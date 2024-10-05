@@ -1,0 +1,24 @@
+@import "./tool/_null-style.scss";
+@import "./tool/_fonts.scss";
+
+:root {
+    --color-yellow-1: #FFEF3A;
+}
+
+#root {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+.padding-style {
+    margin: 0 120px;
+}
+
+.title-style {
+    color: rgb(68, 52, 60);
+    font-family: Dela;
+    font-size: 64px;
+    font-weight: 400;
+    line-height: 93px;
+}

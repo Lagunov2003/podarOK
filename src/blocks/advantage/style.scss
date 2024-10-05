@@ -1,0 +1,57 @@
+.advantage {
+    &__content {
+        padding-bottom: 75px;
+        position: relative;
+    }
+    &__title {
+        margin-bottom: 23px;
+    }
+    &__list {
+        margin-left: 20px;
+        position: relative;
+        z-index: 1;
+        width: 838px;
+        padding: 22px;
+        border-radius: 28px;
+        backdrop-filter: blur(15px);
+        background: rgba(255, 255, 255, 0.65);
+    }
+    &__item {
+        margin-bottom: 28px;
+        padding-left: 38px;
+        &-title {
+            margin-bottom: 15px;
+            font-family: Dimica;
+            font-size: 32px;
+            font-weight: 400;
+            position: relative;
+            &::before {
+                content: "";
+                display: inline-block;
+                width: 32px;
+                height: 40px;
+                position: absolute;
+                left: -38px;
+                top: -4px;
+                background: url("/public/img/white-star.svg") center/ 100% 100% no-repeat;
+            }
+        }
+        &-text {
+            font-family: Dimica;
+            font-size: 20px;
+            font-weight: 400;
+        }
+    }
+    &__decor-cards {
+        position: absolute;
+        right: 0;
+        bottom: 92px;
+    }
+
+    &__decor-hearts {
+        position: absolute;
+        z-index: 0;
+        left: -46px;
+        top: 86px;
+    }
+}

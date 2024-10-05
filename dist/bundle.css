@@ -1,0 +1,237 @@
+/*!****************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/blocks/intro/style.scss ***!
+  \****************************************************************************************************************************************************************/
+.intro__content {
+  padding: 70px 120px 0;
+}
+.intro__title {
+  margin-bottom: 40px;
+  width: 1000px;
+  font-family: Dela;
+  font-size: 96px;
+  font-weight: 400;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #FFFFFF;
+}
+.intro__title span {
+  color: #FF5496;
+}
+.intro__text {
+  width: 550px;
+  margin-bottom: 62px;
+  color: #FFFFFF;
+  font-family: Dimica;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 20px;
+}
+/*!********************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/component/button/style.scss ***!
+  \********************************************************************************************************************************************************************/
+.button-style {
+  width: 236px;
+  height: 75px;
+  border: 1px solid rgb(255, 84, 150);
+  border-radius: 30px;
+  color: rgb(255, 84, 150);
+  font-family: Inter;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  transition: all 0.2s linear;
+}
+.button-style:hover {
+  background-color: rgb(255, 84, 150);
+  color: white;
+  border-color: white;
+}
+.button-style:active {
+  transform: translateY(5px);
+}
+/*!*****************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/blocks/header/style.scss ***!
+  \*****************************************************************************************************************************************************************/
+.header {
+  height: 141px;
+  padding: 0 120px;
+}
+.header__content {
+  height: 100%;
+  padding: 36px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header__logo {
+  font-size: 48px;
+  color: white;
+  font-family: "Dela";
+}
+.header__logo span {
+  color: var(--color-yellow-1);
+}
+.header__nav {
+  display: flex;
+  gap: 25px;
+}
+.header__link {
+  font-size: 20px;
+  font-family: "Dimica";
+  color: white;
+}
+/*!***********************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/style/tool/_null-style.scss ***!
+  \***********************************************************************************/
+* {
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+  
+  *, *:before, *:after {
+    box-sizing: border-box;
+  }
+  
+  :focus, :active {
+    outline: none;
+  }
+  
+  a:focus, a:active {
+    outline: none;
+  }
+  
+  nav, footer, header, aside {
+    display: block;
+  }
+  
+  html, body {
+    height: 100%;
+    width: 100%;
+    font-style: 100%;
+    line-height: 1;
+    font-style: 14px;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  input, button, textarea {
+    font-family: inherit;
+  }
+  
+  input::-ms-clear {
+    display: none;
+  }
+  
+  button {
+    cursor: pointer;
+  }
+  
+  button::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+  }
+  
+  a, a:visited {
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: none;
+    color: initial;
+  }
+  
+  ul li {
+    list-style-type: none;
+  }
+  
+  img {
+    vertical-align: top;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-style: inherit;
+    font-weight: 400;
+    cursor: default;
+  }
+
+  p {
+    cursor: default;
+  }
+/*!******************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/style/tool/_fonts.scss ***!
+  \******************************************************************************/
+@font-face {
+    font-family: 'Dimica';
+    src: url(./fonts/Dimica-Regular.eot);
+    src: url(./fonts/Dimica-Regular.eot?#iefix) format('embedded-opentype'),
+        url(./fonts/Dimica-Regular.woff2) format('woff2'),
+        url(./fonts/Dimica-Regular.woff) format('woff'),
+        url(./fonts/Dimica-Regular.ttf) format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Dela';
+    src: url(./fonts/DelaGothicOne-Regular.eot);
+    src: url(./fonts/DelaGothicOne-Regular.eot?#iefix) format('embedded-opentype'),
+        url(./fonts/DelaGothicOne-Regular.woff2) format('woff2'),
+        url(./fonts/DelaGothicOne-Regular.woff) format('woff'),
+        url(./fonts/DelaGothicOne-Regular.ttf) format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url(./fonts/Inter28pt-Bold.eot);
+    src: url(./fonts/Inter28pt-Bold.eot?#iefix) format('embedded-opentype'),
+        url(./fonts/Inter28pt-Bold.woff2) format('woff2'),
+        url(./fonts/Inter28pt-Bold.woff) format('woff'),
+        url(./fonts/Inter28pt-Bold.ttf) format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+/*!*********************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/component/page-layer/_page-layer.scss ***!
+  \*********************************************************************************************/
+.App {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.App__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2000px;
+  width: 100%;
+  z-index: -1;
+}
+
+.App__bg img {
+  width: 100%;
+}
+/*!********************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/style/style.css ***!
+  \********************************************************************************************************************************************************/
+:root {
+  --color-yellow-1: #FFEF3A;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.padding-style {
+  padding: 0 120px;
+}
