@@ -4,6 +4,8 @@ import Intro from "../../blocks/intro";
 import Header from "../../blocks/header";
 import Manual from "../../blocks/manual";
 import Advantage from "../../blocks/advantage";
+import Survey from "../../blocks/survey";
+import GiftsInCity from "../../blocks/gifts-in-city";
 
 function Main() {
   useEffect(() => {
@@ -16,6 +18,8 @@ function Main() {
       <Intro />
       <Manual />
       <Advantage />
+      <GiftsInCity />
+      <Survey />
     </PageLayer>
   );
 }

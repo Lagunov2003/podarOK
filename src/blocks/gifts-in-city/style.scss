@@ -1,0 +1,91 @@
+.gifts-in-city {
+    &__content {
+        padding-bottom: 40px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__title {
+        margin-bottom: 30px;
+    }
+    &__grid {
+        margin-bottom: 17px;
+        display: flex;
+        flex-direction: column;
+        gap: 64px;
+
+        & .gifts-in-city__row:nth-child(1) {
+            .gifts-in-city__item:last-child {
+                position: relative;
+                .gifts-in-city__item-title {
+                    font-size: 64px;
+                }
+
+                .gifts-in-city__item-img {
+                    position: absolute;
+                    right: -4px;
+                    bottom: -36px;
+                }
+            }
+        } 
+
+        & .gifts-in-city__row:nth-child(2) {
+            .gifts-in-city__item:first-child {
+                position: relative;
+                padding-top: 60px;
+                padding-left: 45px;
+                .gifts-in-city__item-title {
+                    font-size: 64px;
+                    line-height: 93px;
+                    text-align: left;
+                }
+
+                .gifts-in-city__item-img {
+                    position: absolute;
+                    right: -50px;
+                    bottom: -20px;
+                }
+            }
+        }
+    }
+    &__row {
+        display: flex;
+        gap: 55px;
+        height: 350px;
+    }
+    &__item {
+        flex: 260px;
+        padding: 43px 0px 10px;
+        border-radius: 83px;
+        background: rgb(255, 255, 255);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        &-title {
+            color: rgb(68, 52, 60);
+            font-family: Dela;
+            font-size: 32px;
+            font-weight: 400;
+            line-height: 58px;
+            text-align: center;
+        }
+        &-img {
+            display: flex;
+            justify-content: center;
+        }
+    }
+    &__label {
+        margin-bottom: 28px;
+        font-family: Dimica;
+        font-size: 24px;
+        font-weight: 400;
+        color: rgb(125, 125, 125);
+    }
+    &__button {
+        align-self: center;
+    }
+}
+
+.flex-x2 {
+    flex: 575px;
+}
