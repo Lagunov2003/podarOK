@@ -1,0 +1,38 @@
+$MAX-WIDTH: 1920;
+$MIN-WIDTH: 320;
+
+$MOBILE: 320;
+$TABLET: 768;
+$TABLET-L: 1024;
+$DESKTOP: 1280;
+
+// $MOBILE_MEDIA: "screen and (max-width: #{$TABLET - 1 + px})";
+// $TABLET_MEDIA: "screen and (min-width: #{$TABLET + px}) and (max-width: #{$TABLET-L - 1 + px}) and (orientation: landscape)";
+// $TABLET-L_MEDIA: "screen and (min-width: #{$TABLET-L + px}) and (max-width: #{$DESKTOP - 1 + px})";
+// $DESKTOP_MEDIA: "screen and (min-width: #{$DESKTOP + px}) and (max-width: #{$MAX-WIDTH - 1 + px})";
+
+@mixin adap($prop, $dm, $d : $dm, $t : $d, $m : $t) {
+    @media (min-width: #{$MAX-WIDTH + px}) {
+        // #{$prop}: #{$d + px};
+        #{$prop}: calc($dm/$MAX-WIDTH * 100vw);
+    }
+
+    @media screen and (max-width: #{$MAX-WIDTH - 1 + px}) and (min-width: #{$DESKTOP + px}) {
+        $r: $dm - $d;
+        #{$prop}: calc(#{$d + px} + #{$r} * ((100vw - #{$DESKTOP + px}) / (#{$MAX-WIDTH} - #{$DESKTOP})));
+    }
+
+    @media screen and (max-width: #{$DESKTOP - 1 + px}) and (min-width: #{$TABLET + px}) {
+        $r: $d - $t;
+        #{$prop}: calc(#{$t + px} + #{$r} * ((100vw - #{$TABLET + px}) / (#{$DESKTOP} - #{$TABLET})));
+    }
+
+    @media screen and (max-width: #{$TABLET - 1 + px}) and (min-width: #{$MOBILE + px}) {
+        $r: $t - $m;
+        #{$prop}: calc(#{$m + px} + #{$r} * ((100vw - #{$MOBILE + px}) / (#{$TABLET} - #{$MOBILE})));
+    }
+
+    @media (max-width: #{$MIN-WIDTH + px}) {
+        #{$prop}: #{$m + px};
+    }
+}
