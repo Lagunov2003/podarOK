@@ -6,6 +6,7 @@ import Manual from "../../blocks/manual";
 import Advantage from "../../blocks/advantage";
 import Survey from "../../blocks/survey";
 import GiftsInCity from "../../blocks/gifts-in-city";
+import Delivery from "../../blocks/delivery";
 
 function Main() {
   useEffect(() => {
@@ -19,6 +20,7 @@ function Main() {
       <Manual />
       <Advantage />
       <GiftsInCity />
+      <Delivery />
       <Survey />
     </PageLayer>
   );
