@@ -1,4 +1,4 @@
-package ru.uniyar.podarok.entity;
+package ru.uniyar.podarok.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -20,4 +20,6 @@ public class UserEntity {
     private LocalDate dateOfBirth;
     @Transient
     private int age;
+    private boolean activated=false;
+    private String role="ANONYM_USER";
 }
