@@ -1,27 +1,38 @@
 .header {
+    background: #00000033;
+    backdrop-filter: blur(16px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
     &__content {
-        height: 141px;
-        padding: 36px 0;
+        height: 100px;
+        padding: 10px 0;
         display: flex;
         align-items: center;
-        justify-content: space-between;
     }
 
     &__logo {
+        margin-right: auto;
         font-size: 48px;
         color: white;
         font-family: "Dela";
+        height: 62px;
         p {
             cursor: pointer;
         }
 
         span {
             color: var(--color-yellow-1);
+            display: inline-block;
+            height: 62px;
         }
 
     }
 
     &__nav {
+        margin-right: 30px;
         display: flex;
         align-items: center;
         gap: 47px;
@@ -52,17 +63,17 @@
         }
     }
 
-    .button-style {
-        height: 45px;
-        background-color: rgb(255, 84, 150);
+    &__sing-in {
+        padding: 7px 8px 5px;
+        background: rgba(255, 84, 150, 0.2);
         color: white;
-        border-color: white;
+        border: 1px solid rgb(255, 255, 255);
+        border-radius: 10px;    
         font-size: 20px;
-
-        &:hover {
-            border-color: rgb(255, 84, 150);
-            color: rgb(255, 84, 150);
-            background: white;
+        font-family: Dimica;
+        transition: all 0.15s linear;
+        &:active {
+            transform: translateY(3px);
         }
     }
 }

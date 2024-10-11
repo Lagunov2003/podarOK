@@ -46,6 +46,7 @@
         position: absolute;
         right: 0;
         bottom: 92px;
+        animation: fly linear 4s infinite;
     }
 
     &__decor-hearts {
@@ -53,5 +54,29 @@
         z-index: 0;
         left: -46px;
         top: 86px;
+    }
+}
+
+@keyframes fly {
+    0% {
+        transform: translateY(0);
+    }
+    25% {
+        transform: translateY(15px);
+    }
+    30% {
+        transform: translateY(15px);
+    }
+    50% {
+        transform: translateY(0);
+    }
+    75% {
+        transform: translateY(-15px);
+    }
+    80% {
+        transform: translateY(-15px);
+    }
+    100% {
+        transform: translateY(0);
     }
 }

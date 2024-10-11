@@ -1,0 +1,159 @@
+.footer {
+    background-color: #7D7D7D;
+    &__content {
+        padding-top: 30px;
+        padding-bottom: 30px;
+        height: 321px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    &__name {
+        margin-bottom: 30px;
+        font-size: 48px;
+        color: white;
+        font-family: "Dela";
+        p {
+            cursor: pointer;
+        }
+
+        span {
+            color: var(--color-yellow-1);
+        }
+    }
+    &__bottom-row {
+        display: flex;
+        gap: 160px;
+    }
+
+    &__nav {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    &__link {
+        font-size: 20px;
+        font-family: "Dimica";
+        color: white;
+        position: relative;
+        transition: all 0.15s linear;
+        max-width: max-content;
+        &::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: white;
+            transition: all 0.15s linear;
+        }
+        &:hover {
+            color: white;
+            &::before {
+                width: 100%;
+            }
+        }
+    }
+
+    &__contact {
+        display: flex;
+        flex-direction: column;
+
+        &-title {
+            margin-bottom: 13px;
+            color: rgb(255, 255, 255);
+            font-family: Dimica;
+            font-size: 24px;
+            font-weight: 400;
+        }
+        &-tel {
+            font-style: normal;
+            color: white;
+            font-family: Dimica;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 120%;
+            a {
+                color: #90C2EB;
+
+                &:hover {
+                    color: #90C2EB;
+                }
+            }
+        }
+
+        &-email {
+            font-style: normal;
+            color: white;
+            font-family: Dimica;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 120%;
+            a {
+                text-decoration: underline;
+                color: white;
+
+                &:hover {
+                    color: white;
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        &-messages {
+            margin-top: auto;
+            display: flex;
+            gap: 20px;
+        }
+    }
+
+    &__promocode {
+        width: 540px;
+
+        &-text {
+            margin-top: 19px;
+            margin-bottom: 132px;
+            color: rgb(255, 255, 255);
+            font-family: Dimica;
+            font-size: 24px;
+            font-weight: 400;
+        }
+
+        &-email {
+            position: relative;
+            input {
+                width: 100%;
+                background-color: transparent;
+                padding-bottom: 5px;
+                border-bottom: 1px solid rgba($color: #d9d9d9, $alpha: 0.4);
+                color: white;
+                font-family: Dimica;
+                font-size: 20px;
+                font-weight: 400;
+                cursor: pointer;
+
+                &::placeholder {
+                    color: white;
+                    font-family: Dimica;
+                    font-size: 20px;
+                    font-weight: 400;
+                }
+            }
+
+
+            &::after {
+                content: "";
+                width: 30px;
+                height: 10px;
+                right: 0;
+                bottom: 11px;
+                display: inline-block;
+                position: absolute;
+                background: url(/public/img/arrow-line-white.svg) center/ 100% no-repeat;
+                cursor: pointer;
+            }
+        }
+    }
+}
