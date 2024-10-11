@@ -2,9 +2,8 @@ package ru.uniyar.podarok.controllers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.uniyar.podarok.entities.UserEntity;
+import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.UserAlreadyExist;
 import ru.uniyar.podarok.services.UserService;
 
@@ -14,7 +13,7 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/registration")
-    public ResponseEntity<Object> registration(@RequestBody UserEntity user) {
+    public ResponseEntity<Object> registration(@RequestBody User user) {
         try {
             userService.registerUser(user);
             return ResponseEntity.ok().body("Перейдите по ссылке, отправленной на Ваш email!");
