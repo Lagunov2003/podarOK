@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PageLayer from "../../component/page-layer";
 import Intro from "../../blocks/intro";
 import Header from "../../blocks/header";
@@ -9,25 +9,34 @@ import GiftsInCity from "../../blocks/gifts-in-city";
 import Delivery from "../../blocks/delivery";
 import Footer from "../../blocks/footer";
 import Reviews from "../../blocks/reviews";
+import SingIn from "../../component/sing-in";
 
 function Main() {
-  useEffect(() => {
-    document.title = "podarOK | Главная";
-  }, []);
+    const [activeModal, setActiveModal] = useState(false);
 
-  return (
-    <PageLayer>
-      <Header />
-      <Intro />
-      <Manual />
-      <Advantage />
-      <GiftsInCity />
-      <Delivery />
-      <Reviews />
-      <Survey />
-      <Footer />
-    </PageLayer>
-  );
+    useEffect(() => {
+        document.title = "podarOK | Главная";
+    }, []);
+
+    const handleOpenModal = () => {
+      document.body.classList.toggle("local-page")
+      setActiveModal(v => !v)
+    }
+
+    return (
+        <PageLayer>
+            <Header handleOpenModal={handleOpenModal}/>
+            <SingIn openModal={handleOpenModal} activeModal={activeModal}/>
+            <Intro />
+            <Manual />
+            <Advantage />
+            <GiftsInCity />
+            <Delivery />
+            <Reviews />
+            <Survey />
+            <Footer />
+        </PageLayer>
+    );
 }
 
 export default Main;
