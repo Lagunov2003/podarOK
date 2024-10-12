@@ -1,9 +1,8 @@
 import React from "react";
 import "./style.scss";
 import Button from "../../component/button";
-import SingIn from "../../component/sing-in";
 
-function Header({ handleOpenModal }) {
+function Header() {
    return (
       <header className="header">
          <div className="header__content padding-style">
@@ -26,7 +25,7 @@ function Header({ handleOpenModal }) {
                   Корзина
                </a>
             </nav>
-            <button className="header__sing-in" onClick={() => handleOpenModal()}>Вход</button>
+            <button className="header__sing-in">Вход</button>
          </div>
       </header>
    );
