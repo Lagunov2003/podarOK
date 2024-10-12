@@ -1,0 +1,249 @@
+.local-page {
+    .sing-in  {
+        width: 100%;
+        height: 100%;
+
+        &__content {
+            height: 500px;
+            width: 753px;
+        }
+    }
+}
+
+.sing-in {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 150;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s linear;
+    &_active {
+        .sing-in__block {
+            &-title {
+                left: 0px;
+            }
+    
+            &-text {
+                left: 0;
+            }
+
+            &-button {
+                left: 102px;
+                top: 295px;
+            }
+
+            &-bg {
+                left: 0;
+
+            }
+        }
+        .sing-in__enter {
+            opacity: 0;
+            left: -450px;
+            transition: all 0.2s linear;
+        }
+        .sing-in__register {
+           right: 0px;
+           opacity: 1;
+           transition: all 0.3s linear 0.1s;
+        } 
+
+        .sing-in__cancel {
+
+            #cancle-color {
+                fill: black;
+            }
+        }
+    }
+    &_visit {
+        background-color: rgba(0, 0, 0, 0.301);
+        .sing-in__content {
+            top: 0;
+        }
+    }
+    &__content {
+        top: -100%;
+        border-radius: 50px;
+        background-color: white;
+        display: flex;
+        overflow: hidden;
+        position: relative;
+        transition: all 0.3s linear;
+    }
+
+    &__block {            
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        top: 0;
+        z-index: 5;
+        &-title {
+            width: 303px;
+            text-align: center;
+            color: rgb(255, 255, 255);
+            font-family: Dela;
+            font-size: 30px;
+            font-weight: 400;
+            line-height: 43px;
+            position: absolute;
+            left: 450px;
+            top: 101px;
+            z-index: 3;
+        }
+
+        &-text {
+            padding: 0px 30px;
+            width: 303px;
+            text-align: center; 
+            color: rgb(255, 255, 255);
+            font-family: Dimica;
+            font-size: 16px;
+            font-weight: 400;
+            position: absolute;
+            left: 450px;
+            top: 217px;
+            z-index: 1;
+        }
+
+        &-button {
+            padding: 8px 18px;
+            border: 2px solid rgb(255, 255, 255);
+            border-radius: 20px;
+            background: rgba(255, 84, 150, 0.3);
+            color: rgb(255, 255, 255);
+            font-family: Dela;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 29px;
+            transition: all 0.3s linear;
+            position: absolute;
+            left: 54px;
+            top: 280px;
+        }
+
+        &-bg {
+            width: 303px;
+            height: 500px;
+            background: linear-gradient(134.05deg, rgb(49, 206, 217) -6.809%,rgb(151, 71, 255) 113.346%);
+            position: absolute;
+            top: 0;
+            left: 450px;
+            transition: all 0.3s ease-in-out;
+        }
+    }
+    &__enter {
+        padding: 75px 40px;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s linear 0.1s;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 10;
+        &-title {
+            color: rgb(0, 0, 0);
+            font-family: Dela;       
+            font-size: 36px;
+            font-weight: 400;
+            line-height: 52px;
+        }
+        &-text {
+            align-self: center;
+            margin-top: 38px;
+            margin-bottom: 12px;
+            color: rgb(0, 0, 0);
+            font-family: Dimica;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 20px;
+        }
+        &-form {
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+        }
+        &-forget {
+            color: rgb(19, 137, 233);
+            font-family: Dimica;
+            font-size: 14px;
+            font-weight: 400;
+            margin: 5px 5px 40px;
+            align-self: flex-end;
+            border-bottom: 1px solid transparent;
+            cursor: pointer;
+            &:hover {
+                border-color: rgb(19, 137, 233);
+            }
+        }
+        &-button {
+            align-self: center;
+            width: max-content;
+            padding: 8px 10px;
+            color: rgb(255, 255, 255);
+            font-family: Dela;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 29px;
+            border-radius: 20px;
+            background: linear-gradient(90.00deg, rgb(49, 206, 217),rgb(151, 71, 255) 100%);
+        }
+    }
+
+    &__register {
+        padding: 75px 40px;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.2s linear;
+        position: absolute;
+        top: 0;
+        right: -450px;
+        opacity: 0;
+        z-index: 10;
+        &-title {
+            margin-bottom: 17px;
+            color: rgb(0, 0, 0);
+            font-family: Dela;       
+            font-size: 36px;
+            font-weight: 400;
+            line-height: 52px;
+        }
+
+        &-form {
+            margin-bottom: 35px;
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+        }
+    }
+
+    &__input { 
+        padding: 15px 14px;
+        height: 50px;
+        border-radius: 7px;
+        background: rgb(217, 217, 217);
+        color: rgb(99, 99, 99);
+        font-family: Dimica;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 20px;
+    }
+
+    &__cancel {
+        height: 23px;
+        width: 23px;
+        position: absolute;
+        top: 26px;
+        right: 31px;
+        z-index: 12;
+        background-color: transparent;   
+
+        #cancle-color {
+            transition: all 0.3s linear;
+            fill: white;
+        }
+    }
+}
