@@ -1,34 +1,30 @@
 package ru.uniyar.podarok.services;
 
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.Authentication;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.uniyar.podarok.entities.ActivationCodeEntity;
+import ru.uniyar.podarok.dtos.RegistrationUserDto;
 import ru.uniyar.podarok.entities.User;
-import ru.uniyar.podarok.exceptions.IncorrectUserId;
 import ru.uniyar.podarok.exceptions.UserAlreadyExist;
-import ru.uniyar.podarok.exceptions.UserNotAuthorized;
-import ru.uniyar.podarok.repositories.RoleRepository;
 import ru.uniyar.podarok.repositories.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserService implements UserDetailsService {
     private UserRepository userRepository;
-    // TODO
-    // Заменить RoleRepository на RoleService
-    private RoleRepository roleRepository;
-    private EmailService emailService;
+    private RoleService roleService;
+//    private EmailService emailService;
     private PasswordEncoder passwordEncoder;
 
     public Optional<User> findByEmail(String email) {
@@ -54,33 +50,15 @@ public class UserService implements UserDetailsService {
         );
     }
 
-//    public void createNewUser(User user) {
-//        user.setRoles(List.of(roleRepository.findByName("ROLE_USER").get()));
-//        userRepository.save(user);
-//    }
-
-    public void registerUser(User user) throws UserAlreadyExist {
-        if (userRepository.findByEmail(user.getEmail()) != null) {
+    @Transactional
+    public User createNewUser(RegistrationUserDto registrationUserDto) throws UserAlreadyExist {
+        if (userRepository.findUserByEmail(registrationUserDto.getEmail()).isPresent()) {
             throw new UserAlreadyExist("Пользователь уже существует!");
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        emailService.sendActivationCode(user.getEmail());
-    }
-
-    // Приходит код в параметре -> меняется состояние, если код совпадает со значением из бд по этому id
-    public void activateUser(User user, ActivationCodeEntity activationCode) throws IncorrectUserId {
-        if (user.getId() != activationCode.getUserId()) {
-            throw new IncorrectUserId("Идентификаторы пользователей не совпадают!");
-        }
-        user.setActivated(true);
-    }
-
-    public UserDetails getCurrentUser() throws UserNotAuthorized {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            return (UserDetails) authentication.getPrincipal();
-        }
-        throw new UserNotAuthorized("Пользователь не авторизован!");
+        User user = new User();
+        user.setEmail(registrationUserDto.getEmail());
+        user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
+        user.setRoles(List.of(roleService.getUserRole()));
+        return userRepository.save(user);
     }
 }

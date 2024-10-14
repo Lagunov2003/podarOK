@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +23,12 @@ public class JwtTokenUtils {
     @Value("${jwt.lifetime}")
     private Duration jwtLifeTime;
 
-    private final SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    private SecretKey secretKey;
+
+    @PostConstruct
+    private void init() {
+        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    }
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
@@ -53,7 +59,10 @@ public class JwtTokenUtils {
         return getAllClaimsFromToken(token).getSubject();
     }
 
-    public List<?> getRoles(String token) {
-        return getAllClaimsFromToken(token).get("roles", List.class);
+    public List<String> getRoles(String token) {
+        List<?> roles = getAllClaimsFromToken(token).get("roles", List.class);
+        return roles.stream()
+                .map(role -> (String) role)
+                .collect(Collectors.toList());
     }
 }

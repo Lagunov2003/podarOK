@@ -3,28 +3,27 @@ package ru.uniyar.podarok.controllers;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.uniyar.podarok.entities.User;
+import ru.uniyar.podarok.dtos.JwtRequest;
+import ru.uniyar.podarok.dtos.RegistrationUserDto;
 import ru.uniyar.podarok.exceptions.UserAlreadyExist;
-import ru.uniyar.podarok.services.UserService;
+import ru.uniyar.podarok.services.AuthService;
 
 @RestController
 @AllArgsConstructor
 public class AuthController {
-    private UserService userService;
+    private AuthService authService;
+
+    @PostMapping("/auth")
+    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
+        return authService.createAuthToken(authRequest);
+    }
 
     @PostMapping("/registration")
-    public ResponseEntity<Object> registration(@RequestBody User user) {
+    public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
         try {
-            userService.registerUser(user);
-            return ResponseEntity.ok().body("Перейдите по ссылке, отправленной на Ваш email!");
+            return authService.createNewUser(registrationUserDto);
         } catch (UserAlreadyExist e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-//    @GetMapping("/activation")
-//    public ResponseEntity<Object> activation(@RequestParam String activationCode) {
-////        userService.activateUser(activationCode);
-//        return ResponseEntity.ok().body("Регистрация завершена!");
-//    }
 }

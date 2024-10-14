@@ -10,13 +10,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @AllArgsConstructor
 public class SecurityConfig {
+    private JwtRequestFilter jwtRequestFilter;
+    private PasswordEncoder passwordEncoder;
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -27,12 +32,12 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/registration").permitAll()
-                        .requestMatchers("/auth").permitAll()
-                        .requestMatchers("/user").hasRole("ADMIN")
-//                        .anyRequest().permitAll())
-                        .requestMatchers("/**").authenticated())
-                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
+                        .requestMatchers("/registration", "/auth", "/hello").permitAll()
+//                        .requestMatchers("/user").hasRole("ADMIN")
+                        .anyRequest().authenticated())
+//                        .requestMatchers("/**").authenticated())
+                .formLogin(AbstractAuthenticationFilterConfigurer::disable)
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }
