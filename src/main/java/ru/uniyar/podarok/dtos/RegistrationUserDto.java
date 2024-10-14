@@ -9,4 +9,5 @@ public class RegistrationUserDto {
         private long id;
         private String password;
         private String email;
+        private String firstName;
 }

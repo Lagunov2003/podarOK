@@ -1,14 +1,12 @@
 package ru.uniyar.podarok.services;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.uniyar.podarok.dtos.JwtRequest;
 import ru.uniyar.podarok.dtos.JwtResponse;
 import ru.uniyar.podarok.dtos.RegistrationUserDto;
@@ -19,13 +17,12 @@ import ru.uniyar.podarok.utils.JwtTokenUtils;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class AuthService {
     private UserService userService;
     private JwtTokenUtils jwtTokenUtils;
     private AuthenticationManager authenticationManager;
 
-    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
+    public ResponseEntity<?> createAuthToken(JwtRequest authRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
             UserDetails userDetails = userService.loadUserByUsername(authRequest.getEmail());
@@ -36,7 +33,7 @@ public class AuthService {
         }
     }
 
-    public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto) throws UserAlreadyExist {
+    public ResponseEntity<?> createNewUser(RegistrationUserDto registrationUserDto) throws UserAlreadyExist {
         User user = userService.createNewUser(registrationUserDto);
         return ResponseEntity.ok(new UserDto(user.getId(), user.getEmail()));
     }

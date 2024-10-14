@@ -58,6 +58,7 @@ public class UserService implements UserDetailsService {
         User user = new User();
         user.setEmail(registrationUserDto.getEmail());
         user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
+        user.setFirstName(registrationUserDto.getFirstName());
         user.setRoles(List.of(roleService.getUserRole()));
         return userRepository.save(user);
     }
