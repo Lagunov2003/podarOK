@@ -1,11 +1,14 @@
 .footer {
     background-color: #7D7D7D;
+
     &__content {
-        padding-top: 30px;
-        padding-bottom: 30px;
+        padding: 30px 120px;
         height: 321px;
         display: flex;
         justify-content: space-between;
+        max-width: 1440px;
+        width: 100%;
+        margin: 0 auto;
     }
 
     &__name {

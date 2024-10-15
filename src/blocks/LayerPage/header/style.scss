@@ -16,11 +16,14 @@
     &__logo {
         margin-right: auto;
         font-size: 48px;
-        color: white;
         font-family: "Dela";
         height: 62px;
-        p {
+        a {
+            color: white;
             cursor: pointer;
+            &:hover {
+                color: white;
+            }
         }
 
         span {

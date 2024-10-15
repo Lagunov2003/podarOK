@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import "./style.scss";
+import { Link } from "react-router-dom";
 
 const data = [
     {
@@ -53,7 +54,7 @@ function SingIn({ openModal, activeModal }) {
                                 <input type="email" name="" className="sing-in__input" placeholder="Почта" />
                                 <input type="password" name="" className="sing-in__input" placeholder="Пароль" autoComplete="false" />
                             </form>
-                            <p className="sing-in__enter-forget">Забыли пароль?</p>
+                            <Link to={"/password-cange"} className="sing-in__enter-forget" onClick={() => handleOpenModal()}>Забыли пароль?</Link>
                             <button className="sing-in__enter-button">Войти в аккаунт</button>
                         </div>
                         <div className="sing-in__register">

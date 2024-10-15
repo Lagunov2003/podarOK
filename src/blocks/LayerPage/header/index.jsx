@@ -1,16 +1,17 @@
 import React from "react";
 import "./style.scss";
-import Button from "../../component/button";
-import SingIn from "../../component/sing-in";
+import Button from "../../../component/button";
+import SingIn from "../../../component/sing-in";
+import { Link } from "react-router-dom";
 
 function Header({ handleOpenModal }) {
    return (
       <header className="header">
          <div className="header__content padding-style">
             <div className="header__logo">
-               <p>
+               <Link to={"/"}>
                   podar<span>OK</span>
-               </p>
+               </Link>
             </div>
             <nav className="header__nav">
                <a href="" className="header__link">
