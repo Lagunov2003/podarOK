@@ -4,7 +4,7 @@ import "./style.scss";
 function Footer() {
     return (
         <footer className="footer">
-            <div className="footer__content padding-style">
+            <div className="footer__content">
                 <div className="footer__info">
                     <div className="footer__name">
                         <p>

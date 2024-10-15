@@ -1,32 +1,15 @@
-import React, { useEffect, useState } from "react";
-import PageLayer from "../../component/page-layer";
-import Intro from "../../blocks/intro";
-import Header from "../../blocks/header";
-import Manual from "../../blocks/manual";
-import Advantage from "../../blocks/advantage";
-import Survey from "../../blocks/survey";
-import GiftsInCity from "../../blocks/gifts-in-city";
-import Delivery from "../../blocks/delivery";
-import Footer from "../../blocks/footer";
-import Reviews from "../../blocks/reviews";
-import SingIn from "../../component/sing-in";
+import React from "react";
+import Intro from "../../blocks/MainPage/intro";
+import Manual from "../../blocks/MainPage/manual";
+import Advantage from "../../blocks/MainPage/advantage";
+import Survey from "../../blocks/MainPage/survey";
+import GiftsInCity from "../../blocks/MainPage/gifts-in-city";
+import Delivery from "../../blocks/MainPage/delivery";
+import Reviews from "../../blocks/MainPage/reviews";
 
 function Main() {
-    const [activeModal, setActiveModal] = useState(false);
-
-    useEffect(() => {
-        document.title = "podarOK | Главная";
-    }, []);
-
-    const handleOpenModal = () => {
-      document.body.classList.toggle("local-page")
-      setActiveModal(v => !v)
-    }
-
     return (
-        <PageLayer>
-            <Header handleOpenModal={handleOpenModal}/>
-            <SingIn openModal={handleOpenModal} activeModal={activeModal}/>
+        <>
             <Intro />
             <Manual />
             <Advantage />
@@ -34,8 +17,7 @@ function Main() {
             <Delivery />
             <Reviews />
             <Survey />
-            <Footer />
-        </PageLayer>
+        </>
     );
 }
 
