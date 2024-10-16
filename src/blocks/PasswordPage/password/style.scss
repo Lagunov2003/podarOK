@@ -1,0 +1,54 @@
+.password {
+    &__content {
+        padding: 0 172px 255px;
+    }
+    &__title {
+        margin-bottom: 15px;
+        font-size: 64px;
+        line-height: 150%;
+        text-align: center;
+        font-family: Dela;
+        color: white;
+    }
+    &__block {
+        padding: 97px 128px 56px 77px;
+        display: flex;
+        flex-direction: column;
+        border-radius: 32px;
+        box-shadow: inset 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+        background: white;
+        position: relative;
+    }
+    &__form {
+        display: flex;
+        flex-direction: column;
+
+    }
+    &__label {
+        margin-bottom: 39px;
+        display: flex;
+        gap: 45px;
+        font-size: 32px;
+        font-family: Dimica;
+        align-items: center;
+        justify-content: end;
+    }
+
+    &__input {
+        padding: 15px 14px;
+        width: 420px;
+        height: 60px;
+        border-radius: 7px;
+        background: rgb(217, 217, 217);
+        color: rgb(99, 99, 99);
+        font-family: Dimica;
+        font-size: 28px;
+        font-weight: 400;
+        line-height: 28px;
+    }
+
+    &__button {
+        margin-top: 58px;
+        align-self: center;
+    }
+}

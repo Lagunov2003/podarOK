@@ -1,10 +1,11 @@
 import React from "react";
+import Button from "../../component/button";
+import Password from "../../blocks/PasswordPage/password";
 
-function Password() {
-
+function PasswordCange() {
     return <>
-
-    </>
+        <Password />
+    </>;
 }
 
-export default Password;
+export default PasswordCange;

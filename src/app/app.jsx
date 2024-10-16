@@ -2,7 +2,7 @@ import React from "react";
 import Main from "./main";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import PageLayer from "../component/page-layer";
-import Password from "./password";
+import PasswordCange from "./password";
 
 const router = createBrowserRouter([
     {
@@ -14,8 +14,8 @@ const router = createBrowserRouter([
             element: <Main />
           },
           {
-            path: "password-cange",
-            element: <Password />
+            path: "/password-cange",
+            element: <PasswordCange />
           }
         ]
     },
