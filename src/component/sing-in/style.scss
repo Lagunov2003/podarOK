@@ -31,7 +31,7 @@
             }
 
             &-button {
-                left: 102px;
+                left: 54px;
                 top: 295px;
             }
 
@@ -119,10 +119,15 @@
             font-size: 20px;
             font-weight: 400;
             line-height: 29px;
-            transition: all 0.3s linear;
+            transition: all 0.3s linear, width 0.2s linear, padding 0.2s linear;
             position: absolute;
             left: 54px;
-            top: 280px;
+            top: 280px; 
+            width: 195px;
+            &:hover {            
+                padding: 12px 24px;
+                width: 205px;
+            }
         }
 
         &-bg {
@@ -191,6 +196,12 @@
             line-height: 29px;
             border-radius: 20px;
             background: linear-gradient(90.00deg, rgb(49, 206, 217),rgb(151, 71, 255) 100%);
+            width: 214px;
+            transition: width 0.2s linear, padding 0.2s linear;
+            &:hover {            
+                padding: 12px 16px;
+                width: 226px;
+            }
         }
     }
 
