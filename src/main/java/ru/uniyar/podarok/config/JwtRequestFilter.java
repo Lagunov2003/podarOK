@@ -1,12 +1,13 @@
 package ru.uniyar.podarok.config;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +20,6 @@ import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
-@Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtTokenUtils jwtTokenUtils;
 
@@ -42,7 +42,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(token);
                 }
             } catch (ExpiredJwtException e) {
-                log.debug("Время жизни токена вышло!");
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.getWriter().write("Токен устарел!");
+            } catch (SignatureException e) {
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.getWriter().write("Некорректный токен!");
             }
         }
         filterChain.doFilter(request, response);

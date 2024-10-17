@@ -22,6 +22,11 @@ public class AuthService {
     private JwtTokenUtils jwtTokenUtils;
     private AuthenticationManager authenticationManager;
 
+    public ResponseEntity<?> createNewUser(RegistrationUserDto registrationUserDto) throws UserAlreadyExist {
+        User user = userService.createNewUser(registrationUserDto);
+        return ResponseEntity.ok(new UserDto(user.getId(), user.getEmail()));
+    }
+
     public ResponseEntity<?> createAuthToken(JwtRequest authRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
@@ -31,10 +36,5 @@ public class AuthService {
         } catch (BadCredentialsException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-    }
-
-    public ResponseEntity<?> createNewUser(RegistrationUserDto registrationUserDto) throws UserAlreadyExist {
-        User user = userService.createNewUser(registrationUserDto);
-        return ResponseEntity.ok(new UserDto(user.getId(), user.getEmail()));
     }
 }

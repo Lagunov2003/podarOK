@@ -13,11 +13,6 @@ import ru.uniyar.podarok.services.AuthService;
 public class AuthController {
     private AuthService authService;
 
-    @PostMapping("/auth")
-    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
-        return authService.createAuthToken(authRequest);
-    }
-
     @PostMapping("/registration")
     public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
         try {
@@ -25,5 +20,10 @@ public class AuthController {
         } catch (UserAlreadyExist e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PostMapping("/auth")
+    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
+        return authService.createAuthToken(authRequest);
     }
 }
