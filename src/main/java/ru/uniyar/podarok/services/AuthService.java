@@ -24,7 +24,7 @@ public class AuthService {
 
     public ResponseEntity<?> createNewUser(RegistrationUserDto registrationUserDto) throws UserAlreadyExist {
         User user = userService.createNewUser(registrationUserDto);
-        return ResponseEntity.ok(new UserDto(user.getId(), user.getEmail()));
+        return ResponseEntity.ok(new UserDto(user.getId(), user.getEmail(), user.getFirstName(), user.getLastName()));
     }
 
     public ResponseEntity<?> createAuthToken(JwtRequest authRequest) {

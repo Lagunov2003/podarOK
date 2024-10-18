@@ -22,7 +22,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/auth")
+    @PostMapping("/login")
     public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
         return authService.createAuthToken(authRequest);
     }

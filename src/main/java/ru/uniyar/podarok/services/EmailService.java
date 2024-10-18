@@ -9,13 +9,23 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class EmailService {
     private JavaMailSender emailSender;
+    private static final String mailingEmail = "podarOKService@yandex.ru";
 
     public void sendWelcomeLetter(String email, String firstName) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("podarOKService@yandex.ru");
+        message.setFrom(mailingEmail);
         message.setTo(email);
         message.setSubject("Благодарим за регистрацию в сервисе podarOK!");
         message.setText(firstName + ", благодарим Вас за регистрацию в Нашем сервисе по подбору и заказу подарков podarOk!");
+        emailSender.send(message);
+    }
+
+    public void sendConfirmationLetter(String email) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(mailingEmail);
+        message.setTo(email);
+        message.setSubject("Смена пароля в сервисе podarOK!");
+        message.setText("Для изменения пароля перейдите по ссылке: ");
         emailSender.send(message);
     }
 }

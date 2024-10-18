@@ -25,6 +25,3 @@ spring:
 jwt:
   secret: 984hg493gh0439rthr0429uruj2309yh937gc763fe87t3f89723g4
   lifetime: 24h
-logging:
-  file:
-    name: logs/app.log
