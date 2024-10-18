@@ -1,10 +1,12 @@
 package ru.uniyar.podarok.controllers;
 
 import lombok.AllArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
 import ru.uniyar.podarok.dtos.UpdateUserDto;
 import ru.uniyar.podarok.dtos.UserDto;
 import ru.uniyar.podarok.exceptions.EmptyUserData;
@@ -45,6 +47,35 @@ public class UserController {
         }
     }
 
+    @PostMapping("/changePassword")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> changePassword(@RequestBody ChangeUserPasswordDto changeUserPasswordDto) {
+        try {
+            userService.changeUserPassword(changeUserPasswordDto);
+            return ResponseEntity.ok().body("Перейдите по ссылке в письме для подтверждения смены пароля!");
+        } catch(UserNotAuthorized e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch(UserNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ошибка генерации ссылки для подтверждения пароля!");
+        }
+    }
+
+    @GetMapping("/confirmChanges")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> confirmChangePassword(@RequestParam("token") String token){
+        try {
+            userService.confirmChangeUserPassword(token);
+            return ResponseEntity.ok().body("Пароль успешно изменён!");
+        } catch(UserNotAuthorized e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch(UserNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Некорректная ссылка для подтверждения пароля!");
+        }
+    }
 
     @DeleteMapping("/profile")
     @PreAuthorize("isAuthenticated()")

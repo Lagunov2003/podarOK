@@ -22,19 +22,15 @@ public class AuthService {
     private JwtTokenUtils jwtTokenUtils;
     private AuthenticationManager authenticationManager;
 
-    public ResponseEntity<?> createNewUser(RegistrationUserDto registrationUserDto) throws UserAlreadyExist {
+    public UserDto createNewUser(RegistrationUserDto registrationUserDto) throws UserAlreadyExist {
         User user = userService.createNewUser(registrationUserDto);
-        return ResponseEntity.ok(new UserDto(user.getId(), user.getEmail(), user.getFirstName(), user.getLastName()));
+        return new UserDto(user.getId(), user.getEmail(), user.getFirstName(), user.getLastName());
     }
 
-    public ResponseEntity<?> createAuthToken(JwtRequest authRequest) {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
-            UserDetails userDetails = userService.loadUserByUsername(authRequest.getEmail());
-            String token = jwtTokenUtils.generateToken(userDetails);
-            return ResponseEntity.ok(new JwtResponse(token));
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public JwtResponse createAuthToken(JwtRequest authRequest) throws BadCredentialsException {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
+        UserDetails userDetails = userService.loadUserByUsername(authRequest.getEmail());
+        String token = jwtTokenUtils.generateToken(userDetails);
+        return new JwtResponse(token);
     }
 }

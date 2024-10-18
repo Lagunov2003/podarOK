@@ -10,15 +10,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
 import ru.uniyar.podarok.dtos.RegistrationUserDto;
 import ru.uniyar.podarok.dtos.UpdateUserDto;
 import ru.uniyar.podarok.dtos.UserDto;
 import ru.uniyar.podarok.entities.User;
-import ru.uniyar.podarok.exceptions.EmptyUserData;
-import ru.uniyar.podarok.exceptions.UserAlreadyExist;
-import ru.uniyar.podarok.exceptions.UserNotAuthorized;
-import ru.uniyar.podarok.exceptions.UserNotFoundException;
+import ru.uniyar.podarok.exceptions.*;
 import ru.uniyar.podarok.repositories.UserRepository;
+import ru.uniyar.podarok.utils.EncryptionUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,6 +31,7 @@ public class UserService implements UserDetailsService {
     private RoleService roleService;
     private EmailService emailService;
     private PasswordEncoder passwordEncoder;
+    private EncryptionUtils encryptionUtils;
 
     private User getCurrentAuthenticationUser() throws UserNotAuthorized, UserNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -89,7 +89,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserDto updateUserProfile(UpdateUserDto updateUserDto) throws UserNotFoundException, EmptyUserData, UserNotAuthorized {
         User currentUser = getCurrentAuthenticationUser();
-        if (updateUserDto.getFirstName() == null && updateUserDto.getLastName() == null && updateUserDto.getPassword() == null) {
+        if (updateUserDto.getFirstName() == null && updateUserDto.getLastName() == null) {
             throw new EmptyUserData("Поля не должны быть пустыми!");
         }
         if (updateUserDto.getFirstName() != null && !currentUser.getFirstName().equals(updateUserDto.getFirstName())) {
@@ -98,11 +98,30 @@ public class UserService implements UserDetailsService {
         if (updateUserDto.getLastName() != null && !currentUser.getLastName().equals(updateUserDto.getLastName())) {
             currentUser.setLastName(updateUserDto.getLastName());
         }
-        if (updateUserDto.getPassword() != null && updateUserDto.getPassword().length() > 6) {
-            currentUser.setPassword(passwordEncoder.encode(updateUserDto.getPassword()));
-        }
         userRepository.save(currentUser);
         return new UserDto(currentUser.getId(), currentUser.getEmail(), currentUser.getFirstName(), currentUser.getLastName());
+    }
+
+    @Transactional
+    public void changeUserPassword(ChangeUserPasswordDto changeUserPasswordDto) throws Exception {
+        User currentUser = getCurrentAuthenticationUser();
+        if (changeUserPasswordDto.getPassword() != null && changeUserPasswordDto.getPassword().length() > 6) {
+            String hashedCode = encryptionUtils.encrypt(changeUserPasswordDto.getPassword() + ":" + changeUserPasswordDto.getId());
+            emailService.sendConfirmationLetter(currentUser.getEmail(), hashedCode);
+        }
+    }
+
+    @Transactional
+    public void confirmChangeUserPassword(String token) throws Exception {
+        User currentUser = getCurrentAuthenticationUser();
+        String[] parts = encryptionUtils.decrypt(token).split(":");
+        String decryptedPassword = parts[0];
+        long decryptedNumber = Long.parseLong(parts[1]);
+        if (currentUser.getId() != decryptedNumber) {
+            throw new NotValidToken("Невалидный токен для смены пароля!");
+        }
+        currentUser.setPassword(passwordEncoder.encode(decryptedPassword));
+        userRepository.save(currentUser);
     }
 
     @Transactional

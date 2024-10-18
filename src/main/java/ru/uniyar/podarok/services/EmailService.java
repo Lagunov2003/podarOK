@@ -20,12 +20,12 @@ public class EmailService {
         emailSender.send(message);
     }
 
-    public void sendConfirmationLetter(String email) {
+    public void sendConfirmationLetter(String email, String hashedCode) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(mailingEmail);
         message.setTo(email);
         message.setSubject("Смена пароля в сервисе podarOK!");
-        message.setText("Для изменения пароля перейдите по ссылке: ");
+        message.setText("Для изменения пароля перейдите по ссылке: localhost:8080/confirmChanges?token=" + hashedCode);
         emailSender.send(message);
     }
 }
