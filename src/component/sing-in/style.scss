@@ -60,12 +60,21 @@
     }
     &_visit {
         background-color: rgba(0, 0, 0, 0.301);
-        .sing-in__content {
+        .sing-in__wrapper {
             top: 0;
         }
     }
-    &__content {
+    &__wrapper {
         top: -100%;
+        position: relative;
+        transition: all 0.3s linear;
+
+        .info-password  {
+            right: -320px;
+            bottom: 2px;
+        }
+    }
+    &__content {
         border-radius: 50px;
         background-color: white;
         display: flex;
@@ -171,12 +180,25 @@
             flex-direction: column;
             gap: 26px;
         }
+        &-row {
+            margin: 5px 10px 40px;
+            display: flex;
+            justify-content: end;
+        }
+
+        &-error {
+            margin-right: auto;
+            color: rgb(249, 64, 86);
+            font-family: Dimica;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
         &-forget {
             color: rgb(19, 137, 233);
             font-family: Dimica;
             font-size: 14px;
             font-weight: 400;
-            margin: 5px 5px 40px;
             align-self: flex-end;
             border-bottom: 1px solid transparent;
             cursor: pointer;
@@ -202,6 +224,12 @@
                 padding: 12px 16px;
                 width: 226px;
             }
+
+        }
+
+        .sing-in__input {
+            padding: 15px 14px;
+
         }
     }
 
@@ -225,16 +253,30 @@
         }
 
         &-form {
-            margin-bottom: 35px;
             display: flex;
             flex-direction: column;
             gap: 26px;
         }
+
+        &-error {
+            height: 16px;
+            margin-top: 4px;
+            color: rgb(249, 64, 86);
+            font-family: Dimica;
+            font-size: 16px;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        .sing-in__enter-button {
+            margin-top: 35px;
+        }
     }
 
     &__input { 
-        padding: 15px 14px;
+        padding: 15px 40px 15px 14px;
         height: 50px;
+        width: 100%;
         border-radius: 7px;
         background: rgb(217, 217, 217);
         color: rgb(99, 99, 99);
@@ -257,5 +299,9 @@
             transition: all 0.3s linear;
             fill: white;
         }
+    }
+
+    &__password-wrapper {
+        position: relative;
     }
 }

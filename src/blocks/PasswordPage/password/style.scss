@@ -11,7 +11,7 @@
         color: white;
     }
     &__block {
-        padding: 97px 128px 56px 77px;
+        padding: 97px 78px 56px;
         display: flex;
         flex-direction: column;
         border-radius: 32px;
@@ -19,24 +19,45 @@
         background: white;
         position: relative;
     }
+
+    &__error {
+        top: 42px;
+        left: 50%;
+        transform: translateX(-50%);
+        position: absolute;
+        font-size: 32px;
+        font-family: Dimica;
+        color: #F94056;
+    }
+
     &__form {
         display: flex;
         flex-direction: column;
 
+    & label:nth-child(2) {
+            input {
+                padding: 15px 14px;
+            }
+        }
+
     }
     &__label {
+        margin-right: 170px;
         margin-bottom: 39px;
         display: flex;
         gap: 45px;
         font-size: 32px;
         font-family: Dimica;
         align-items: center;
+
+        position: relative;
+
         justify-content: end;
     }
 
     &__input {
-        padding: 15px 14px;
-        width: 420px;
+        padding: 15px 38px 15px 14px;
+        width: 290px;
         height: 60px;
         border-radius: 7px;
         background: rgb(217, 217, 217);

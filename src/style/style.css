@@ -31,4 +31,17 @@ section {
     max-width: 1440px;
     width: 100%;
     margin: 0 auto;
+
+}
+
+.infoBlockPassword {
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 14px;
+    background: url(/public/img/icon-info.svg) center / 100% no-repeat;
+    cursor: pointer;
+
 }
