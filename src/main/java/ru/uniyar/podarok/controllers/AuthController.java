@@ -1,6 +1,7 @@
 package ru.uniyar.podarok.controllers;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class AuthController {
             UserDto userDto = authService.createNewUser(registrationUserDto);
             return ResponseEntity.ok(userDto);
         } catch (UserAlreadyExist e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
 
@@ -32,7 +33,7 @@ public class AuthController {
             JwtResponse jwtResponse = authService.createAuthToken(authRequest);
             return ResponseEntity.ok(jwtResponse);
         } catch (BadCredentialsException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 }
