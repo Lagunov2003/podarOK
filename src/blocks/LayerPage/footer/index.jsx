@@ -58,10 +58,11 @@ function Footer() {
                 </div>
                 <div className="footer__promocode">
                     <p className="footer__promocode-text">
-                        Укажите свою почту для подписки на наши новости и получите промокод на скидку 10%
+                        Укажите свой номер телефона, чтобы мы могли информировать вас о новых акциях и других новостях. Мы отправим вам
+                        <span> промокод на скидку 10%!</span>
                     </p>
-                    <div className="footer__promocode-email">
-                        <input type="email" name="" id="" placeholder="EMAIL" />
+                    <div className="footer__promocode-tel">
+                        <input type="tel" name="" id="" placeholder="+7" />
                     </div>
                 </div>
             </div>

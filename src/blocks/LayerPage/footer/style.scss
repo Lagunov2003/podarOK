@@ -3,7 +3,7 @@
 
     &__content {
         padding: 30px 120px;
-        height: 321px;
+        height: 400px;
         display: flex;
         justify-content: space-between;
         max-width: 1440px;
@@ -123,14 +123,18 @@
 
         &-text {
             margin-top: 19px;
-            margin-bottom: 132px;
+            margin-bottom: 90px;
             color: rgb(255, 255, 255);
             font-family: Dimica;
             font-size: 24px;
             font-weight: 400;
+
+            span {
+                color: #FFEF3A;
+            }
         }
 
-        &-email {
+        &-tel {
             position: relative;
             input {
                 width: 100%;
@@ -144,7 +148,7 @@
                 cursor: pointer;
 
                 &::placeholder {
-                    color: white;
+                    color: #D8D8D8;
                     font-family: Dimica;
                     font-size: 20px;
                     font-weight: 400;

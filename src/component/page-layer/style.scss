@@ -9,7 +9,7 @@
   &__wrapper {
     margin: 0 auto; 
     display: grid;
-    grid-template-rows: 1fr 321px;
+    grid-template-rows: 1fr 400px;
     min-height: calc(100vh - 140px);
     &-header{
       position: absolute;

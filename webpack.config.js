@@ -2,6 +2,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require("path");
+const autoprefixer = require('autoprefixer');
 
 module.exports = (env) => {
 
@@ -29,12 +30,18 @@ module.exports = (env) => {
                 },
                 {
                     test: /\.(s[ac]|c)ss$/i,
-                    use: [
-                        MiniCssExtractPlugin.loader,
-                        'css-loader',
-                        'postcss-loader',
-                        'sass-loader',
-                    ],
+                    use: [{
+                        loader: MiniCssExtractPlugin.loader
+                    },
+                    {
+                        loader: 'css-loader'
+                    },
+                    {
+                        loader: 'postcss-loader',
+                    }, 
+                    {
+                        loader: 'sass-loader',
+                    }],
                 },
                 {
                     test: /\.(jpg|png|webp)$/,
@@ -54,7 +61,8 @@ module.exports = (env) => {
         },
         plugins: [
             new HtmlWebpackPlugin({
-                template: __dirname + "/public/index.html"
+                favicon: "./public/img/mainIcon.svg",
+                template: __dirname + "/public/index.html",
             }),
             new MiniCssExtractPlugin(),
             new CopyWebpackPlugin({
