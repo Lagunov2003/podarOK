@@ -162,6 +162,7 @@ function SingIn({ openModal, activeModal }) {
                                     Создать
                                 </button>
                             </div>
+
                             <button className="sing-in__cancel" onClick={() => handleOpenModal()}>
                                 <svg width="23.000000" height="23.000000" viewBox="0 0 23 23" fill="none">
                                     <desc>Created with Pixso.</desc>
@@ -177,6 +178,7 @@ function SingIn({ openModal, activeModal }) {
                     )}
                 </div>
                 {modalPassword == true && <InfoPassword handleOpen={handleOpenModalPassword} />}
+
             </div>
         </div>
     );

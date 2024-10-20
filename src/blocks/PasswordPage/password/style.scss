@@ -19,6 +19,7 @@
         background: white;
         position: relative;
     }
+
     &__error {
         top: 42px;
         left: 50%;
@@ -28,11 +29,12 @@
         font-family: Dimica;
         color: #F94056;
     }
+
     &__form {
         display: flex;
         flex-direction: column;
 
-        & label:nth-child(2) {
+    & label:nth-child(2) {
             input {
                 padding: 15px 14px;
             }
@@ -47,7 +49,9 @@
         font-size: 32px;
         font-family: Dimica;
         align-items: center;
+
         position: relative;
+
         justify-content: end;
     }
 

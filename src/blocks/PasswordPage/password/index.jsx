@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Button from "../../../component/button";
 import "./style.scss";
@@ -38,11 +39,13 @@ function Password() {
         setModalPassword(v => !v)
     }
 
+
     return (
         <section className="password">
             <div className="password__content">
                 <h1 className="password__title">Восстановление пароля</h1>
                 <div className="password__block">
+
                     {error != -1 && <p className="password__error">{errors[error]}</p>}
                     <form
                         action=""
@@ -69,6 +72,8 @@ function Password() {
                         />
                     </form>
                     {modalPassword == true && <InfoPassword handleOpen={handleOpenModalPassword}/>}
+
+                   
                 </div>
             </div>
         </section>
@@ -76,3 +81,4 @@ function Password() {
 }
 
 export default Password;
+
