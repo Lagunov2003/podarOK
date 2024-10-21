@@ -5,6 +5,7 @@ import PageLayer from "../component/page-layer";
 import PasswordCange from "./password";
 import Account from "./account";
 import User from "../blocks/AccountPage/user";
+import Setting from "../blocks/AccountPage/setting";
 
 const router = createBrowserRouter([
     {
@@ -12,11 +13,11 @@ const router = createBrowserRouter([
         element: <PageLayer />,
         children: [
             {
-                path: "/",
+                path: "",
                 element: <Main />,
             },
             {
-                path: "/password-cange",
+                path: "password-change",
                 element: <PasswordCange />,
             },
             {
@@ -45,7 +46,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "setting",
-                        element: <User />,
+                        element: <Setting />,
                     },
                 ],
             },
