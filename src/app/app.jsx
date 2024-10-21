@@ -7,6 +7,7 @@ import Account from "./account";
 import User from "../blocks/AccountPage/user";
 import Setting from "../blocks/AccountPage/setting";
 
+
 const router = createBrowserRouter([
     {
         path: "/",
