@@ -27,18 +27,17 @@ public class ConfirmationCodeService {
         return LocalDate.now().isBefore(expiryDate);
     }
 
-    public void sendConfirmationCode(ChangeUserPasswordDto changeUserPasswordDto, String password) {
+    public void sendConfirmationCode(long userId, String email) {
         String code = generateConfirmationCode();
         ConfirmationCode confirmationCode = new ConfirmationCode();
-        confirmationCode.setOwnUserId(changeUserPasswordDto.getId());
-        confirmationCode.setPassword(password);
+        confirmationCode.setOwnUserId(userId);
         confirmationCode.setCode(code);
         confirmationCode.setExpiryDate(LocalDate.now().plusDays(1));
         confirmationCodeRepository.save(confirmationCode);
-        emailService.sendConfirmationLetter(changeUserPasswordDto.getEmail(), code);
+        emailService.sendConfirmationLetter(email, code);
     }
 
-    public String checkConfirmationCode(long userId, String code) throws NotValidCode, ExpiredCode, FakeConfirmationCode {
+    public boolean checkConfirmationCode(long userId, String code) throws NotValidCode, ExpiredCode, FakeConfirmationCode {
         ConfirmationCode confirmationCode = confirmationCodeRepository.findByCode(code)
                 .orElseThrow(() -> new NotValidCode("Некорректный код подтверждения!"));
         if (confirmationCode.getOwnUserId() != userId) {
@@ -48,6 +47,7 @@ public class ConfirmationCodeService {
             confirmationCodeRepository.delete(confirmationCode);
             throw new ExpiredCode("Срок валидности кода истёк!");
         }
-        return confirmationCode.getPassword();
+        confirmationCodeRepository.delete(confirmationCode);
+        return true;
     }
 }

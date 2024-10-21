@@ -28,4 +28,13 @@ public class EmailService {
         message.setText("Для изменения пароля перейдите по ссылке: localhost:8080/confirmChanges?code=" + code);
         emailSender.send(message);
     }
+
+    public void sendUpdateEmailNotifications(String email, String newEmail) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(mailingEmail);
+        message.setTo(email, newEmail);
+        message.setSubject("Смена электронной почты в сервисе podarOK!");
+        message.setText(String.format("Электронная почта в сервисе podarOK была изменена с %s на %s!", email, newEmail));
+        emailSender.send(message);
+    }
 }

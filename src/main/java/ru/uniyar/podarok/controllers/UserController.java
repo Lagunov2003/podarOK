@@ -33,22 +33,25 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateProfile(@RequestBody UpdateUserDto updateUserDto) {
         try {
+            if (updateUserDto.getFirstName().isEmpty() && updateUserDto.getLastName().isEmpty() &&
+                    updateUserDto.getGender() == ' ' && updateUserDto.getEmail().isEmpty() &&
+                    updateUserDto.getPhoneNumber().isEmpty() && updateUserDto.getDateOfBirth() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Поля не должны быть пустыми!");
+            }
             UserDto updatedUser = userService.updateUserProfile(updateUserDto);
             return ResponseEntity.ok(updatedUser);
         } catch(UserNotAuthorized e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch(UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch(EmptyUserData e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     @PostMapping("/changePassword")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> requestChangeUserPassword(@RequestBody ChangeUserPasswordDto changeUserPasswordDto) {
+    public ResponseEntity<?> requestChangeUserPassword() {
         try {
-            userService.requestChangeUserPassword(changeUserPasswordDto);
+            userService.requestChangeUserPassword();
             return ResponseEntity.ok().body("Перейдите по ссылке в письме для подтверждения смены пароля!");
         } catch(UserNotAuthorized e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -57,11 +60,17 @@ public class UserController {
         }
     }
 
-    @GetMapping("/confirmChanges")
+    @PostMapping("/confirmChanges")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> confirmChangeUserPassword(@RequestParam("token") String token){
+    public ResponseEntity<?> confirmChangeUserPassword(@RequestParam("code") String code, @RequestParam ChangeUserPasswordDto changeUserPasswordDto){
         try {
-            userService.confirmChangeUserPassword(token);
+            if (!changeUserPasswordDto.getPassword().equals(changeUserPasswordDto.getConfirmPassword())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Пароли не совпадают!");
+            }
+            if (changeUserPasswordDto.getPassword().length() < 6) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Пароль должен быть минимум 6 символов!");
+            }
+            userService.confirmChangeUserPassword(code, changeUserPasswordDto);
             return ResponseEntity.ok().body("Пароль успешно изменён!");
         } catch(UserNotAuthorized e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

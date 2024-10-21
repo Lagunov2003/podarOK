@@ -65,7 +65,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(
-                        String.format("Пользователь с email '%s' не найден", email)
+                        String.format("Пользователь с email %s не найден", email)
                 )
         );
 
@@ -86,36 +86,46 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserDto updateUserProfile(UpdateUserDto updateUserDto) throws UserNotFoundException, EmptyUserData, UserNotAuthorized {
+    public UserDto updateUserProfile(UpdateUserDto updateUserDto) throws UserNotFoundException, UserNotAuthorized {
         User currentUser = getCurrentAuthenticationUser();
-        if (updateUserDto.getFirstName() == null && updateUserDto.getLastName() == null) {
-            throw new EmptyUserData("Поля не должны быть пустыми!");
-        }
         if (updateUserDto.getFirstName() != null && !currentUser.getFirstName().equals(updateUserDto.getFirstName())) {
             currentUser.setFirstName(updateUserDto.getFirstName());
         }
         if (updateUserDto.getLastName() != null && !currentUser.getLastName().equals(updateUserDto.getLastName())) {
             currentUser.setLastName(updateUserDto.getLastName());
         }
+        if (updateUserDto.getGender() != currentUser.getGender()) {
+            currentUser.setGender(updateUserDto.getGender());
+        }
+        if (updateUserDto.getPhoneNumber() != null && !currentUser.getPhoneNumber().equals(updateUserDto.getPhoneNumber())) {
+            currentUser.setPhoneNumber(updateUserDto.getPhoneNumber());
+        }
+        if (updateUserDto.getDateOfBirth() != null && currentUser.getDateOfBirth() != updateUserDto.getDateOfBirth()) {
+            currentUser.setDateOfBirth(updateUserDto.getDateOfBirth());
+        }
+        if (updateUserDto.getEmail() != null && !currentUser.getEmail().equals(updateUserDto.getEmail())
+                && userRepository.findUserByEmail(updateUserDto.getEmail()).isEmpty()) {
+            currentUser.setEmail(updateUserDto.getEmail());
+            emailService.sendUpdateEmailNotifications(currentUser.getEmail(), updateUserDto.getEmail());
+        }
         userRepository.save(currentUser);
         return new UserDto(currentUser.getId(), currentUser.getEmail(), currentUser.getFirstName(), currentUser.getLastName());
     }
 
     @Transactional
-    public void requestChangeUserPassword(ChangeUserPasswordDto changeUserPasswordDto) throws UserNotFoundException, UserNotAuthorized {
+    public void requestChangeUserPassword() throws UserNotFoundException, UserNotAuthorized {
         User currentUser = getCurrentAuthenticationUser();
-        String newPassword = passwordEncoder.encode(changeUserPasswordDto.getPassword());
-        if (!currentUser.getPassword().equals(newPassword) && changeUserPasswordDto.getPassword() != null && changeUserPasswordDto.getPassword().length() > 6) {
-            confirmationCodeService.sendConfirmationCode(changeUserPasswordDto, newPassword);
-        }
+        confirmationCodeService.sendConfirmationCode(currentUser.getId(), currentUser.getEmail());
     }
 
     @Transactional
-    public void confirmChangeUserPassword(String code) throws UserNotFoundException, UserNotAuthorized, FakeConfirmationCode, NotValidCode, ExpiredCode {
+    public void confirmChangeUserPassword(String code, ChangeUserPasswordDto changeUserPasswordDto) throws UserNotFoundException, UserNotAuthorized, FakeConfirmationCode, NotValidCode, ExpiredCode {
         User currentUser = getCurrentAuthenticationUser();
-        String newUserPassword = confirmationCodeService.checkConfirmationCode(currentUser.getId(), code);
-        currentUser.setPassword(newUserPassword);
-        userRepository.save(currentUser);
+        String newPassword = passwordEncoder.encode(changeUserPasswordDto.getPassword());
+        if (confirmationCodeService.checkConfirmationCode(currentUser.getId(), code)) {
+            currentUser.setPassword(newPassword);
+            userRepository.save(currentUser);
+        }
     }
 
     @Transactional

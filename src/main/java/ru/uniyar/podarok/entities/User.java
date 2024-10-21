@@ -26,8 +26,10 @@ public class User {
     private LocalDate dateOfBirth;
     @Column(name = "registration_date")
     private LocalDate registrationDate;
-    @Column(name = "activated")
-    private boolean activated=false;
+    @Column(name = "gender")
+    private char gender;
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
     @ManyToMany
     @JoinTable(

@@ -1,7 +1,6 @@
 package ru.uniyar.podarok.services;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.stereotype.Service;
 import ru.uniyar.podarok.entities.Role;
 import ru.uniyar.podarok.repositories.RoleRepository;

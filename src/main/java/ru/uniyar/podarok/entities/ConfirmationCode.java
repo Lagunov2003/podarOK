@@ -13,7 +13,6 @@ public class ConfirmationCode {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long Id;
     private String code;
-    private String password;
     @Column(name = "own_user_id")
     private long ownUserId;
     private LocalDate expiryDate;
