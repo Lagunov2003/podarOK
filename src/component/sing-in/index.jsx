@@ -120,7 +120,7 @@ function SingIn({ openModal, activeModal }) {
                                 </form>
                                 <div className="sing-in__enter-row">
                                     {errorEnter == true && <p className="sing-in__enter-error">Неверная почта или пароль</p>}
-                                    <Link to={"/password-cange"} className="sing-in__enter-forget" onClick={() => handleOpenModal()}>
+                                    <Link to={"/password-change"} className="sing-in__enter-forget" onClick={() => handleOpenModal()}>
                                         Забыли пароль?
                                     </Link>
                                 </div>

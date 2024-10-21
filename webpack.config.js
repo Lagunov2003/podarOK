@@ -13,10 +13,14 @@ module.exports = (env) => {
         },
         output: {
             path: path.resolve(__dirname, "dist"),
+            publicPath: "/",
             assetModuleFilename: 'assets/[name][ext]',
             clean: true,
         },
         devServer: {
+            historyApiFallback:{
+                index:'/'
+            },
             port: "8080",
             open: true,
             liveReload: true
@@ -38,7 +42,7 @@ module.exports = (env) => {
                     },
                     {
                         loader: 'postcss-loader',
-                    }, 
+                    },
                     {
                         loader: 'sass-loader',
                     }],
