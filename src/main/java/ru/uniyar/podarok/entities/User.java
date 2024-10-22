@@ -27,7 +27,7 @@ public class User {
     @Column(name = "registration_date")
     private LocalDate registrationDate;
     @Column(name = "gender")
-    private char gender;
+    private boolean gender;
     @Column(name = "phone_number")
     private String phoneNumber;
 

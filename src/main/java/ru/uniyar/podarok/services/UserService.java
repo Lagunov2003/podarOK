@@ -10,10 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
-import ru.uniyar.podarok.dtos.RegistrationUserDto;
-import ru.uniyar.podarok.dtos.UpdateUserDto;
-import ru.uniyar.podarok.dtos.UserDto;
+import ru.uniyar.podarok.dtos.*;
 import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.*;
 import ru.uniyar.podarok.repositories.UserRepository;
@@ -80,13 +77,14 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    public UserDto getCurrentUserProfile() throws UserNotAuthorized, UserNotFoundException {
+    public CurrentUserDto getCurrentUserProfile() throws UserNotAuthorized, UserNotFoundException {
         User currentUser = getCurrentAuthenticationUser();
-        return new UserDto(currentUser.getId(), currentUser.getEmail(), currentUser.getFirstName(), currentUser.getLastName());
+        return new CurrentUserDto(currentUser.getId(), currentUser.getEmail(), currentUser.getFirstName(), currentUser.getLastName(),
+                currentUser.getDateOfBirth(), currentUser.getRegistrationDate(), currentUser.isGender(), currentUser.getPhoneNumber());
     }
 
     @Transactional
-    public UserDto updateUserProfile(UpdateUserDto updateUserDto) throws UserNotFoundException, UserNotAuthorized {
+    public CurrentUserDto updateUserProfile(UpdateUserDto updateUserDto) throws UserNotFoundException, UserNotAuthorized {
         User currentUser = getCurrentAuthenticationUser();
         if (updateUserDto.getFirstName() != null && !currentUser.getFirstName().equals(updateUserDto.getFirstName())) {
             currentUser.setFirstName(updateUserDto.getFirstName());
@@ -94,8 +92,8 @@ public class UserService implements UserDetailsService {
         if (updateUserDto.getLastName() != null && !currentUser.getLastName().equals(updateUserDto.getLastName())) {
             currentUser.setLastName(updateUserDto.getLastName());
         }
-        if (updateUserDto.getGender() != currentUser.getGender()) {
-            currentUser.setGender(updateUserDto.getGender());
+        if (updateUserDto.isGender() != currentUser.isGender()) {
+            currentUser.setGender(updateUserDto.isGender());
         }
         if (updateUserDto.getPhoneNumber() != null && !currentUser.getPhoneNumber().equals(updateUserDto.getPhoneNumber())) {
             currentUser.setPhoneNumber(updateUserDto.getPhoneNumber());
@@ -109,7 +107,8 @@ public class UserService implements UserDetailsService {
             emailService.sendUpdateEmailNotifications(currentUser.getEmail(), updateUserDto.getEmail());
         }
         userRepository.save(currentUser);
-        return new UserDto(currentUser.getId(), currentUser.getEmail(), currentUser.getFirstName(), currentUser.getLastName());
+        return new CurrentUserDto(currentUser.getId(), currentUser.getEmail(), currentUser.getFirstName(), currentUser.getLastName(),
+                currentUser.getDateOfBirth(), currentUser.getRegistrationDate(), currentUser.isGender(), currentUser.getPhoneNumber());
     }
 
     @Transactional

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
+import ru.uniyar.podarok.dtos.CurrentUserDto;
 import ru.uniyar.podarok.dtos.UpdateUserDto;
 import ru.uniyar.podarok.dtos.UserDto;
 import ru.uniyar.podarok.exceptions.*;
@@ -20,7 +21,7 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> showProfile() {
         try {
-            UserDto userDto = userService.getCurrentUserProfile();
+            CurrentUserDto userDto = userService.getCurrentUserProfile();
             return ResponseEntity.ok(userDto);
         } catch(UserNotAuthorized e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -34,11 +35,11 @@ public class UserController {
     public ResponseEntity<?> updateProfile(@RequestBody UpdateUserDto updateUserDto) {
         try {
             if (updateUserDto.getFirstName().isEmpty() && updateUserDto.getLastName().isEmpty() &&
-                    updateUserDto.getGender() == ' ' && updateUserDto.getEmail().isEmpty() &&
-                    updateUserDto.getPhoneNumber().isEmpty() && updateUserDto.getDateOfBirth() == null) {
+                    updateUserDto.getEmail().isEmpty() && updateUserDto.getPhoneNumber().isEmpty() &&
+                    updateUserDto.getDateOfBirth() == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Поля не должны быть пустыми!");
             }
-            UserDto updatedUser = userService.updateUserProfile(updateUserDto);
+            CurrentUserDto updatedUser = userService.updateUserProfile(updateUserDto);
             return ResponseEntity.ok(updatedUser);
         } catch(UserNotAuthorized e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
