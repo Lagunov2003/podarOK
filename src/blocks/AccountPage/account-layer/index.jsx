@@ -9,7 +9,7 @@ function AccountLayer({ children }) {
         <section className="account-layer">
             <div className="account-layer__content padding-style">
                 <ul className="account-layer__menu">
-                    <li className={"account-layer__link" + (location.pathname == "/account/user" ? " account-layer__link_active" : "")}>
+                    <li className={"account-layer__link" + (location.pathname == "/account/user" || location.pathname == "/account/user/edit" ? " account-layer__link_active" : "")}>
                         <Link to={"/account/user"}>Личные данные</Link>
                     </li>
                     <li className={"account-layer__link" + (location.pathname == "/account/notice" ? " account-layer__link_active" : "")}>

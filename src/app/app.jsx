@@ -6,10 +6,7 @@ import PasswordCange from "./password";
 import Account from "./account";
 import User from "../blocks/AccountPage/user";
 import Setting from "../blocks/AccountPage/setting";
-<<<<<<< HEAD
-=======
-
->>>>>>> 0daf3b5a26c263562593456756e3b707db11a599
+import Edit from "../blocks/AccountPage/edit";
 
 const router = createBrowserRouter([
     {
@@ -31,6 +28,10 @@ const router = createBrowserRouter([
                     {
                         path: "user",
                         element: <User />,
+                    },
+                    {
+                        path:"user/edit",
+                        element: <Edit />
                     },
                     {
                         path: "notice",
