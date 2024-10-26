@@ -29,7 +29,7 @@ public class UserService implements UserDetailsService {
     private ConfirmationCodeService confirmationCodeService;
     private PasswordEncoder passwordEncoder;
 
-    private User getCurrentAuthenticationUser() throws UserNotAuthorized, UserNotFoundException {
+    public User getCurrentAuthenticationUser() throws UserNotAuthorized, UserNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new UserNotAuthorized("Пользователь не авторизован!");

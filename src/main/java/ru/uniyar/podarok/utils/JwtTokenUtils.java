@@ -18,15 +18,15 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenUtils {
     @Value("${jwt.secret}")
-    private String secret;
+    String secret;
 
     @Value("${jwt.lifetime}")
-    private Duration jwtLifeTime;
+    Duration jwtLifeTime;
 
     private SecretKey secretKey;
 
     @PostConstruct
-    private void init() {
+    void init() {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
     }
 

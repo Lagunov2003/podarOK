@@ -19,7 +19,7 @@ public class ConfirmationCodeService {
     private ConfirmationCodeRepository confirmationCodeRepository;
     private EmailService emailService;
 
-    private String generateConfirmationCode() {
+    public String generateConfirmationCode() {
         return String.valueOf(100000 + new Random().nextInt(900000));
     }
 
