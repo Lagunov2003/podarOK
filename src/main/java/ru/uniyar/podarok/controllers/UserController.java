@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
 import ru.uniyar.podarok.dtos.CurrentUserDto;
 import ru.uniyar.podarok.dtos.UpdateUserDto;
-import ru.uniyar.podarok.dtos.UserDto;
 import ru.uniyar.podarok.exceptions.*;
 import ru.uniyar.podarok.services.UserService;
 
@@ -45,6 +44,8 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch(UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch(NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Все поля должны быть заполнены!");
         }
     }
 
@@ -63,7 +64,7 @@ public class UserController {
 
     @PostMapping("/confirmChanges")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> confirmChangeUserPassword(@RequestParam("code") String code, @RequestParam ChangeUserPasswordDto changeUserPasswordDto){
+    public ResponseEntity<?> confirmChangeUserPassword(@RequestParam("code") String code, @RequestBody ChangeUserPasswordDto changeUserPasswordDto){
         try {
             if (!changeUserPasswordDto.getPassword().equals(changeUserPasswordDto.getConfirmPassword())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Пароли не совпадают!");

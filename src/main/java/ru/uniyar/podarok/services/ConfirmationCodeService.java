@@ -1,9 +1,7 @@
 package ru.uniyar.podarok.services;
 
 import lombok.AllArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
-import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
 import ru.uniyar.podarok.entities.ConfirmationCode;
 import ru.uniyar.podarok.exceptions.ExpiredCode;
 import ru.uniyar.podarok.exceptions.FakeConfirmationCode;
@@ -19,11 +17,11 @@ public class ConfirmationCodeService {
     private ConfirmationCodeRepository confirmationCodeRepository;
     private EmailService emailService;
 
-    private String generateConfirmationCode() {
+    public String generateConfirmationCode() {
         return String.valueOf(100000 + new Random().nextInt(900000));
     }
 
-    private boolean isExpiryDateValid(LocalDate expiryDate) {
+    public boolean isExpiryDateValid(LocalDate expiryDate) {
         return LocalDate.now().isBefore(expiryDate);
     }
 

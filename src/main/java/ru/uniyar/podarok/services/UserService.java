@@ -29,7 +29,7 @@ public class UserService implements UserDetailsService {
     private ConfirmationCodeService confirmationCodeService;
     private PasswordEncoder passwordEncoder;
 
-    private User getCurrentAuthenticationUser() throws UserNotAuthorized, UserNotFoundException {
+    public User getCurrentAuthenticationUser() throws UserNotAuthorized, UserNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new UserNotAuthorized("Пользователь не авторизован!");
@@ -103,8 +103,9 @@ public class UserService implements UserDetailsService {
         }
         if (updateUserDto.getEmail() != null && !currentUser.getEmail().equals(updateUserDto.getEmail())
                 && userRepository.findUserByEmail(updateUserDto.getEmail()).isEmpty()) {
+            String oldEmail = currentUser.getEmail();
             currentUser.setEmail(updateUserDto.getEmail());
-            emailService.sendUpdateEmailNotifications(currentUser.getEmail(), updateUserDto.getEmail());
+            emailService.sendUpdateEmailNotifications(oldEmail, updateUserDto.getEmail());
         }
         userRepository.save(currentUser);
         return new CurrentUserDto(currentUser.getId(), currentUser.getEmail(), currentUser.getFirstName(), currentUser.getLastName(),

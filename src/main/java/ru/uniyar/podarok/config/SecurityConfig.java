@@ -34,9 +34,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/registration", "/login").permitAll()
                         .requestMatchers("/profile").authenticated()
-//                        .requestMatchers("/user").hasRole("ADMIN")
-                        .anyRequest().authenticated())
-//                        .requestMatchers("/**").authenticated())
+                        .anyRequest().permitAll())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

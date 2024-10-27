@@ -1,8 +1,10 @@
 package ru.uniyar.podarok.controllers;
 
 import lombok.AllArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 import ru.uniyar.podarok.dtos.JwtRequest;
@@ -16,6 +18,11 @@ import ru.uniyar.podarok.services.AuthService;
 @AllArgsConstructor
 public class AuthController {
     private AuthService authService;
+
+    @GetMapping("/login")
+    public ResponseEntity<?> login() {
+        return ResponseEntity.ok("Открылась страница авторизации!");
+    }
 
     @PostMapping("/registration")
     public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
