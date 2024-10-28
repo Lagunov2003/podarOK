@@ -3,15 +3,18 @@ package ru.uniyar.podarok.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.uniyar.podarok.config.JwtRequestFilter;
 import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
 import ru.uniyar.podarok.dtos.CurrentUserDto;
 import ru.uniyar.podarok.dtos.UpdateUserDto;
@@ -26,21 +29,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @WithMockUser
 class UserControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private UserService userService;
+    @Mock
+    private JwtRequestFilter jwtRequestFilter;
 
     @Test
     void showProfile_statusIsOk_whenUserIsAuthorized() throws Exception {
         CurrentUserDto userDto = new CurrentUserDto(1L, "test@example.com", "Test", "User", LocalDate.now(), LocalDate.now(), true, "123456789");
+        Mockito.doNothing().when(jwtRequestFilter).doFilterInternal(Mockito.any(), Mockito.any(), Mockito.any());
         Mockito.when(userService.getCurrentUserProfile()).thenReturn(userDto);
+        String token = "validToken";
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/profile"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/profile")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("test@example.com"));
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.firstName").value("Test"))
+                .andExpect(jsonPath("$.lastName").value("User"));
     }
 
     @Test

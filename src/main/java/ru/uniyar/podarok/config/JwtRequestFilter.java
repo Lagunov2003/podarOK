@@ -30,7 +30,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private static final List<String> PERMITTED_URLS = Arrays.asList("/registration", "/login");
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         String email = null;
         String jwt = null;
@@ -41,38 +41,39 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7);
-            try {
-                email = jwtTokenUtils.getUserEmail(jwt);
-                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                            email,
-                            null,
-                            jwtTokenUtils.getRoles(jwt).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
-                    );
-                    SecurityContextHolder.getContext().setAuthentication(token);
-                }
-            } catch (ExpiredJwtException e) {
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                response.getWriter().write("Токен устарел!");
-                return;
-            } catch (SignatureException e) {
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                response.getWriter().write("Некорректный токен!");
-                return;
-            }  catch (MalformedJwtException e) {
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                response.getWriter().write("Неправильный формат токена!");
-                return;
-            }
-        } else {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
             response.getWriter().write("Токен не предоставлен!");
+            return;
+        }
+
+        jwt = authHeader.substring(7);
+        try {
+            email = jwtTokenUtils.getUserEmail(jwt);
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                        email,
+                        null,
+                        jwtTokenUtils.getRoles(jwt).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
+                );
+                SecurityContextHolder.getContext().setAuthentication(token);
+            }
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.getWriter().write("Токен устарел!");
+            return;
+        } catch (SignatureException e) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.getWriter().write("Некорректный токен!");
+            return;
+        }  catch (MalformedJwtException e) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.getWriter().write("Неправильный формат токена!");
+            return;
         }
 
         filterChain.doFilter(request, response);

@@ -64,7 +64,7 @@ class UserServiceTest {
         User savedUser = new User();
         savedUser.setId(1L);
         savedUser.setEmail("test@example.com");
-        savedUser.setPassword("12345");
+        savedUser.setPassword("encoded_password");
         savedUser.setFirstName("test");
 
         Mockito.when(userRepository.findUserByEmail(registrationUserDto.getEmail())).thenReturn(Optional.empty());
@@ -180,7 +180,14 @@ class UserServiceTest {
         currentUser.setGender(true);
         currentUser.setPhoneNumber("1234567890");
 
-        Mockito.when(userService.getCurrentAuthenticationUser()).thenReturn(currentUser);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        Mockito.when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        Mockito.when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(currentUser));
 
         CurrentUserDto result = userService.getCurrentUserProfile();
 
@@ -227,7 +234,14 @@ class UserServiceTest {
         currentUser.setId(1L);
         currentUser.setEmail("test@example.com");
 
-        Mockito.when(userService.getCurrentAuthenticationUser()).thenReturn(currentUser);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        Mockito.when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        Mockito.when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(currentUser));
 
         userService.requestChangeUserPassword();
 
@@ -245,7 +259,14 @@ class UserServiceTest {
         String newPassword = "newPassword";
         ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto(1L, "test@example.com", newPassword, newPassword, "validCode");
 
-        Mockito.when(userService.getCurrentAuthenticationUser()).thenReturn(currentUser);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        Mockito.when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        Mockito.when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(currentUser));
         Mockito.when(confirmationCodeService.checkConfirmationCode(1L, code)).thenReturn(true);
         Mockito.when(passwordEncoder.encode(newPassword)).thenReturn("encodedNewPassword");
 
@@ -260,7 +281,14 @@ class UserServiceTest {
         User currentUser = new User();
         currentUser.setId(1L);
 
-        Mockito.when(userService.getCurrentAuthenticationUser()).thenReturn(currentUser);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        Mockito.when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        Mockito.when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(currentUser));
 
         userService.deleteCurrentUser();
 
