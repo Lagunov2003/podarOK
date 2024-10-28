@@ -4,12 +4,12 @@ import Button from "../../../component/button";
 import { useNavigate } from "react-router";
 
 function Edit() {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
-        e.preventDefault()
-        navigate("/account/user")
-    }
+        e.preventDefault();
+        navigate("/account/user");
+    };
 
     return (
         <div className="edit">
@@ -57,7 +57,7 @@ function Edit() {
                         <input type="tel" className="edit__input" />
                     </div>
                 </div>
-                <Button text="Сохранить" classNameText="edit__submit" typeButton="submit" idForm="editUser"/>
+                <Button text="Сохранить" classNameText="edit__submit" typeButton="submit" idForm="editUser" />
             </form>
         </div>
     );

@@ -7,6 +7,7 @@ import Account from "./account";
 import User from "../blocks/AccountPage/user";
 import Setting from "../blocks/AccountPage/setting";
 import Edit from "../blocks/AccountPage/edit";
+import Basket from "../blocks/AccountPage/basket";
 
 const router = createBrowserRouter([
     {
@@ -39,7 +40,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "order",
-                        element: <User />,
+                        element: <Basket />,
                     },
                     {
                         path: "favorite",
