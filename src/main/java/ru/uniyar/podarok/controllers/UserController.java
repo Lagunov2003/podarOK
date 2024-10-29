@@ -1,5 +1,8 @@
 package ru.uniyar.podarok.controllers;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +13,8 @@ import ru.uniyar.podarok.dtos.CurrentUserDto;
 import ru.uniyar.podarok.dtos.UpdateUserDto;
 import ru.uniyar.podarok.exceptions.*;
 import ru.uniyar.podarok.services.UserService;
+
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @AllArgsConstructor
@@ -95,6 +100,38 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch(UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/forgot")
+    public ResponseEntity<?> processForgotPassword(@RequestBody String email) {
+        try {
+            userService.sendPasswordResetLink(email);
+            return ResponseEntity.ok("Перейдите по ссылке в письме для восстановления пароля!");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.badRequest().body(e);
+        }
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestParam("token") String token, @RequestBody ChangeUserPasswordDto changeUserPasswordDto) {
+        try {
+            if (!changeUserPasswordDto.getPassword().equals(changeUserPasswordDto.getConfirmPassword())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Пароли не совпадают!");
+            }
+            if (changeUserPasswordDto.getPassword().length() < 6) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Пароль должен быть минимум 6 символов!");
+            }
+            userService.confirmChangePassword(token, changeUserPasswordDto);
+            return ResponseEntity.ok().body("Пароль успешно изменён!");
+        } catch(UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Токен устарел!");
+        } catch (SignatureException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Некорректный токен!");
+        }  catch (MalformedJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неправильный формат токена!");
         }
     }
 }

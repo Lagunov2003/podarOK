@@ -47,6 +47,18 @@ public class JwtTokenUtils {
                 .compact();
     }
 
+    public String generatePasswordResetToken(String email) {
+        Date issuedDate = new Date();
+        Date expiredDate = new Date(issuedDate.getTime() + Duration.ofMinutes(15).toMillis());
+
+        return Jwts.builder()
+                .subject(email)
+                .issuedAt(issuedDate)
+                .expiration(expiredDate)
+                .signWith(secretKey)
+                .compact();
+    }
+
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtTokenUtils jwtTokenUtils;
 
-    private static final List<String> PERMITTED_URLS = Arrays.asList("/registration", "/login");
+    private static final List<String> PERMITTED_URLS = Arrays.asList("/registration", "/login", "/forgot", "/resetPassword");
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

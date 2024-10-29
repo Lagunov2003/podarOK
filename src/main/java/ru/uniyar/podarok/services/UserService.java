@@ -1,5 +1,8 @@
 package ru.uniyar.podarok.services;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,6 +17,7 @@ import ru.uniyar.podarok.dtos.*;
 import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.*;
 import ru.uniyar.podarok.repositories.UserRepository;
+import ru.uniyar.podarok.utils.JwtTokenUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,6 +31,7 @@ public class UserService implements UserDetailsService {
     private RoleService roleService;
     private EmailService emailService;
     private ConfirmationCodeService confirmationCodeService;
+    private JwtTokenUtils jwtTokenUtils;
     private PasswordEncoder passwordEncoder;
 
     public User getCurrentAuthenticationUser() throws UserNotAuthorized, UserNotFoundException {
@@ -132,5 +137,19 @@ public class UserService implements UserDetailsService {
     public void deleteCurrentUser() throws UserNotFoundException, UserNotAuthorized {
         User currentUser = getCurrentAuthenticationUser();
         userRepository.delete(currentUser);
+    }
+
+    public void sendPasswordResetLink(String email) throws UserNotFoundException {
+        loadUserByUsername(email);
+        String token = jwtTokenUtils.generatePasswordResetToken(email);
+        emailService.sendPasswordResetLetter(email, token);
+    }
+
+    @Transactional
+    public void confirmChangePassword(String token, ChangeUserPasswordDto changeUserPasswordDto) throws ExpiredJwtException, SignatureException, MalformedJwtException, UserNotFoundException {
+        String email = jwtTokenUtils.getUserEmail(token);
+        User user = (User)loadUserByUsername(email);
+        user.setPassword(changeUserPasswordDto.getPassword());
+        userRepository.save(user);
     }
 }
