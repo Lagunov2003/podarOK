@@ -8,6 +8,8 @@ import User from "../blocks/AccountPage/user";
 import Setting from "../blocks/AccountPage/setting";
 import Edit from "../blocks/AccountPage/edit";
 import Basket from "../blocks/AccountPage/basket";
+import Notice from "../blocks/AccountPage/notice";
+import ChatHelper from "../blocks/AccountPage/chat-helper";
 
 const router = createBrowserRouter([
     {
@@ -36,7 +38,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "notice",
-                        element: <User />,
+                        element: <Notice />,
                     },
                     {
                         path: "order",
@@ -48,7 +50,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "help",
-                        element: <User />,
+                        element: <ChatHelper />,
                     },
                     {
                         path: "setting",
