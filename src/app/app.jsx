@@ -10,6 +10,7 @@ import Edit from "../blocks/AccountPage/edit";
 import Basket from "../blocks/AccountPage/basket";
 import Notice from "../blocks/AccountPage/notice";
 import ChatHelper from "../blocks/AccountPage/chat-helper";
+import Favorite from "../blocks/AccountPage/favorite";
 
 const router = createBrowserRouter([
     {
@@ -46,7 +47,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "favorite",
-                        element: <User />,
+                        element: <Favorite />,
                     },
                     {
                         path: "help",
