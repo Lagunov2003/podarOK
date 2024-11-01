@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import "./style.scss";
 import { Link } from "react-router-dom";
 import InfoPassword from "../info-password";
+import EmailSend from "../email-send";
 
 const data = [
     {
@@ -21,6 +22,8 @@ function SingIn({ openModal, activeModal }) {
     const [errorEnter, setErrorEnter] = useState(false);
     const [errorRegister, setErrorRegister] = useState(false);
     const [modalPassword, setModalPassword] = useState(false);
+    const [modalEmail, setModalEmail] = useState(false);
+
     const refSingIn = useRef();
     const refFormEnter = useRef();
     const refFormRegister = useRef();
@@ -120,9 +123,9 @@ function SingIn({ openModal, activeModal }) {
                                 </form>
                                 <div className="sing-in__enter-row">
                                     {errorEnter == true && <p className="sing-in__enter-error">Неверная почта или пароль</p>}
-                                    <Link to={"/password-change"} className="sing-in__enter-forget" onClick={() => handleOpenModal()}>
+                                    <p className="sing-in__enter-forget" onClick={() => setModalEmail(true)}>
                                         Забыли пароль?
-                                    </Link>
+                                    </p>
                                 </div>
                                 <button className="sing-in__enter-button" type="submit" form="formEnter">
                                     Войти в аккаунт
@@ -178,7 +181,7 @@ function SingIn({ openModal, activeModal }) {
                     )}
                 </div>
                 {modalPassword == true && <InfoPassword handleOpen={handleOpenModalPassword} />}
-
+                {modalEmail == true && <EmailSend setModalEmail={setModalEmail} />}
             </div>
         </div>
     );
