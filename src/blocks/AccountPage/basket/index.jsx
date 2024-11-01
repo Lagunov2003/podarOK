@@ -104,10 +104,11 @@ function Basket() {
                                     <img src="" alt="" />
                                 </div>
                                 <div className="basket__article-property">
-                                    <h3 className="basket__article-property-title">Характеристики:</h3>
+                                    <h3 className="basket__article-property-name">Комплект постельного белья</h3>
+                                    <p className="basket__article-property-title">Характеристики:</p>
                                     <div className="basket__article-property-list">
-                                        <p className="basket__article-property-item">Название: Комплект постельного белья</p>
                                         <p className="basket__article-property-item">Размер: 2-спальный комплект</p>
+                                        <p className="basket__article-property-item">Цвет: Черный</p>
                                     </div>
                                     <div className="basket__article-price">
                                         <span>Цена:</span>
@@ -117,6 +118,24 @@ function Basket() {
                             </div>
                             <button className="basket__article-button-catalog button-style">Информация о товаре</button>
                             <div className="basket__article-info">
+                                <div className="basket__article-info-item">
+                                    <h3 className="basket__article-info-item-title">Состояние доставки</h3>
+                                    <p className="basket__article-info-item-text">Мы пришлем уведомление об изменении состояния товара</p>
+                                    <div className="basket__article-info-list">
+                                        <p className="basket__article-info-state basket__article-info-state_active">
+                                            <span>1</span> Оформлен
+                                        </p>
+                                        <p className="basket__article-info-state basket__article-info-state_active">
+                                            <span>2</span> Собран
+                                        </p>
+                                        <p className="basket__article-info-state basket__article-info-state_active">
+                                            <span>3</span> В пути
+                                        </p>
+                                        <p className="basket__article-info-state">
+                                            <span>4</span> Доставлен
+                                        </p>
+                                    </div>
+                                </div>
                                 <div className="basket__article-info-item">
                                     <h3 className="basket__article-info-item-title">Дата получения</h3>
                                     <p className="basket__article-info-item-text">Получение товара ожидается 20.01.2025</p>
@@ -142,10 +161,11 @@ function Basket() {
                                     <img src="" alt="" />
                                 </div>
                                 <div className="basket__article-property">
-                                    <h3 className="basket__article-property-title">Характеристики:</h3>
+                                    <h3 className="basket__article-property-name">Комплект постельного белья</h3>
+                                    <p className="basket__article-property-title">Характеристики:</p>
                                     <div className="basket__article-property-list">
-                                        <p className="basket__article-property-item">Название: Комплект постельного белья</p>
                                         <p className="basket__article-property-item">Размер: 2-спальный комплект</p>
+                                        <p className="basket__article-property-item">Цвет: Черный</p>
                                     </div>
                                     <div className="basket__article-price">
                                         <span>Цена:</span>
@@ -169,25 +189,16 @@ function Basket() {
                                     <div className="basket__article-info-item-row">
                                         <h3 className="basket__article-info-item-title">Оставить отзыв</h3>
                                         <div className="basket__article-info-item-row-star">
-                                            <div className="basket__article-info-item-star">
-                                                <img src="/img/account/star.svg" alt="" />
-                                            </div>
-                                            <div className="basket__article-info-item-star">
-                                                <img src="/img/account/star.svg" alt="" />
-                                            </div>
-                                            <div className="basket__article-info-item-star">
-                                                <img src="/img/account/star.svg" alt="" />
-                                            </div>
-                                            <div className="basket__article-info-item-star">
-                                                <img src="/img/account/star.svg" alt="" />
-                                            </div>
-                                            <div className="basket__article-info-item-star">
-                                                <img src="/img/account/star.svg" alt="" />
-                                            </div>
+                                            <div className="basket__article-info-item-star"></div>
+                                            <div className="basket__article-info-item-star"></div>
+                                            <div className="basket__article-info-item-star"></div>
+                                            <div className="basket__article-info-item-star"></div>
+                                            <div className="basket__article-info-item-star"></div>
                                         </div>
                                     </div>
                                     <form action="" className="basket__article-info-form">
                                         <textarea name="" id="" placeholder="Напишите ваше мнение о товаре и доставке"></textarea>
+                                        <button className="basket__article-info-send button-style">Отправить</button>
                                     </form>
                                 </div>
                             </div>

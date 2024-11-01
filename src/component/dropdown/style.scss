@@ -1,0 +1,82 @@
+
+.dropdown {
+    position: absolute;
+    overflow: hidden;
+    border-radius: 15px;
+    z-index: 15;
+    &__content {
+        margin-bottom: 20px;
+        height: 60px;
+        transition: all 0.15s linear;
+    }
+
+    &_active {
+        height: 100%;
+
+        .dropdown__text {
+            &::after {
+                transform: rotateZ(-180deg);
+            }
+        }
+
+        .dropdown__list {
+            bottom: 0px;
+            position: relative;
+        }
+    }
+
+    &__text {
+        width: 280px;
+        margin-bottom: 15px;
+        padding: 15px;
+        padding-right: 40px;
+        border-radius: 15px;
+        height: 45px;
+        border: 1px solid black;
+        background: rgb(255, 255, 255);
+        position: relative;
+        z-index: 2;
+        color: black;
+        font-family: Dimica;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 20px;
+        cursor: pointer;
+        &::after {
+            content: "";
+            height: 25px;
+            width: 25px;
+            display: inline-block;
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            background: url(/public/img/triangle.svg) center/ 100% no-repeat;
+            transition: all 0.15s linear;
+        }
+    }
+
+
+    &__list {
+        width: 100%;
+        border: 1px solid rgb(0, 0, 0);
+        border-radius: 15px;
+        position: absolute;
+        z-index: 0;
+        bottom: 400px;
+        background-color: white;
+        transition: all 0.15s linear;
+        & .dropdown__item:last-child {
+            border-bottom: none;
+        }
+    }
+
+    &__item {
+        padding: 6px 11px;
+        font-family: Dimica;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 20px;
+        border-bottom: 1px solid black;
+        cursor: pointer;
+    }
+}

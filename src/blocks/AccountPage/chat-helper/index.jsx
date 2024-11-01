@@ -25,6 +25,13 @@ const list = [
 ];
 
 function ChatHelper() {
+
+
+    const handleSend = (e) => {
+
+    }
+
+
     return (
         <div className="chat">
             <div className="chat__top">
@@ -48,7 +55,7 @@ function ChatHelper() {
             </div>
 
             <div className="chat__bottom">
-                <form action="">
+                <form action="" id="chatHelper">
                     <input type="text" placeholder="Введите сообщение" className="chat__bottom-input" />
                     <button className="chat__bottom-send">
                         <img src="/img/account/send-chat.svg" alt="" />

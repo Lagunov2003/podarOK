@@ -26,7 +26,7 @@
             }
         }
         & .account-layer__link_active:nth-child(1) {
-            a {
+            span {
                 padding-left: 64px;
             }
             &::after {
@@ -44,7 +44,7 @@
             }
         }
         & .account-layer__link_active:nth-child(2) {
-            a {
+            span {
                 padding-left: 90px;
             }
             &::after {
@@ -62,7 +62,7 @@
             }
         }
         & .account-layer__link_active:nth-child(3) {
-            a {
+            span {
                 padding-left: 110px;
             }
             &::after {
@@ -80,7 +80,7 @@
             }
         }
         & .account-layer__link_active:nth-child(4) {
-            a {
+            span {
                 padding-left: 90px;
             }
             &::after {
@@ -98,7 +98,7 @@
             }
         }
         & .account-layer__link_active:nth-child(5) {
-            a {
+            span {
                 padding-left: 70px;
             }
             &::after {
@@ -116,7 +116,7 @@
             }
         }
         & .account-layer__link_active:nth-child(6) {
-            a {
+            span {
                 padding-left: 90px;
             }
             &::after {
@@ -135,7 +135,7 @@
             border-radius: 50px;
         }
 
-        a {
+        span {
             padding-left: 0;
             color: rgb(0, 0, 0);
             font-family: Dimica;

@@ -2,6 +2,9 @@ import React from "react";
 import "./style.scss";
 
 function PageCount() {
+
+    
+
     return (
         <div className="page-count">
             <div className="page-count__prev">

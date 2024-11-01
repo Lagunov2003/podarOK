@@ -1,18 +1,10 @@
 import React, { useRef, useState } from "react";
 import "./style.scss";
+import Dropdown from "../../../component/dropdown";
+
+const list = ["С 8:00 до 11:00", "С 11:00 до 14:00", "С 14:00 до 17:00", "С 17:00 до 20:00", "С 20:00 до 23:00", "Любое время"];
 
 function Delivery() {
-    const refTime = useRef(null);
-    const [textTime, setTextTime] = useState("");
-
-    const handleClickTime = () => {
-        refTime.current.classList.toggle("delivery__col-time_active");
-    };
-
-    const handleClickItemTime = (value) => {
-        setTextTime(value);
-    };
-
     return (
         <section className="delivery">
             <div className="delivery__content padding-style">
@@ -45,30 +37,8 @@ function Delivery() {
                         </div>
                         <div className="delivery__col">
                             <h3 className="delivery__col-title">3. Выберите время доставки*</h3>
-                            <div className="delivery__col-time" ref={refTime}>
-                                <p className="delivery__col-time-field" onClick={handleClickTime}>
-                                    {textTime}
-                                </p>
-                                <div className="delivery__col-time-list">
-                                    <p className="delivery__col-time-item" onClick={() => handleClickItemTime("С 8:00 до 11:00")}>
-                                        С 8:00 до 11:00
-                                    </p>
-                                    <p className="delivery__col-time-item" onClick={() => handleClickItemTime("С 11:00 до 14:00")}>
-                                        С 11:00 до 14:00
-                                    </p>
-                                    <p className="delivery__col-time-item" onClick={() => handleClickItemTime("С 14:00 до 17:00")}>
-                                        С 14:00 до 17:00
-                                    </p>
-                                    <p className="delivery__col-time-item" onClick={() => handleClickItemTime("С 17:00 до 20:00")}>
-                                        С 17:00 до 20:00
-                                    </p>
-                                    <p className="delivery__col-time-item" onClick={() => handleClickItemTime("С 20:00 до 23:00")}>
-                                        С 20:00 до 23:00
-                                    </p>
-                                    <p className="delivery__col-time-item" onClick={() => handleClickItemTime("Любое время")}>
-                                        Любое время
-                                    </p>
-                                </div>
+                            <div className="delivery__col-wrapper">
+                                <Dropdown list={list} classBlock={"delivery__dropdown"} />
                             </div>
                             <label className="delivery__col-radio">
                                 <input type="checkbox" className="delivery__col-fast" name="fast" />

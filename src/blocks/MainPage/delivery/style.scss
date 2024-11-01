@@ -107,85 +107,6 @@
             cursor: pointer;
         }
 
-        &-time {
-            margin-bottom: 20px;
-            overflow: hidden;
-            height: 60px;
-            position: relative;
-            border-radius: 15px;
-            transition: all 0.15s linear;
-            &_active {
-                height: 100%;
-                .delivery__col-time-field {
-                    &::after {
-                        transform: rotateZ(-180deg);
-                    }
-                }
-
-                .delivery__col-time-list {
-                    bottom: 0px;
-                }
-            }
-            
-            & + .delivery__col-radio {
-                margin-bottom: 30px;
-            }
-
-            &-field {
-                margin-bottom: 18px;
-                padding: 15px 15px;
-                border-radius: 15px;
-                height: 45px;
-                border: 1px solid black;
-                background: rgb(255, 247, 247);
-                position: relative;
-                z-index: 2;
-                color: rgb(156, 156, 156);
-                font-family: Dimica;
-                font-size: 20px;
-                font-weight: 400;
-                line-height: 20px;
-                cursor: pointer;
-                &::after {
-                    content: "";
-                    height: 30px;
-                    width: 30px;
-                    display: inline-block;
-                    position: absolute;
-                    top: 7px;
-                    right: 12px;
-                    background: url(/public/img/triangle.svg) center/ 100% no-repeat;
-                    transition: all 0.15s linear;
-                }
-            }
-
-
-            &-list {
-                width: 100%;
-                border: 1px solid rgb(0, 0, 0);
-                border-radius: 15px;
-                position: absolute;
-                z-index: 0;
-                bottom: 400px;
-                transition: all 0.15s linear;
-                & .delivery__col-time-item:last-child {
-                    border-bottom: none;
-                }
-            }
-
-            &-item {
-                padding: 6px 11px;
-                font-family: Dimica;
-                font-size: 20px;
-                font-weight: 400;
-                line-height: 20px;
-                border-bottom: 1px solid black;
-                cursor: pointer;
-            }
-        }
-
-
-
         &-fast {
             border-radius: 6px;
             height: 22px;
@@ -194,7 +115,17 @@
             cursor: pointer;
             appearance: none;
         }
+
+        &-wrapper {
+            height: 45px;
+            margin-bottom: 42px;
+        }
     }
+
+    &__dropdown + .delivery__col-radio {
+        margin-bottom: 25px;
+    }
+
     &__price-row {
         width: 100%;
         left: 0;

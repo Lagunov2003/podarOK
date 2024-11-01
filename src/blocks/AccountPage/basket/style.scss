@@ -128,12 +128,23 @@
         &-property {
             display: flex;
             flex-direction: column;
-            &-title {
-                margin-bottom: 27px;
+
+            &-name {
+                margin-bottom: 20px;
                 font-family: Dimica;
-                font-size: 32px;
+                font-size: 24px;
                 font-weight: 400;
-                line-height: 32px; 
+                line-height: 24px;
+            }
+
+            &-title {
+                margin-bottom: 16px;
+                width: max-content;
+                font-family: Dimica;
+                font-size: 20px;
+                font-weight: 400;
+                line-height: 20px;
+                border-bottom: 1px solid black;
             }
 
             &-list {
@@ -199,13 +210,77 @@
                 &-star {
                     height: 31px;
                     min-width: 31px;
+                    cursor: pointer;
+                    background: url("/public/img/account/star.svg") center/ 100% no-repeat;
+
+                    &:hover {
+                        background: url("/public/img/account/star-hover.svg") center/ 100% no-repeat;
+                    }
+                }
+            }
+
+            &-list {
+                margin-top: 13px;
+                display: flex;
+                gap: 8px;
+
+                & .basket__article-info-state:first-child {
+                    &::before {
+                        display: none;
+                    }
+                }
+            }
+
+            &-state {
+                font-family: Dimica;
+                font-size: 24px;
+                font-weight: 400;
+                line-height: 28px;
+                text-align: left;
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                opacity: 0.5;
+
+                &::before {
+                    content: "";
+                    display: inline-block;
+                    width: 25px;
+                    height: 15px;
+                    background: url("/public/img/account/arrow-black.svg") center/ 100% no-repeat;
+                }
+
+                & span {
+                    display: inline-block;
+                    height: 35px;
+                    width: 35px;
+                    background-color: #FF5496;
+                    border-radius: 50%;
+                    font-family: Dela;
+                    font-size: 20px;
+                    font-weight: 400;
+                    line-height: 32px;
+                    text-align: center;
+                    color: white;
+                }
+
+                
+                &_active {
+                    opacity: 1;
+
+                    & span {
+                        background-color: #39BB12;
+                    }
                 }
             }
 
             &-form {
-
+                display: flex;
+                flex-direction: column;
+                align-items: center;
 
                 & textarea {
+                    margin-bottom: 34px;
                     resize: none;
                     padding: 20px;
                     width: 100%;
@@ -217,6 +292,11 @@
                     line-height: 20px;
                     background-color: #ECECEC;
                 }
+            }
+
+            &-send {
+                height: 55px;
+                width: 224px;
             }
         }
 
