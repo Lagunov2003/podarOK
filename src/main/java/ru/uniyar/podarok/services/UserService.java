@@ -44,8 +44,10 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UserNotFoundException("Пользователь не найден!"));
     }
 
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findUserByEmail(email);
+    public User findByEmail(String email) throws UserNotFoundException {
+        return userRepository.findUserByEmail(email).orElseThrow(() ->
+                new UserNotFoundException(String.format("Пользователь с email %s не найден", email))
+        );
     }
 
     @Transactional
@@ -66,20 +68,20 @@ public class UserService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(
-                        String.format("Пользователь с email %s не найден", email)
-                )
-        );
+        try {
+            User user = findByEmail(email);
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                user.getRoles()
-                        .stream()
-                        .map(role -> new SimpleGrantedAuthority(
-                                role.getName())).collect(Collectors.toList()
-                        )
-        );
+            return new org.springframework.security.core.userdetails.User(
+                    user.getEmail(),
+                    user.getPassword(),
+                    user.getRoles()
+                            .stream()
+                            .map(role -> new SimpleGrantedAuthority(role.getName()))
+                            .collect(Collectors.toList())
+            );
+        } catch (UserNotFoundException e) {
+            throw new UsernameNotFoundException(String.format("Пользователь с email %s не найден", email), e);
+        }
     }
 
     public CurrentUserDto getCurrentUserProfile() throws UserNotAuthorized, UserNotFoundException {
@@ -91,19 +93,16 @@ public class UserService implements UserDetailsService {
     @Transactional
     public CurrentUserDto updateUserProfile(UpdateUserDto updateUserDto) throws UserNotFoundException, UserNotAuthorized {
         User currentUser = getCurrentAuthenticationUser();
-        if (updateUserDto.getFirstName() != null && !currentUser.getFirstName().equals(updateUserDto.getFirstName())) {
+        if (updateUserDto.getFirstName() != null) {
             currentUser.setFirstName(updateUserDto.getFirstName());
         }
-        if (updateUserDto.getLastName() != null && !currentUser.getLastName().equals(updateUserDto.getLastName())) {
+        if (updateUserDto.getLastName() != null) {
             currentUser.setLastName(updateUserDto.getLastName());
         }
-        if (updateUserDto.isGender() != currentUser.isGender()) {
-            currentUser.setGender(updateUserDto.isGender());
-        }
-        if (updateUserDto.getPhoneNumber() != null && !currentUser.getPhoneNumber().equals(updateUserDto.getPhoneNumber())) {
+        if (updateUserDto.getPhoneNumber() != null) {
             currentUser.setPhoneNumber(updateUserDto.getPhoneNumber());
         }
-        if (updateUserDto.getDateOfBirth() != null && currentUser.getDateOfBirth() != updateUserDto.getDateOfBirth()) {
+        if (updateUserDto.getDateOfBirth() != null) {
             currentUser.setDateOfBirth(updateUserDto.getDateOfBirth());
         }
         if (updateUserDto.getEmail() != null && !currentUser.getEmail().equals(updateUserDto.getEmail())
@@ -112,6 +111,7 @@ public class UserService implements UserDetailsService {
             currentUser.setEmail(updateUserDto.getEmail());
             emailService.sendUpdateEmailNotifications(oldEmail, updateUserDto.getEmail());
         }
+        currentUser.setGender(updateUserDto.isGender());
         userRepository.save(currentUser);
         return new CurrentUserDto(currentUser.getId(), currentUser.getEmail(), currentUser.getFirstName(), currentUser.getLastName(),
                 currentUser.getDateOfBirth(), currentUser.getRegistrationDate(), currentUser.isGender(), currentUser.getPhoneNumber());
@@ -126,9 +126,8 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void confirmChangeUserPassword(String code, ChangeUserPasswordDto changeUserPasswordDto) throws UserNotFoundException, UserNotAuthorized, FakeConfirmationCode, NotValidCode, ExpiredCode {
         User currentUser = getCurrentAuthenticationUser();
-        String newPassword = passwordEncoder.encode(changeUserPasswordDto.getPassword());
         if (confirmationCodeService.checkConfirmationCode(currentUser.getId(), code)) {
-            currentUser.setPassword(newPassword);
+            currentUser.setPassword(passwordEncoder.encode(changeUserPasswordDto.getPassword()));
             userRepository.save(currentUser);
         }
     }
@@ -140,7 +139,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void sendPasswordResetLink(String email) throws UserNotFoundException {
-        loadUserByUsername(email);
+        User user = findByEmail(email);
         String token = jwtTokenUtils.generatePasswordResetToken(email);
         emailService.sendPasswordResetLetter(email, token);
     }
@@ -148,8 +147,8 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void confirmChangePassword(String token, ChangeUserPasswordDto changeUserPasswordDto) throws ExpiredJwtException, SignatureException, MalformedJwtException, UserNotFoundException {
         String email = jwtTokenUtils.getUserEmail(token);
-        User user = (User)loadUserByUsername(email);
-        user.setPassword(changeUserPasswordDto.getPassword());
+        User user = findByEmail(email);
+        user.setPassword(passwordEncoder.encode(changeUserPasswordDto.getPassword()));
         userRepository.save(user);
     }
 }
