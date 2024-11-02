@@ -1,10 +1,12 @@
 package ru.uniyar.podarok.services;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
@@ -49,40 +51,56 @@ class UserServiceTest {
     @Mock
     private ConfirmationCodeService confirmationCodeService;
 
+    @Spy
     @InjectMocks
     private UserService userService;
 
+    private RegistrationUserDto registrationUserDto;
+    private User user;
+    private Role role;
+    @BeforeEach
+    void setUp() {
+        registrationUserDto = new RegistrationUserDto(1, "test", "test@example.com", "12345");
+
+        user = new User();
+        user.setId(1L);
+        user.setEmail("test@example.com");
+        user.setPassword("encoded_password");
+        user.setFirstName("test");
+        user.setLastName("user");
+        user.setDateOfBirth(LocalDate.now());
+        user.setRegistrationDate(LocalDate.now());
+        user.setGender(true);
+        user.setPhoneNumber("80000000000");
+
+        role = new Role();
+        role.setName("ROLE_USER");
+
+    }
     @Test
-    void createNewUser_success_whenCorrectData() throws UserAlreadyExist {
-        RegistrationUserDto registrationUserDto = new RegistrationUserDto(1, "test", "test@example.com", "12345");
-
-        Role userRole = new Role();
-        userRole.setName("ROLE_USER");
-
-        User savedUser = new User();
-        savedUser.setId(1L);
-        savedUser.setEmail("test@example.com");
-        savedUser.setPassword("12345");
-        savedUser.setFirstName("test");
-
+    void UserService_CreateNewUser_ReturnsCreatedUser() throws UserAlreadyExist {
         Mockito.when(userRepository.findUserByEmail(registrationUserDto.getEmail())).thenReturn(Optional.empty());
         Mockito.when(passwordEncoder.encode(registrationUserDto.getPassword())).thenReturn("encoded_password");
-        Mockito.when(roleService.getUserRole()).thenReturn(userRole);
-        Mockito.when(userRepository.save(any(User.class))).thenReturn(savedUser);
+        Mockito.when(roleService.getUserRole()).thenReturn(role);
+        Mockito.when(userRepository.save(any(User.class))).thenReturn(user);
 
         User result = userService.createNewUser(registrationUserDto);
 
         assertNotNull(result);
         assertEquals("test@example.com", result.getEmail());
         assertEquals("encoded_password", result.getPassword());
+        assertEquals("test", result.getFirstName());
+        assertEquals("user", result.getLastName());
+        assertEquals(LocalDate.now(), result.getDateOfBirth());
+        assertEquals(LocalDate.now(), result.getRegistrationDate());
+        assertTrue(result.isGender());
+        assertEquals("80000000000", result.getPhoneNumber());
         Mockito.verify(emailService, Mockito.times(1)).sendWelcomeLetter("test@example.com", "test");
         Mockito.verify(userRepository, Mockito.times(1)).save(any(User.class));
     }
 
     @Test
-    void createNewUser_exception_whenUserAlreadyExist() {
-        RegistrationUserDto registrationUserDto = new RegistrationUserDto(1, "test", "test@example.com", "12345");
-
+    void UserService_CreateNewUser_ThrowsUserAlreadyExistException() {
         Mockito.when(userRepository.findUserByEmail(registrationUserDto.getEmail())).thenReturn(Optional.of(new User()));
 
         assertThrows(UserAlreadyExist.class, () -> userService.createNewUser(registrationUserDto));
@@ -92,58 +110,54 @@ class UserServiceTest {
     }
 
     @Test
-    void loadUserByUsername_success_whenDetailsCorrect() {
+    void UserService_LoadUserByUsername_ReturnsUserDetails() {
         String email = "test@example.com";
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword("12345");
-        Role userRole = new Role();
-        userRole.setName("ROLE_USER");
-        user.setRoles(List.of(userRole));
-
+        user.setRoles(List.of(role));
         Mockito.when(userRepository.findUserByEmail(email)).thenReturn(Optional.of(user));
 
         UserDetails userDetails = userService.loadUserByUsername(email);
 
         assertNotNull(userDetails);
         assertEquals(email, userDetails.getUsername());
-        assertEquals("12345", userDetails.getPassword());
+        assertEquals("encoded_password", userDetails.getPassword());
         assertTrue(userDetails.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_USER")));
     }
 
     @Test
-    void loadUserByUsername_exception_whenUserNotFound() {
+    void UserService_LoadUserByUsername_ThrowsUsernameNotFoundException() {
         String email = "test@example.com";
-
         Mockito.when(userRepository.findUserByEmail(email)).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class, () -> userService.loadUserByUsername(email));
     }
 
     @Test
-    void getCurrentAuthenticationUser_success_whenUserIsAuthenticated() throws UserNotAuthorized, UserNotFoundException {
+    void UserService_GetCurrentAuthenticationUser_ReturnsCurrentUser() throws UserNotAuthorized, UserNotFoundException {
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-
         Mockito.when(authentication.isAuthenticated()).thenReturn(true);
         Mockito.when(authentication.getName()).thenReturn("test@example.com");
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
-
-        User user = new User();
-        user.setEmail("test@example.com");
-
         Mockito.when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.of(user));
 
         User result = userService.getCurrentAuthenticationUser();
 
         assertNotNull(result);
+        assertNotNull(result);
         assertEquals("test@example.com", result.getEmail());
+        assertEquals("encoded_password", result.getPassword());
+        assertEquals("test", result.getFirstName());
+        assertEquals("user", result.getLastName());
+        assertEquals(LocalDate.now(), result.getDateOfBirth());
+        assertEquals(LocalDate.now(), result.getRegistrationDate());
+        assertTrue(result.isGender());
+        assertEquals("80000000000", result.getPhoneNumber());
     }
 
     @Test
-    void getCurrentAuthenticationUser_userNotAuthorized_whenUserNotAuthenticated() {
+    void UserService_GetCurrentAuthenticationUser_ThrowsUserNotAuthorizedException() {
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(securityContext.getAuthentication()).thenReturn(null);
         SecurityContextHolder.setContext(securityContext);
@@ -152,58 +166,43 @@ class UserServiceTest {
     }
 
     @Test
-    void getCurrentAuthenticationUser_exception_whenUserNotFound() {
+    void UserService_GetCurrentAuthenticationUser_ThrowsUserNotFoundException() {
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-
         Mockito.when(authentication.isAuthenticated()).thenReturn(true);
         Mockito.when(authentication.getName()).thenReturn("test@example.com");
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
-
         Mockito.when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> userService.getCurrentAuthenticationUser());
     }
 
     @Test
-    void getCurrentUserProfile_success_whenCorrectData() throws UserNotAuthorized, UserNotFoundException {
-        User currentUser = new User();
-        currentUser.setId(1L);
-        currentUser.setEmail("test@example.com");
-        currentUser.setFirstName("John");
-        currentUser.setLastName("Doe");
-        currentUser.setDateOfBirth(LocalDate.of(1990, 1, 1));
-        currentUser.setRegistrationDate(LocalDate.of(2020, 1, 1));
-        currentUser.setGender(true);
-        currentUser.setPhoneNumber("1234567890");
-
-        Mockito.when(userService.getCurrentAuthenticationUser()).thenReturn(currentUser);
+    void UserService_GetCurrentUserProfile_ReturnsCurrentUserDto() throws UserNotAuthorized, UserNotFoundException {
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        Mockito.when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
 
         CurrentUserDto result = userService.getCurrentUserProfile();
-
         assertNotNull(result);
         assertEquals("test@example.com", result.getEmail());
-        assertEquals("John", result.getFirstName());
-        assertEquals("Doe", result.getLastName());
-        assertEquals(LocalDate.of(1990, 1, 1), result.getDateOfBirth());
-        assertEquals("1234567890", result.getPhoneNumber());
+        assertEquals("test", result.getFirstName());
+        assertEquals("user", result.getLastName());
+        assertEquals(LocalDate.now(), result.getDateOfBirth());
+        assertEquals(LocalDate.now(), result.getRegistrationDate());
+        assertTrue(result.isGender());
+        assertEquals("80000000000", result.getPhoneNumber());
     }
 
     @Test
-    void updateUserProfile_success_whenCorrectData() throws UserNotFoundException, UserNotAuthorized {
-        User currentUser = new User();
-        currentUser.setId(1L);
-        currentUser.setEmail("old@example.com");
-        currentUser.setFirstName("John");
-        currentUser.setLastName("Doe");
-        currentUser.setGender(true);
-        currentUser.setPhoneNumber("1234567890");
-        currentUser.setDateOfBirth(LocalDate.of(2000, 10, 24));
-
-        UpdateUserDto updateUserDto = new UpdateUserDto("Jane", "Smith", LocalDate.of(1990, 5, 4), false, "0987654321", "new@example.com");
-
-        Mockito.doReturn(currentUser).when(userService).getCurrentAuthenticationUser();
+    void UserService_UpdateUserProfile_ReturnsUpdatedCurrentUserDto() throws UserNotFoundException, UserNotAuthorized {
+        UpdateUserDto updateUserDto = new UpdateUserDto("Jane", "Smith", LocalDate.of(1990, 5, 4), false, "new@example.com", "0987654321");
+        Mockito.doReturn(user).when(userService).getCurrentAuthenticationUser();
         Mockito.when(userRepository.findUserByEmail("new@example.com")).thenReturn(Optional.empty());
 
         CurrentUserDto result = userService.updateUserProfile(updateUserDto);
@@ -214,18 +213,19 @@ class UserServiceTest {
         assertFalse(result.isGender());
         assertEquals("0987654321", result.getPhoneNumber());
         assertEquals(LocalDate.of(1990, 5, 4), result.getDateOfBirth());
-
-        Mockito.verify(emailService).sendUpdateEmailNotifications("old@example.com", "new@example.com");
-        Mockito.verify(userRepository).save(currentUser);
+        Mockito.verify(emailService).sendUpdateEmailNotifications("test@example.com", "new@example.com");
+        Mockito.verify(userRepository).save(user);
     }
 
     @Test
-    void requestChangeUserPassword_success_whenCorrectData() throws UserNotFoundException, UserNotAuthorized {
-        User currentUser = new User();
-        currentUser.setId(1L);
-        currentUser.setEmail("test@example.com");
-
-        Mockito.when(userService.getCurrentAuthenticationUser()).thenReturn(currentUser);
+    void UserService_RequestChangeUserPassword_SendsConfirmationCode() throws UserNotFoundException, UserNotAuthorized {
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        Mockito.when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
 
         userService.requestChangeUserPassword();
 
@@ -233,36 +233,40 @@ class UserServiceTest {
     }
 
     @Test
-    void confirmChangeUserPassword_success_whenCorrectData() throws UserNotFoundException, UserNotAuthorized, FakeConfirmationCode, NotValidCode, ExpiredCode {
-        User currentUser = new User();
-        currentUser.setId(1L);
-        currentUser.setEmail("test@example.com");
-        currentUser.setPassword("oldPassword");
+    void UserService_ConfirmChangeUserPassword_ReturnsNewPassword() throws UserNotFoundException, UserNotAuthorized, FakeConfirmationCode, NotValidCode, ExpiredCode {
 
         String code = "validCode";
         String newPassword = "newPassword";
         ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto(1L, "test@example.com", newPassword, newPassword, "validCode");
-
-        Mockito.when(userService.getCurrentAuthenticationUser()).thenReturn(currentUser);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        Mockito.when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         Mockito.when(confirmationCodeService.checkConfirmationCode(1L, code)).thenReturn(true);
         Mockito.when(passwordEncoder.encode(newPassword)).thenReturn("encodedNewPassword");
 
         userService.confirmChangeUserPassword(code, changeUserPasswordDto);
 
-        Mockito.verify(userRepository).save(currentUser);
-        assertEquals("encodedNewPassword", currentUser.getPassword());
+        Mockito.verify(userRepository).save(user);
+        assertEquals("encodedNewPassword", user.getPassword());
     }
 
     @Test
-    void deleteCurrentUser_success_whenCorrectData() throws UserNotFoundException, UserNotAuthorized {
-        User currentUser = new User();
-        currentUser.setId(1L);
-
-        Mockito.when(userService.getCurrentAuthenticationUser()).thenReturn(currentUser);
+    void UserService_DeleteCurrentUser_VerifiesUserIsDeleted() throws UserNotFoundException, UserNotAuthorized {
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        Mockito.when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
 
         userService.deleteCurrentUser();
 
-        Mockito.verify(userRepository).delete(currentUser);
+        Mockito.verify(userRepository).delete(user);
     }
 }
 

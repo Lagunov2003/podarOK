@@ -2,14 +2,17 @@ package ru.uniyar.podarok.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.uniyar.podarok.config.JwtRequestFilter;
 import ru.uniyar.podarok.dtos.JwtRequest;
 import ru.uniyar.podarok.dtos.JwtResponse;
 import ru.uniyar.podarok.dtos.RegistrationUserDto;
@@ -22,17 +25,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(controllers = AuthController.class)
+@AutoConfigureMockMvc(addFilters = false)
+@ExtendWith(MockitoExtension.class)
 public class AuthControllerTest {
     @MockBean
     AuthService authService;
-
+    @MockBean
+    JwtRequestFilter jwtRequestFilter;
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Test
-    void createNewUser_Success_whenCorrectData() throws Exception {
+    void AuthController_CreateNewUser_ReturnsStatusIsOk() throws Exception {
         RegistrationUserDto registrationUserDto = new RegistrationUserDto(1, "test", "test@example.com", "12345");
         UserDto userDto = new UserDto(1L, "test@example.com", "test");
 
@@ -40,26 +48,27 @@ public class AuthControllerTest {
 
         mockMvc.perform(post("/registration")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(registrationUserDto)))
+                        .content(objectMapper.writeValueAsString(registrationUserDto)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(new ObjectMapper().writeValueAsString(userDto)));
+                .andExpect(content().json(objectMapper.writeValueAsString(userDto)));
     }
 
     @Test
-    void createNewUser_Conflict_whenUserAlreadyExists() throws Exception {
+    void AuthController_CreateNewUser_ReturnsStatusIsConflict() throws Exception {
         RegistrationUserDto registrationUserDto = new RegistrationUserDto(1, "test", "test@example.com", "12345");
 
-        Mockito.when(authService.createNewUser(any(RegistrationUserDto.class))).thenThrow(new UserAlreadyExist("Пользователь уже существует!"));
+        Mockito.when(authService.createNewUser(any(RegistrationUserDto.class)))
+                .thenThrow(new UserAlreadyExist("Пользователь уже существует!"));
 
         mockMvc.perform(post("/registration")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(registrationUserDto)))
+                        .content(objectMapper.writeValueAsString(registrationUserDto)))
                 .andExpect(status().isConflict())
                 .andExpect(content().string("Пользователь уже существует!"));
     }
 
     @Test
-    void createAuthToken_Success_whenCorrectData() throws Exception {
+    void AuthController_CreateAuthToken_ReturnsStatusIsOk() throws Exception {
         JwtRequest jwtRequest = new JwtRequest("test@example.com", "12345");
         JwtResponse jwtResponse = new JwtResponse("");
 
@@ -67,20 +76,21 @@ public class AuthControllerTest {
 
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(jwtRequest)))
+                        .content(objectMapper.writeValueAsString(jwtRequest)))
                 .andExpect(status().isOk())
                 .andExpect(content().json(new ObjectMapper().writeValueAsString(jwtResponse)));
     }
 
     @Test
-    void createAuthToken_Unauthorized_whenWrongData() throws Exception {
+    void AuthController_CreateAuthToken_ReturnsStatusIsUnauthorized() throws Exception {
         JwtRequest jwtRequest = new JwtRequest("test@example.com", "12345");
 
-        Mockito.when(authService.createAuthToken(any(JwtRequest.class))).thenThrow(new BadCredentialsException("Неверные данные!"));
+        Mockito.when(authService.createAuthToken(any(JwtRequest.class))).
+                thenThrow(new BadCredentialsException("Неверные данные!"));
 
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(jwtRequest)))
+                        .content(objectMapper.writeValueAsString(jwtRequest)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().string("Неверные данные!"));
     }

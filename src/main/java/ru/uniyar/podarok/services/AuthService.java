@@ -1,16 +1,12 @@
 package ru.uniyar.podarok.services;
 
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import ru.uniyar.podarok.dtos.JwtRequest;
-import ru.uniyar.podarok.dtos.JwtResponse;
-import ru.uniyar.podarok.dtos.RegistrationUserDto;
-import ru.uniyar.podarok.dtos.UserDto;
+import ru.uniyar.podarok.dtos.*;
 import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.UserAlreadyExist;
 import ru.uniyar.podarok.utils.JwtTokenUtils;

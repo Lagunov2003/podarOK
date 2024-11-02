@@ -25,21 +25,20 @@ public class RoleServiceTest {
     private RoleService roleService;
 
     @Test
-    public void getUserRole_Success_whenRoleExist() {
+    public void RoleService_GetUserRole_ReturnsUserRole() {
         Role role = new Role();
         role.setName("ROLE_USER");
 
         when(roleRepository.findByName("ROLE_USER")).thenReturn(Optional.of(role));
 
         Role result = roleService.getUserRole();
-        assertEquals("ROLE_USER", result.getName(), "Должна возвращаться роль с именем ROLE_USER");
+        assertEquals("ROLE_USER", result.getName());
     }
 
     @Test
-    public void getUserRole_roleNotFound_whenRoleDoesNotExist() {
+    public void RoleService_GetUserRole_ThrowsNoSuchElementException() {
         when(roleRepository.findByName("ROLE_USER")).thenReturn(Optional.empty());
 
-        assertThrows(NoSuchElementException.class, () -> roleService.getUserRole(),
-                "Если роль не найдена, должно выбрасываться исключение NoSuchElementException");
+        assertThrows(NoSuchElementException.class, () -> roleService.getUserRole());
     }
 }

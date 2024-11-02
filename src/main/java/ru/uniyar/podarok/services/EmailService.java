@@ -37,4 +37,13 @@ public class EmailService {
         message.setText(String.format("Электронная почта в сервисе podarOK была изменена с %s на %s!", email, newEmail));
         emailSender.send(message);
     }
+
+    public void sendPasswordResetLetter(String email, String token) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(mailingEmail);
+        message.setTo(email);
+        message.setSubject("Восстановление пароля в сервисе podarOK!");
+        message.setText("Для восстановления пароля перейдите по ссылке: localhost:8080/resetPassword?token=" + token);
+        emailSender.send(message);
+    }
 }

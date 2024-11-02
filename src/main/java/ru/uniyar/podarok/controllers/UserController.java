@@ -1,5 +1,8 @@
 package ru.uniyar.podarok.controllers;
 
+import  io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,8 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
 import ru.uniyar.podarok.dtos.CurrentUserDto;
+import ru.uniyar.podarok.dtos.ForgotUserPasswordDto;
 import ru.uniyar.podarok.dtos.UpdateUserDto;
-import ru.uniyar.podarok.dtos.UserDto;
 import ru.uniyar.podarok.exceptions.*;
 import ru.uniyar.podarok.services.UserService;
 
@@ -34,17 +37,17 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateProfile(@RequestBody UpdateUserDto updateUserDto) {
         try {
-            if (updateUserDto.getFirstName().isEmpty() && updateUserDto.getLastName().isEmpty() &&
-                    updateUserDto.getEmail().isEmpty() && updateUserDto.getPhoneNumber().isEmpty() &&
-                    updateUserDto.getDateOfBirth() == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Поля не должны быть пустыми!");
-            }
+            updateUserDto.validate();
             CurrentUserDto updatedUser = userService.updateUserProfile(updateUserDto);
             return ResponseEntity.ok(updatedUser);
         } catch(UserNotAuthorized e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch(UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch(NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Все поля должны быть заполнены!");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -63,7 +66,7 @@ public class UserController {
 
     @PostMapping("/confirmChanges")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> confirmChangeUserPassword(@RequestParam("code") String code, @RequestParam ChangeUserPasswordDto changeUserPasswordDto){
+    public ResponseEntity<?> confirmChangeUserPassword(@RequestParam("code") String code, @RequestBody ChangeUserPasswordDto changeUserPasswordDto){
         try {
             if (!changeUserPasswordDto.getPassword().equals(changeUserPasswordDto.getConfirmPassword())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Пароли не совпадают!");
@@ -94,6 +97,38 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch(UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/forgot")
+    public ResponseEntity<?> processForgotPassword(@RequestBody ForgotUserPasswordDto forgotUserPasswordDto) {
+        try {
+            userService.sendPasswordResetLink(forgotUserPasswordDto.getEmail());
+            return ResponseEntity.ok("Перейдите по ссылке в письме для восстановления пароля!");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestParam("token") String token, @RequestBody ChangeUserPasswordDto changeUserPasswordDto) {
+        try {
+            if (!changeUserPasswordDto.getPassword().equals(changeUserPasswordDto.getConfirmPassword())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Пароли не совпадают!");
+            }
+            if (changeUserPasswordDto.getPassword().length() < 6) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Пароль должен быть минимум 6 символов!");
+            }
+            userService.confirmChangePassword(token, changeUserPasswordDto);
+            return ResponseEntity.ok().body("Пароль успешно изменён!");
+        } catch(UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Токен устарел!");
+        } catch (SignatureException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Некорректный токен!");
+        }  catch (MalformedJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неправильный формат токена!");
         }
     }
 }

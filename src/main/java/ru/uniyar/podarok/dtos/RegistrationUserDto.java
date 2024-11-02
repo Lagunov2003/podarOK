@@ -2,12 +2,14 @@ package ru.uniyar.podarok.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class RegistrationUserDto {
-    private long id;
-    private String firstName;
-    private String email;
-    private String password;
+        private long id;
+        private String firstName;
+        private String email;
+        private String password;
 }

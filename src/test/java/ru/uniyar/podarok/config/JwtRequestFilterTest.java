@@ -1,103 +1,103 @@
 package ru.uniyar.podarok.config;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.uniyar.podarok.utils.JwtTokenUtils;
-import io.jsonwebtoken.security.SignatureException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import ru.uniyar.podarok.utils.JwtTokenUtils;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@WebMvcTest
 @SpringBootTest
 @AutoConfigureMockMvc
 class JwtRequestFilterTest {
-
-    @MockBean
+    @Mock
     private JwtTokenUtils jwtTokenUtils;
-
     @InjectMocks
     private JwtRequestFilter jwtRequestFilter;
+    @Mock
+    private HttpServletRequest request;
+    @Mock
+    private HttpServletResponse response;
+    @Mock
+    private FilterChain filterChain;
 
-    @Autowired
-    private MockMvc mockMvc;
-
+    private String validJwt = "valid.jwt.token";
+    private String email = "test@example.com";
     @Test
-    void doFilterInternal_WithValidToken() throws Exception {
-        String validJwt = "valid.jwt.token";
-        String email = "test@example.com";
+    void JwtRequestFilter_DoFilterInternal_VerifiesDoFilter() throws Exception {
         List<String> roles = List.of("ROLE_USER");
-
         Mockito.when(jwtTokenUtils.getUserEmail(validJwt)).thenReturn(email);
         Mockito.when(jwtTokenUtils.getRoles(validJwt)).thenReturn(roles);
+        Mockito.when(request.getHeader("Authorization")).thenReturn("Bearer " + validJwt);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/some-endpoint")
-                        .header("Authorization", "Bearer " + validJwt))
-                .andExpect(status().isOk());
+        jwtRequestFilter.doFilterInternal(request, response, filterChain);
 
-        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
         assertNotNull(authentication);
         assertEquals(email, authentication.getPrincipal());
         assertTrue(authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")));
+        Mockito.verify(filterChain).doFilter(request, response);
     }
 
     @Test
-    void doFilterInternal_WithoutAuthorizationHeader() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/some-endpoint"))
-                .andExpect(status().isOk());
+    void JwtRequestFilter_DoFilterInternal_VerifiesDoNotFilter_WithoutAuthorizationHeader() throws Exception {
+        Mockito.when(request.getHeader("Authorization")).thenReturn(null);
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
 
+        jwtRequestFilter.doFilterInternal(request, response, filterChain);
+
+        Mockito.verify(filterChain, Mockito.never()).doFilter(request, response);
+        printWriter.flush();
         assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Test
-    void doFilterInternal_WithExpiredToken() throws Exception {
-        String expiredJwt = "expired.jwt.token";
+    void JwtRequestFilter_DoFilterInternal_VerifiesDoNotFilter_WithExpiredToken() throws Exception {
+        String expiredJwt = "expiredJwtToken";
+        Mockito.when(request.getHeader("Authorization")).thenReturn("Bearer " + expiredJwt);
+        Mockito.when(jwtTokenUtils.getUserEmail(expiredJwt)).thenThrow(new ExpiredJwtException(null, null, "Токен устарел!"));
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
 
-        Mockito.when(jwtTokenUtils.getUserEmail(expiredJwt)).thenThrow(new ExpiredJwtException(null, null, "Токе устарел"));
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/some-endpoint")
-                        .header("Authorization", "Bearer " + expiredJwt))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Токен устарел!"));
-
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        jwtRequestFilter.doFilterInternal(request, response, filterChain);
+        Mockito.verify(filterChain, Mockito.never()).doFilter(request, response);
+        Mockito.verify(response).setStatus(HttpStatus.UNAUTHORIZED.value());
+        printWriter.flush();
+        assertTrue(stringWriter.toString().contains("Токен устарел!"));
     }
 
     @Test
-    void testDoFilterInternal_WithInvalidTokenSignature() throws Exception {
-        String invalidJwt = "invalid.jwt.token";
+    void JwtRequestFilter_DoFilterInternal_VerifiesDoNotFilter_WithInvalidTokenSignature() throws Exception {
+        Mockito.when(request.getHeader("Authorization")).thenReturn("Bearer " + validJwt);
+        Mockito.when(jwtTokenUtils.getUserEmail(validJwt)).thenThrow(new SignatureException("Некорректный токен!"));
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
 
-        Mockito.when(jwtTokenUtils.getUserEmail(invalidJwt)).thenThrow(new SignatureException("Недопустимая подпись токена"));
+        jwtRequestFilter.doFilterInternal(request, response, filterChain);
+        Mockito.verify(filterChain, Mockito.never()).doFilter(request, response);
+        Mockito.verify(response).setStatus(HttpStatus.UNAUTHORIZED.value());
+        printWriter.flush();
+        assertTrue(stringWriter.toString().contains("Некорректный токен!"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/some-endpoint")
-                        .header("Authorization", "Bearer " + invalidJwt))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Некорректный токен!"));
-
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 
-    @Test
-    void testDoFilterInternal_WithNullToken() throws Exception {
-        String invalidJwt = "Bearer ";  // Некорректный заголовок
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/some-endpoint")
-                        .header("Authorization", invalidJwt))
-                .andExpect(status().isOk());
-
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
-    }
 }

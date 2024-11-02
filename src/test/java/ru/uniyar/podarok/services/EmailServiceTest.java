@@ -21,14 +21,13 @@ class EmailServiceTest {
     private ArgumentCaptor<SimpleMailMessage> mailMessageCaptor;
 
     @Test
-    void sendWelcomeLetter_success_whenCorrectData() {
+    void EmailService_SendWelcomeLetter_ReturnsSentMessage() {
         String email = "test@example.com";
         String firstName = "test";
 
         emailService.sendWelcomeLetter(email, firstName);
 
         Mockito.verify(emailSender, Mockito.times(1)).send(mailMessageCaptor.capture());
-
         SimpleMailMessage sentMessage = mailMessageCaptor.getValue();
         assertEquals("podarOKService@yandex.ru", sentMessage.getFrom());
         assertEquals(email, sentMessage.getTo()[0]);
@@ -37,14 +36,13 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendConfirmationLetter_success_whenCorrectData() {
+    void EmailService_SendConfirmationLetter_ReturnsSentMessage() {
         String email = "test@example.com";
         String code = "12345";
 
         emailService.sendConfirmationLetter(email, code);
 
         Mockito.verify(emailSender, Mockito.times(1)).send(mailMessageCaptor.capture());
-
         SimpleMailMessage sentMessage = mailMessageCaptor.getValue();
         assertEquals("podarOKService@yandex.ru", sentMessage.getFrom());
         assertEquals(email, sentMessage.getTo()[0]);
@@ -53,14 +51,13 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendUpdateEmailNotifications_success_whenCorrectData() {
+    void EmailService_SendUpdateEmailNotifications_ReturnsSentMessage() {
         String oldEmail = "old@example.com";
         String newEmail = "new@example.com";
 
         emailService.sendUpdateEmailNotifications(oldEmail, newEmail);
 
         Mockito.verify(emailSender, Mockito.times(1)).send(mailMessageCaptor.capture());
-
         SimpleMailMessage sentMessage = mailMessageCaptor.getValue();
         assertEquals("podarOKService@yandex.ru", sentMessage.getFrom());
         assertEquals(oldEmail, sentMessage.getTo()[0]);

@@ -18,15 +18,15 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenUtils {
     @Value("${jwt.secret}")
-    String secret;
+    private String secret;
 
     @Value("${jwt.lifetime}")
-    Duration jwtLifeTime;
+    private Duration jwtLifeTime;
 
     private SecretKey secretKey;
 
     @PostConstruct
-    void init() {
+    private void init() {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
     }
 
@@ -41,6 +41,18 @@ public class JwtTokenUtils {
         return Jwts.builder()
                 .claims(claims)
                 .subject(userDetails.getUsername())
+                .issuedAt(issuedDate)
+                .expiration(expiredDate)
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String generatePasswordResetToken(String email) {
+        Date issuedDate = new Date();
+        Date expiredDate = new Date(issuedDate.getTime() + Duration.ofMinutes(15).toMillis());
+
+        return Jwts.builder()
+                .subject(email)
                 .issuedAt(issuedDate)
                 .expiration(expiredDate)
                 .signWith(secretKey)
