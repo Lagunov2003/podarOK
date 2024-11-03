@@ -3,10 +3,7 @@ package ru.uniyar.podarok.services;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
@@ -23,6 +20,7 @@ import ru.uniyar.podarok.entities.Role;
 import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.*;
 import ru.uniyar.podarok.repositories.UserRepository;
+import ru.uniyar.podarok.utils.JwtTokenUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -50,6 +48,9 @@ class UserServiceTest {
 
     @Mock
     private ConfirmationCodeService confirmationCodeService;
+
+    @Mock
+    private JwtTokenUtils jwtTokenUtils;
 
     @Spy
     @InjectMocks
@@ -267,6 +268,58 @@ class UserServiceTest {
         userService.deleteCurrentUser();
 
         Mockito.verify(userRepository).delete(user);
+    }
+
+    @Test
+    void UserService_SendPasswordResetLink_VerifiesSendsLink() throws UserNotFoundException {
+        String email = "test@example.com";
+        Mockito.when(userRepository.findUserByEmail(email)).thenReturn(Optional.of(user));
+        Mockito.when(jwtTokenUtils.generatePasswordResetToken(email)).thenReturn("resetToken");
+
+        userService.sendPasswordResetLink(email);
+
+        Mockito.verify(jwtTokenUtils).generatePasswordResetToken(email);
+        Mockito.verify(emailService).sendPasswordResetLetter(email, "resetToken");
+    }
+
+    @Test
+    void UserService_SendPasswordResetLink_ThrowsUserNotFoundException() {
+        String email = "nonexistent@example.com";
+        Mockito.when(userRepository.findUserByEmail(email)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> userService.sendPasswordResetLink(email));
+        Mockito.verify(emailService, Mockito.never()).sendPasswordResetLetter(anyString(), anyString());
+    }
+
+    @Test
+    void UserService_ConfirmChangePassword_VerifiesChangedPasswordSaved() throws UserNotFoundException {
+        String token = "validToken";
+        String email = "test@example.com";
+        ChangeUserPasswordDto changePasswordDto = new ChangeUserPasswordDto();
+        changePasswordDto.setPassword("newPassword");
+        Mockito.when(jwtTokenUtils.getUserEmail(token)).thenReturn(email);
+        Mockito.when(userRepository.findUserByEmail(email)).thenReturn(Optional.of(user));
+        Mockito.when(passwordEncoder.encode("newPassword")).thenReturn("encodedPassword");
+
+        userService.confirmChangePassword(token, changePasswordDto);
+
+        Mockito.verify(userRepository).save(user);
+        Mockito.verify(passwordEncoder).encode("newPassword");
+        assertEquals("encodedPassword", user.getPassword());
+    }
+
+    @Test
+    void UserService_ConfirmChangePassword_ThrowsUserNotFoundException() {
+        String token = "validToken";
+        String email = "test@example.com";
+        ChangeUserPasswordDto changePasswordDto = new ChangeUserPasswordDto();
+        changePasswordDto.setPassword("newPassword");
+
+        Mockito.when(jwtTokenUtils.getUserEmail(token)).thenReturn(email);
+        Mockito.when(userRepository.findUserByEmail(email)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> userService.confirmChangePassword(token, changePasswordDto));
+        Mockito.verify(userRepository, Mockito.never()).save(any(User.class));
     }
 }
 

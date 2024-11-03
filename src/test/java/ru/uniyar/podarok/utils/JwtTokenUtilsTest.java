@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,7 +44,15 @@ public class JwtTokenUtilsTest {
         UserDetails userDetails = new User("test", "password", List.of(new SimpleGrantedAuthority("ROLE_USER")));
         String token = jwtTokenUtils.generateToken(userDetails);
 
-        assertNotNull(token, "Токен не должен быть null");
+        assertNotNull(token);
+    }
+
+    @Test
+    public void JwtTokenUtils_GeneratePasswordResetToken_ReturnsNotNull() {
+        String email = "test@example.com";
+        String token = jwtTokenUtils.generatePasswordResetToken(email);
+
+        assertNotNull(token);
     }
 
     @Test
@@ -54,7 +61,7 @@ public class JwtTokenUtilsTest {
         String token = jwtTokenUtils.generateToken(userDetails);
 
         String email = jwtTokenUtils.getUserEmail(token);
-        assertEquals("test", email, "Email пользователя должен совпадать с тем, что было передано");
+        assertEquals("test", email);
     }
 
     @Test
@@ -63,8 +70,8 @@ public class JwtTokenUtilsTest {
         String token = jwtTokenUtils.generateToken(userDetails);
 
         List<String> roles = jwtTokenUtils.getRoles(token);
-        assertEquals(2, roles.size(), "Должно быть две роли");
-        assertEquals("ROLE_ADMIN", roles.get(0), "Первая роль должна быть ROLE_ADMIN");
-        assertEquals("ROLE_USER", roles.get(1), "Вторая роль должна быть ROLE_USER");
+        assertEquals(2, roles.size());
+        assertEquals("ROLE_ADMIN", roles.get(0));
+        assertEquals("ROLE_USER", roles.get(1));
     }
 }

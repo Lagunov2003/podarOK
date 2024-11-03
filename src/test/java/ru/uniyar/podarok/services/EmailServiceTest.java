@@ -65,4 +65,19 @@ class EmailServiceTest {
         assertEquals("Смена электронной почты в сервисе podarOK!", sentMessage.getSubject());
         assertEquals(String.format("Электронная почта в сервисе podarOK была изменена с %s на %s!", oldEmail, newEmail), sentMessage.getText());
     }
+
+    @Test
+    void EmailService_SendPasswordResetLetter_ReturnsSentMessage() {
+        String email = "test@example.com";
+        String token = "valid_token";
+
+        emailService.sendPasswordResetLetter(email, token);
+
+        Mockito.verify(emailSender, Mockito.times(1)).send(mailMessageCaptor.capture());
+        SimpleMailMessage sentMessage = mailMessageCaptor.getValue();
+        assertEquals("podarOKService@yandex.ru", sentMessage.getFrom());
+        assertEquals(email, sentMessage.getTo()[0]);
+        assertEquals("Восстановление пароля в сервисе podarOK!", sentMessage.getSubject());
+        assertEquals("Для восстановления пароля перейдите по ссылке: localhost:8080/resetPassword?token=" + token, sentMessage.getText());
+    }
 }
