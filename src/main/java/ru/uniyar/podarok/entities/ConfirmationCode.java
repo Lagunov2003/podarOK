@@ -11,9 +11,8 @@ import java.time.LocalDate;
 public class ConfirmationCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long Id;
+    private Long id;
     private String code;
-    @Column(name = "own_user_id")
-    private long ownUserId;
+    private Long ownUserId;
     private LocalDate expiryDate;
 }

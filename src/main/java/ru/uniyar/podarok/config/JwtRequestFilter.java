@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,9 +24,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@AllArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtTokenUtils jwtTokenUtils;
+
+    @Autowired
+    public JwtRequestFilter(JwtTokenUtils jwtTokenUtils){
+        this.jwtTokenUtils = jwtTokenUtils;
+    }
 
     private static final List<String> PERMITTED_URLS = Arrays.asList("/registration", "/login", "/forgot", "/resetPassword");
 

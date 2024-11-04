@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import ru.uniyar.podarok.dtos.*;
 import ru.uniyar.podarok.entities.User;
-import ru.uniyar.podarok.exceptions.UserAlreadyExist;
+import ru.uniyar.podarok.exceptions.UserAlreadyExistException;
 import ru.uniyar.podarok.utils.JwtTokenUtils;
 
 @Service
@@ -18,7 +18,7 @@ public class AuthService {
     private JwtTokenUtils jwtTokenUtils;
     private AuthenticationManager authenticationManager;
 
-    public UserDto createNewUser(RegistrationUserDto registrationUserDto) throws UserAlreadyExist {
+    public UserDto createNewUser(RegistrationUserDto registrationUserDto) throws UserAlreadyExistException {
         User user = userService.createNewUser(registrationUserDto);
         return new UserDto(user.getId(), user.getEmail(), user.getFirstName());
     }

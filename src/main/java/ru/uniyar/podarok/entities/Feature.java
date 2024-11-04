@@ -5,10 +5,14 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "roles")
-public class Role {
+@Table(name = "feature")
+public class Feature {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String name;
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 }

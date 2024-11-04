@@ -24,7 +24,7 @@ public class AuthController {
         try {
             UserDto userDto = authService.createNewUser(registrationUserDto);
             return ResponseEntity.ok(userDto);
-        } catch (UserAlreadyExist e) {
+        } catch (UserAlreadyExistException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }

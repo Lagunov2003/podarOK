@@ -3,9 +3,9 @@ package ru.uniyar.podarok.services;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.uniyar.podarok.entities.ConfirmationCode;
-import ru.uniyar.podarok.exceptions.ExpiredCode;
-import ru.uniyar.podarok.exceptions.FakeConfirmationCode;
-import ru.uniyar.podarok.exceptions.NotValidCode;
+import ru.uniyar.podarok.exceptions.ExpiredCodeException;
+import ru.uniyar.podarok.exceptions.FakeConfirmationCodeException;
+import ru.uniyar.podarok.exceptions.NotValidCodeException;
 import ru.uniyar.podarok.repositories.ConfirmationCodeRepository;
 
 import java.time.LocalDate;
@@ -35,15 +35,15 @@ public class ConfirmationCodeService {
         emailService.sendConfirmationLetter(email, code);
     }
 
-    public boolean checkConfirmationCode(long userId, String code) throws NotValidCode, ExpiredCode, FakeConfirmationCode {
+    public boolean checkConfirmationCode(long userId, String code) throws NotValidCodeException, ExpiredCodeException, FakeConfirmationCodeException {
         ConfirmationCode confirmationCode = confirmationCodeRepository.findByCode(code)
-                .orElseThrow(() -> new NotValidCode("Некорректный код подтверждения!"));
+                .orElseThrow(() -> new NotValidCodeException("Некорректный код подтверждения!"));
         if (confirmationCode.getOwnUserId() != userId) {
-            throw new FakeConfirmationCode("Подделаный код пользователя!");
+            throw new FakeConfirmationCodeException("Подделаный код пользователя!");
         }
         if (!isExpiryDateValid(confirmationCode.getExpiryDate())) {
             confirmationCodeRepository.delete(confirmationCode);
-            throw new ExpiredCode("Срок валидности кода истёк!");
+            throw new ExpiredCodeException("Срок валидности кода истёк!");
         }
         confirmationCodeRepository.delete(confirmationCode);
         return true;
