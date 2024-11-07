@@ -11,6 +11,7 @@ import Basket from "../blocks/AccountPage/basket";
 import Notice from "../blocks/AccountPage/notice";
 import ChatHelper from "../blocks/AccountPage/chat-helper";
 import Favorite from "../blocks/AccountPage/favorite";
+import Catalog from "./catalog";
 
 const router = createBrowserRouter([
     {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
             {
                 path: "password-change",
                 element: <PasswordCange />,
+            },
+            {
+                path: "catalog",
+                element: <Catalog />
             },
             {
                 path: "account",

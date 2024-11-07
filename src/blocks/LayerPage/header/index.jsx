@@ -17,9 +17,9 @@ function Header({ handleOpenModal }) {
                     <span>аккаунт</span>
                 </Link>
                 <nav className="header__nav">
-                    <a href="" className="header__link">
+                    <Link to={"/catalog"} className="header__link">
                         Каталог
-                    </a>
+                    </Link>
                     <a href="" className="header__link">
                         Доставка
                     </a>

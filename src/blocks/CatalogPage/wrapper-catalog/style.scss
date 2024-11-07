@@ -1,0 +1,10 @@
+.wrapper-catalog {
+    margin-bottom: 62px;
+    &__content {
+        margin: 0 120px;
+        display: grid;
+        grid-template-columns: 285px 1fr;
+        grid-template-rows: repeat(2, max-content);
+        gap: 20px;
+    }
+}

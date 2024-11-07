@@ -1,0 +1,111 @@
+.filter {
+    padding: 24px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 285px;
+    background-color: #FFFFFF;
+    border-radius: 25px;
+    position: relative;
+
+    &__item {
+        &-title {
+            margin-bottom: 15px;
+            font-family: Dimica;
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 24px;
+            text-decoration: underline;
+            color: #44343C;
+        }
+        
+        &-wrapper {
+            padding: 0 26px 0 17px;
+            height: 190px;
+            border-radius: 24px;
+            box-shadow: 0px 0px 8px 0px #00000026 inset;
+        }
+
+
+        &-list {
+            padding: 14px 0;
+            overflow: auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+
+            &::-webkit-scrollbar {
+                width: 11px;
+            }
+
+            &::-webkit-scrollbar-track {
+                margin: 11px 0;
+                border-radius: 5px;
+                background-color: #FF549633;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                border-radius: 5px;
+                background-color: #FF5496;
+            }
+        }
+
+        &-gender {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-left: 13px;
+            .filter__item-input {
+                gap: 7px;
+            }
+        }
+
+        &-input {
+            font-family: Dimica;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 20px;
+            line-height: 120%;
+            text-align: left;
+            display: flex;
+            gap: 15px;
+            input {
+                position: relative;
+                top: 2px;
+                height: 16px;
+                min-width: 16px;
+            }
+
+        }
+
+        &-price {
+            input {
+                border: 1px solid #44343C;
+                border-radius: 4px;
+                height: 24px;
+                padding: 5px;
+            }
+
+            .filter__item-input {
+                align-items: flex-end;
+                line-height: 100%;
+            }
+        }
+
+        &-wrapper-dropdown {
+            height: 45px;
+        }
+    }
+
+    &__dropdown {
+        .dropdown__text {
+            width: 257px;
+        }
+    }
+
+    &__button {
+        height: 50px !important;
+        width: 100%;
+    }
+}
