@@ -12,10 +12,9 @@ public class GiftFeature {
     private Long id;
     @Column(nullable = false)
     private String itemValue;
+    @Column(nullable = false)
+    private String itemName;
     @ManyToOne
     @JoinColumn(name = "gift_id", nullable = false)
     private Gift gift;
-    @ManyToOne
-    @JoinColumn(name = "feature_id", nullable = false)
-    private Feature feature;
 }

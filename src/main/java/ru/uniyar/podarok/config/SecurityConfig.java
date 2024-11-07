@@ -3,6 +3,7 @@ package ru.uniyar.podarok.config;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -23,6 +24,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 @AllArgsConstructor
+@EnableSpringDataWebSupport
 public class SecurityConfig {
     private JwtRequestFilter jwtRequestFilter;
     private PasswordEncoder passwordEncoder;
@@ -38,7 +40,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/registration", "/login", "/forgot", "/resetPassword").permitAll()
+                        .requestMatchers("/registration", "/login", "/forgot", "/resetPassword", "/catalog").permitAll()
                         .requestMatchers("/profile").authenticated()
                         .anyRequest().permitAll())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)

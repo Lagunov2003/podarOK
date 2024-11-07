@@ -18,7 +18,6 @@ public class Order {
     @Column(columnDefinition = "text")
     private String review;
     private String information;
-    private String photoFilePath;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

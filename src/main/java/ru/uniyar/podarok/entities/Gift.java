@@ -19,7 +19,8 @@ public class Gift {
     private String description;
     @Column(nullable = false)
     private BigDecimal price;
-    @ManyToMany
+    private String photoFilePath;
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "gift_category",
             joinColumns = @JoinColumn(name = "gift_id"),
@@ -29,11 +30,13 @@ public class Gift {
     @ManyToOne
     @JoinColumn(name = "recommendation_id")
     private GiftRecommendation recommendation;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "gift_ocassion",
             joinColumns = @JoinColumn(name = "gift_id"),
             inverseJoinColumns = @JoinColumn(name = "ocassion_id")
     )
     private List<Ocassion> ocassions = new ArrayList<>();
+    @OneToMany(mappedBy = "gift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<GiftFeature> features = new ArrayList<>();
 }

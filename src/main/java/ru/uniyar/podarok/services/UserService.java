@@ -35,7 +35,7 @@ public class UserService implements UserDetailsService {
 
     public User getCurrentAuthenticationUser() throws UserNotAuthorizedException, UserNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
+        if (!authentication.isAuthenticated()) {
             throw new UserNotAuthorizedException("Пользователь не авторизован!");
         }
         String email = authentication.getName();

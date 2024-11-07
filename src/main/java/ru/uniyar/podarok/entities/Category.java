@@ -15,8 +15,6 @@ public class Category {
     private Long id;
     @Column(nullable = false)
     private String name;
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    private List<Feature> features = new ArrayList<>();
     @ManyToMany(mappedBy = "categories")
     private List<Gift> gifts = new ArrayList<>();
 }
