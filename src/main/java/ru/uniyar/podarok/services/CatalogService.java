@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import ru.uniyar.podarok.dtos.GiftFilterRequest;
 import ru.uniyar.podarok.entities.Survey;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
@@ -17,13 +18,18 @@ public class CatalogService {
     private GiftService giftService;
     private UserService userService;
 
-    public Page<GiftProjection> getGiftsCatalog(Pageable pageable) throws UserNotFoundException, UserNotAuthorizedException {
+    public Page<GiftProjection> getGiftsCatalog(GiftFilterRequest giftFilterRequest, Pageable pageable) throws UserNotFoundException, UserNotAuthorizedException, IllegalArgumentException {
         if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
             Survey survey = userService.getCurrentAuthenticationUser().getSurvey();
             if (survey != null) {
+                if (giftFilterRequest != null && giftFilterRequest.hasAnyFilter()) {
+                    throw new IllegalArgumentException("Вы не можете использовать фильтрацию по опросу и параметрам одновременно!");
+                }
                 return giftService.getGiftsBySurvey(survey, pageable);
             }
         }
-        return giftService.getAllGifts(pageable);
+        return giftFilterRequest.hasAnyFilter() ?
+                giftService.getGiftsByFilter(giftFilterRequest, pageable) :
+                giftService.getAllGifts(pageable);
     }
 }

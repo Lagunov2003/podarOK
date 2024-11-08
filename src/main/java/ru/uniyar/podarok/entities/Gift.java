@@ -32,11 +32,11 @@ public class Gift {
     private GiftRecommendation recommendation;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "gift_ocassion",
+            name = "gift_occasion",
             joinColumns = @JoinColumn(name = "gift_id"),
-            inverseJoinColumns = @JoinColumn(name = "ocassion_id")
+            inverseJoinColumns = @JoinColumn(name = "occasion_id")
     )
-    private List<Ocassion> ocassions = new ArrayList<>();
+    private List<Occasion> occasions = new ArrayList<>();
     @OneToMany(mappedBy = "gift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<GiftFeature> features = new ArrayList<>();
 }

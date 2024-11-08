@@ -1,6 +1,5 @@
 package ru.uniyar.podarok.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -23,8 +22,8 @@ public class Survey {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     @ManyToOne
-    @JoinColumn(name = "ocassion_id")
-    private Ocassion ocassion;
+    @JoinColumn(name = "occasion_id")
+    private Occasion occasion;
     @ManyToMany
     @JoinTable(
             name = "survey_category",
