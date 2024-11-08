@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
 import "./style.scss";
 
-function Dropdown({ list, classBlock = "" }) {
+function Dropdown({ list, classBlock = "", defaultValue = "" }) {
     const refTime = useRef(null);
-    const [textTime, setTextTime] = useState(list[0]);
+    const [textTime, setTextTime] = useState(defaultValue != "" ? defaultValue : list[0]);
 
     const handleClick = () => {
         refTime.current.classList.toggle("dropdown_active");
@@ -11,6 +11,7 @@ function Dropdown({ list, classBlock = "" }) {
 
     const handleClickItem = (value) => {
         setTextTime(value);
+        refTime.current.classList.remove("dropdown_active");
     };
 
     return (

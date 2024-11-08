@@ -13,11 +13,28 @@
     }   
 
     &__wrapper {
-        height: 45px; 
+        height: 64px; 
         width: 285px;
 
         .dropdown__text {
+            margin-bottom: 5px;
             width: 285px;
+            padding: 22px 12px;
+            height: 64px;
+            border-color: #FF5496;
+            color: #7D7D7D;
+            &::after {
+                top: 20px;
+            }
+        }
+        
+        .dropdown__list {
+            border-color: #FF5496;
+        }
+
+        .dropdown__item {
+            border-color: #FF5496;
+            color: #7D7D7D;
         }
     }
 

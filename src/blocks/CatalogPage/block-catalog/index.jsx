@@ -2,7 +2,7 @@ import React from "react";
 import "./style.scss";
 import Dropdown from "../../../component/dropdown";
 
-const drop = ["По рейтингу", "По возрастанию цены", "По убыванию цены", "По количеству заказов", "По дате добавления"]
+const drop = ["Выбрать всё", "По рейтингу", "По возрастанию цены", "По убыванию цены", "По количеству заказов", "По дате добавления"]
 
 function BlockCatalog() {
 
@@ -12,7 +12,7 @@ function BlockCatalog() {
         </div>
         <div className="block-catalog__row">
             <div className="block-catalog__wrapper">
-                <Dropdown list={drop}/>
+                <Dropdown list={drop} defaultValue="Сортировка по"/>
             </div>
             <label className="block-catalog__find">
                 <input type="text" name="" placeholder="Найти подарок"/>

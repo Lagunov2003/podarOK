@@ -64,17 +64,9 @@ function Filter() {
                 </div>
             </div>
             <div className="filter__item">
-                <p className="filter__item-title">Бюджет:</p>
+                <p className="filter__item-title">Возраст:</p>
                 <div className="filter__item-wrapper-dropdown">
                     <Dropdown list={age} classBlock="filter__dropdown" />
-                </div>
-            </div>
-            <div className="filter__item">
-                <p className="filter__item-title">Срочность доставки:</p>
-                <div className="filter__item-list">
-                    <label className="filter__item-input">
-                        <input type="checkbox" name="" /> Мужской
-                    </label>
                 </div>
             </div>
             <button className="button-style filter__button">Подобрать</button>
