@@ -7,11 +7,12 @@ import Account from "./account";
 import User from "../blocks/AccountPage/user";
 import Setting from "../blocks/AccountPage/setting";
 import Edit from "../blocks/AccountPage/edit";
-import Basket from "../blocks/AccountPage/basket";
 import Notice from "../blocks/AccountPage/notice";
 import ChatHelper from "../blocks/AccountPage/chat-helper";
 import Favorite from "../blocks/AccountPage/favorite";
 import Catalog from "./catalog";
+import Basket from "./basket";
+import Order from "../blocks/AccountPage/Order";
 
 const router = createBrowserRouter([
     {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
                 element: <Catalog />
             },
             {
+                path: "basket",
+                element: <Basket />
+            },
+            {
                 path: "account",
                 element: <Account />,
                 children: [
@@ -48,7 +53,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "order",
-                        element: <Basket />,
+                        element: <Order />,
                     },
                     {
                         path: "favorite",

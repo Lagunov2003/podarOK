@@ -26,9 +26,9 @@ function Header({ handleOpenModal }) {
                     <a href="" className="header__link">
                         Отзывы
                     </a>
-                    <a href="" className="header__link">
+                    <Link to={"/basket"} className="header__link">
                         Корзина
-                    </a>
+                    </Link>
                 </nav>
                 <button className="header__sing-in" onClick={() => handleOpenModal()}>
                     Вход

@@ -35,7 +35,7 @@ const textView = [
     },
 ];
 
-function Basket() {
+function Order() {
     const [typeView, setTypeView] = useState(0);
     const [openItem, setOpenItem] = useState(false);
     const [indexItem, setIndexItem] = useState(-1);
@@ -210,4 +210,4 @@ function Basket() {
     );
 }
 
-export default Basket;
+export default Order;
