@@ -79,7 +79,7 @@ class UserServiceTest {
 
     }
     @Test
-    void UserService_CreateNewUser_ReturnsCreatedUser() throws UserAlreadyExist {
+    void UserService_CreateNewUser_ReturnsCreatedUser() throws UserAlreadyExistException {
         Mockito.when(userRepository.findUserByEmail(registrationUserDto.getEmail())).thenReturn(Optional.empty());
         Mockito.when(passwordEncoder.encode(registrationUserDto.getPassword())).thenReturn("encoded_password");
         Mockito.when(roleService.getUserRole()).thenReturn(role);
@@ -94,7 +94,7 @@ class UserServiceTest {
         assertEquals("user", result.getLastName());
         assertEquals(LocalDate.now(), result.getDateOfBirth());
         assertEquals(LocalDate.now(), result.getRegistrationDate());
-        assertTrue(result.isGender());
+        assertTrue(result.getGender());
         assertEquals("80000000000", result.getPhoneNumber());
         Mockito.verify(emailService, Mockito.times(1)).sendWelcomeLetter("test@example.com", "test");
         Mockito.verify(userRepository, Mockito.times(1)).save(any(User.class));
@@ -104,7 +104,7 @@ class UserServiceTest {
     void UserService_CreateNewUser_ThrowsUserAlreadyExistException() {
         Mockito.when(userRepository.findUserByEmail(registrationUserDto.getEmail())).thenReturn(Optional.of(new User()));
 
-        assertThrows(UserAlreadyExist.class, () -> userService.createNewUser(registrationUserDto));
+        assertThrows(UserAlreadyExistException.class, () -> userService.createNewUser(registrationUserDto));
 
         Mockito.verify(emailService, Mockito.never()).sendWelcomeLetter(anyString(), anyString());
         Mockito.verify(userRepository, Mockito.never()).save(any(User.class));
@@ -134,7 +134,7 @@ class UserServiceTest {
     }
 
     @Test
-    void UserService_GetCurrentAuthenticationUser_ReturnsCurrentUser() throws UserNotAuthorized, UserNotFoundException {
+    void UserService_GetCurrentAuthenticationUser_ReturnsCurrentUser() throws UserNotAuthorizedException, UserNotFoundException {
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(authentication.isAuthenticated()).thenReturn(true);
@@ -153,7 +153,7 @@ class UserServiceTest {
         assertEquals("user", result.getLastName());
         assertEquals(LocalDate.now(), result.getDateOfBirth());
         assertEquals(LocalDate.now(), result.getRegistrationDate());
-        assertTrue(result.isGender());
+        assertTrue(result.getGender());
         assertEquals("80000000000", result.getPhoneNumber());
     }
 
@@ -163,7 +163,7 @@ class UserServiceTest {
         Mockito.when(securityContext.getAuthentication()).thenReturn(null);
         SecurityContextHolder.setContext(securityContext);
 
-        assertThrows(UserNotAuthorized.class, () -> userService.getCurrentAuthenticationUser());
+        assertThrows(UserNotAuthorizedException.class, () -> userService.getCurrentAuthenticationUser());
     }
 
     @Test
@@ -180,7 +180,7 @@ class UserServiceTest {
     }
 
     @Test
-    void UserService_GetCurrentUserProfile_ReturnsCurrentUserDto() throws UserNotAuthorized, UserNotFoundException {
+    void UserService_GetCurrentUserProfile_ReturnsCurrentUserDto() throws UserNotAuthorizedException, UserNotFoundException {
         Authentication authentication = Mockito.mock(Authentication.class);
         Mockito.when(authentication.isAuthenticated()).thenReturn(true);
         Mockito.when(authentication.getName()).thenReturn("test@example.com");
@@ -201,7 +201,7 @@ class UserServiceTest {
     }
 
     @Test
-    void UserService_UpdateUserProfile_ReturnsUpdatedCurrentUserDto() throws UserNotFoundException, UserNotAuthorized {
+    void UserService_UpdateUserProfile_ReturnsUpdatedCurrentUserDto() throws UserNotFoundException, UserNotAuthorizedException {
         UpdateUserDto updateUserDto = new UpdateUserDto("Jane", "Smith", LocalDate.of(1990, 5, 4), false, "new@example.com", "0987654321");
         Mockito.doReturn(user).when(userService).getCurrentAuthenticationUser();
         Mockito.when(userRepository.findUserByEmail("new@example.com")).thenReturn(Optional.empty());
@@ -219,7 +219,7 @@ class UserServiceTest {
     }
 
     @Test
-    void UserService_RequestChangeUserPassword_SendsConfirmationCode() throws UserNotFoundException, UserNotAuthorized {
+    void UserService_RequestChangeUserPassword_SendsConfirmationCode() throws UserNotFoundException, UserNotAuthorizedException {
         Authentication authentication = Mockito.mock(Authentication.class);
         Mockito.when(authentication.isAuthenticated()).thenReturn(true);
         Mockito.when(authentication.getName()).thenReturn("test@example.com");
@@ -234,7 +234,7 @@ class UserServiceTest {
     }
 
     @Test
-    void UserService_ConfirmChangeUserPassword_ReturnsNewPassword() throws UserNotFoundException, UserNotAuthorized, FakeConfirmationCode, NotValidCode, ExpiredCode {
+    void UserService_ConfirmChangeUserPassword_ReturnsNewPassword() throws UserNotFoundException, UserNotAuthorizedException, FakeConfirmationCodeException, NotValidCodeException, ExpiredCodeException {
 
         String code = "validCode";
         String newPassword = "newPassword";
@@ -256,7 +256,7 @@ class UserServiceTest {
     }
 
     @Test
-    void UserService_DeleteCurrentUser_VerifiesUserIsDeleted() throws UserNotFoundException, UserNotAuthorized {
+    void UserService_DeleteCurrentUser_VerifiesUserIsDeleted() throws UserNotFoundException, UserNotAuthorizedException {
         Authentication authentication = Mockito.mock(Authentication.class);
         Mockito.when(authentication.isAuthenticated()).thenReturn(true);
         Mockito.when(authentication.getName()).thenReturn("test@example.com");

@@ -27,9 +27,9 @@ public class ConfirmationCodeRepositoryTest {
     @BeforeEach
     void setUp() {
         code = new ConfirmationCode();
-        code.setId(1);
+        code.setId(1L);
         code.setExpiryDate(LocalDate.now().plusDays(1));
-        code.setOwnUserId(0);
+        code.setOwnUserId(0L);
         code.setCode("12345");
     }
     @BeforeEach
@@ -52,8 +52,8 @@ public class ConfirmationCodeRepositoryTest {
     void ConfirmationCodeRepository_FindByCode_ReturnFoundCode(){
         confirmationCodeRepository.save(code);
         ConfirmationCode code2 = new ConfirmationCode();
-        code2.setId(2);
-        code2.setOwnUserId(1);
+        code2.setId(2L);
+        code2.setOwnUserId(1L);
         code2.setExpiryDate(LocalDate.now().plusDays(2));
         code2.setCode("23456");
         confirmationCodeRepository.save(code2);

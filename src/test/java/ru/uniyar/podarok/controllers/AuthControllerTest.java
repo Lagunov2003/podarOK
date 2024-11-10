@@ -17,7 +17,7 @@ import ru.uniyar.podarok.dtos.JwtRequest;
 import ru.uniyar.podarok.dtos.JwtResponse;
 import ru.uniyar.podarok.dtos.RegistrationUserDto;
 import ru.uniyar.podarok.dtos.UserDto;
-import ru.uniyar.podarok.exceptions.UserAlreadyExist;
+import ru.uniyar.podarok.exceptions.UserAlreadyExistException;
 import ru.uniyar.podarok.services.AuthService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -58,7 +58,7 @@ public class AuthControllerTest {
         RegistrationUserDto registrationUserDto = new RegistrationUserDto(1, "test", "test@example.com", "12345");
 
         Mockito.when(authService.createNewUser(any(RegistrationUserDto.class)))
-                .thenThrow(new UserAlreadyExist("Пользователь уже существует!"));
+                .thenThrow(new UserAlreadyExistException("Пользователь уже существует!"));
 
         mockMvc.perform(post("/registration")
                         .contentType(MediaType.APPLICATION_JSON)

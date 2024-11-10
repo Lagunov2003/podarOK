@@ -5,10 +5,13 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "roles")
-public class Role {
+@Table(name = "gift_recommendations")
+public class GiftRecommendation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private Boolean gender;
+    private Integer minAge;
+    private Integer maxAge;
+    private Boolean urgency;
 }

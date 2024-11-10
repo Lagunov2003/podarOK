@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.uniyar.podarok.entities.ConfirmationCode;
-import ru.uniyar.podarok.exceptions.ExpiredCode;
-import ru.uniyar.podarok.exceptions.FakeConfirmationCode;
-import ru.uniyar.podarok.exceptions.NotValidCode;
+import ru.uniyar.podarok.exceptions.ExpiredCodeException;
+import ru.uniyar.podarok.exceptions.FakeConfirmationCodeException;
+import ru.uniyar.podarok.exceptions.NotValidCodeException;
 import ru.uniyar.podarok.repositories.ConfirmationCodeRepository;
 
 import java.time.LocalDate;
@@ -47,7 +47,7 @@ class ConfirmationCodeServiceTest {
     }
 
     @Test
-    void ConfirmationCodeService_CheckConfirmationCode_ReturnsIsCodeCorrect() throws NotValidCode, ExpiredCode, FakeConfirmationCode {
+    void ConfirmationCodeService_CheckConfirmationCode_ReturnsIsCodeCorrect() throws NotValidCodeException, ExpiredCodeException, FakeConfirmationCodeException {
         ConfirmationCode confirmationCode = new ConfirmationCode();
         confirmationCode.setOwnUserId(userId);
         confirmationCode.setCode(code);
@@ -65,7 +65,7 @@ class ConfirmationCodeServiceTest {
         String invalidCode = "99999";
         Mockito.when(confirmationCodeRepository.findByCode(invalidCode)).thenReturn(Optional.empty());
 
-        assertThrows(NotValidCode.class, () -> confirmationCodeService.checkConfirmationCode(userId, invalidCode));
+        assertThrows(NotValidCodeException.class, () -> confirmationCodeService.checkConfirmationCode(userId, invalidCode));
     }
 
     @Test
@@ -77,7 +77,7 @@ class ConfirmationCodeServiceTest {
         confirmationCode.setExpiryDate(LocalDate.now().plusDays(1));
         Mockito.when(confirmationCodeRepository.findByCode(code)).thenReturn(Optional.of(confirmationCode));
 
-        assertThrows(FakeConfirmationCode.class, () -> {
+        assertThrows(FakeConfirmationCodeException.class, () -> {
             confirmationCodeService.checkConfirmationCode(userId, code);
         });
     }
@@ -90,7 +90,7 @@ class ConfirmationCodeServiceTest {
         confirmationCode.setExpiryDate(LocalDate.now().minusDays(1));
         Mockito.when(confirmationCodeRepository.findByCode(code)).thenReturn(Optional.of(confirmationCode));
 
-        assertThrows(ExpiredCode.class, () -> confirmationCodeService.checkConfirmationCode(userId, code));
+        assertThrows(ExpiredCodeException.class, () -> confirmationCodeService.checkConfirmationCode(userId, code));
         Mockito.verify(confirmationCodeRepository).delete(confirmationCode);
     }
 }

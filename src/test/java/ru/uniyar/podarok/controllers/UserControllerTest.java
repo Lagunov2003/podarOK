@@ -20,7 +20,7 @@ import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
 import ru.uniyar.podarok.dtos.CurrentUserDto;
 import ru.uniyar.podarok.dtos.ForgotUserPasswordDto;
 import ru.uniyar.podarok.dtos.UpdateUserDto;
-import ru.uniyar.podarok.exceptions.UserNotAuthorized;
+import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.services.UserService;
 
@@ -54,7 +54,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ShowProfile_ReturnsStatusIsUnauthorized() throws Exception {
-        Mockito.when(userService.getCurrentUserProfile()).thenThrow(new UserNotAuthorized("Пользователь не авторизован!"));
+        Mockito.when(userService.getCurrentUserProfile()).thenThrow(new UserNotAuthorizedException("Пользователь не авторизован!"));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/profile"))
                 .andExpect(status().isUnauthorized())
@@ -96,7 +96,7 @@ class UserControllerTest {
 
     @Test
     void UserController_RequestChangeUserPassword_ReturnsStatusIsUnauthorized() throws Exception {
-        Mockito.doThrow(new UserNotAuthorized("Пользователь не авторизован!")).when(userService).requestChangeUserPassword();
+        Mockito.doThrow(new UserNotAuthorizedException("Пользователь не авторизован!")).when(userService).requestChangeUserPassword();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/changePassword"))
                 .andExpect(status().isUnauthorized())
@@ -136,7 +136,7 @@ class UserControllerTest {
 
     @Test
     void UserController_DeleteUser_ReturnsStatusIsUnauthorized() throws Exception {
-        Mockito.doThrow(new UserNotAuthorized("Пользователь не авторизован!")).when(userService).deleteCurrentUser();
+        Mockito.doThrow(new UserNotAuthorizedException("Пользователь не авторизован!")).when(userService).deleteCurrentUser();
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/profile"))
                 .andExpect(status().isUnauthorized())

@@ -25,7 +25,7 @@ public class UserRepositoryTest {
     @BeforeEach
     void setUp() {
         user = new User();
-        user.setId(1);
+        user.setId(1L);
         user.setEmail("test@example.com");
         user.setPassword("12345");
         user.setGender(true);
@@ -47,7 +47,7 @@ public class UserRepositoryTest {
         assertThat(savedUser).isNotNull();
         assertThat(savedUser.getId()).isGreaterThan(0);
         assertEquals("test@example.com", savedUser.getEmail());
-        assertTrue(savedUser.isGender());
+        assertTrue(savedUser.getGender());
         assertEquals("test", savedUser.getFirstName());
         assertEquals("user", savedUser.getLastName());
         assertEquals(LocalDate.now(), savedUser.getDateOfBirth());
@@ -59,7 +59,7 @@ public class UserRepositoryTest {
     void UserRepository_FindUserByEmail_ReturnsFoundUser(){
         userRepository.save(user);
         User user2 = new User();
-        user2.setId(2);
+        user2.setId(2L);
         user2.setEmail("test2@example.com");
         userRepository.save(user2);
 
@@ -95,7 +95,7 @@ public class UserRepositoryTest {
         assertThat(updatedUser).isNotNull();
         assertThat(updatedUser.getId()).isGreaterThan(0);
         assertEquals("newTest@example.com", updatedUser.getEmail());
-        assertFalse(updatedUser.isGender());
+        assertFalse(updatedUser.getGender());
         assertEquals("newTest", updatedUser.getFirstName());
         assertEquals("newUser", updatedUser.getLastName());
         assertEquals(LocalDate.now().minusDays(1), updatedUser.getDateOfBirth());

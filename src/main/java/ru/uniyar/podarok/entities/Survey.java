@@ -1,0 +1,36 @@
+package ru.uniyar.podarok.entities;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.ToString;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Data
+@Table(name = "survey")
+public class Survey {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private Boolean gender;
+    private Integer age;
+    private BigDecimal budget;
+    private Boolean urgency;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
+    private User user;
+    @ManyToOne
+    @JoinColumn(name = "occasion_id")
+    private Occasion occasion;
+    @ManyToMany
+    @JoinTable(
+            name = "survey_category",
+            joinColumns = @JoinColumn(name = "survey_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category> categories = new ArrayList<>();
+}

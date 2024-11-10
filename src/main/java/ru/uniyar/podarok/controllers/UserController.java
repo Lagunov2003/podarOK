@@ -1,12 +1,14 @@
 package ru.uniyar.podarok.controllers;
 
-import  io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
 import ru.uniyar.podarok.dtos.CurrentUserDto;
@@ -26,7 +28,7 @@ public class UserController {
         try {
             CurrentUserDto userDto = userService.getCurrentUserProfile();
             return ResponseEntity.ok(userDto);
-        } catch(UserNotAuthorized e) {
+        } catch(UserNotAuthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch(UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -35,12 +37,14 @@ public class UserController {
 
     @PutMapping("/profile")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateProfile(@RequestBody UpdateUserDto updateUserDto) {
+    public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateUserDto updateUserDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Некоторые поля заполнены некорректно!");
+        }
         try {
-            updateUserDto.validate();
             CurrentUserDto updatedUser = userService.updateUserProfile(updateUserDto);
             return ResponseEntity.ok(updatedUser);
-        } catch(UserNotAuthorized e) {
+        } catch(UserNotAuthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch(UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -57,7 +61,7 @@ public class UserController {
         try {
             userService.requestChangeUserPassword();
             return ResponseEntity.ok().body("Перейдите по ссылке в письме для подтверждения смены пароля!");
-        } catch(UserNotAuthorized e) {
+        } catch(UserNotAuthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch(UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -76,13 +80,13 @@ public class UserController {
             }
             userService.confirmChangeUserPassword(code, changeUserPasswordDto);
             return ResponseEntity.ok().body("Пароль успешно изменён!");
-        } catch(UserNotAuthorized e) {
+        } catch(UserNotAuthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch(UserNotFoundException | NotValidCode e) {
+        } catch(UserNotFoundException | NotValidCodeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch(FakeConfirmationCode e) {
+        } catch(FakeConfirmationCodeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        } catch(ExpiredCode e) {
+        } catch(ExpiredCodeException e) {
             return ResponseEntity.status(HttpStatus.GONE).body(e.getMessage());
         }
     }
@@ -93,7 +97,7 @@ public class UserController {
         try {
             userService.deleteCurrentUser();
             return ResponseEntity.ok("Пользователь успешно удалён!");
-        } catch(UserNotAuthorized e) {
+        } catch(UserNotAuthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch(UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

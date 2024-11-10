@@ -16,7 +16,7 @@ import ru.uniyar.podarok.dtos.JwtResponse;
 import ru.uniyar.podarok.dtos.RegistrationUserDto;
 import ru.uniyar.podarok.dtos.UserDto;
 import ru.uniyar.podarok.entities.User;
-import ru.uniyar.podarok.exceptions.UserAlreadyExist;
+import ru.uniyar.podarok.exceptions.UserAlreadyExistException;
 import ru.uniyar.podarok.utils.JwtTokenUtils;
 
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ class AuthServiceTest {
     private AuthService authService;
 
     @Test
-    void AuthService_CreateNewUser_ReturnsCreatedUser() throws UserAlreadyExist {
+    void AuthService_CreateNewUser_ReturnsCreatedUser() throws UserAlreadyExistException {
         RegistrationUserDto registrationUserDto = new RegistrationUserDto(1, "test", "test@example.com", "12345");
         User user = new User();
         user.setId(1L);
