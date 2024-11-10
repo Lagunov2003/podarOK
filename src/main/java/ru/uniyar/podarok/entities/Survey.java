@@ -2,6 +2,7 @@ package ru.uniyar.podarok.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class Survey {
     private Boolean urgency;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private User user;
     @ManyToOne
     @JoinColumn(name = "occasion_id")
