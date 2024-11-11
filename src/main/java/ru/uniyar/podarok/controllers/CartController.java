@@ -1,8 +1,6 @@
 package ru.uniyar.podarok.controllers;
 
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +28,7 @@ public class CartController {
         }
         List<Cart> cartItems = cartService.getCart();
         if (cartItems.isEmpty()) {
-            ResponseEntity.ok("Корзина пуста!");
+            return ResponseEntity.ok("Корзина пуста!");
         }
         return ResponseEntity.ok(cartItems);
     }
@@ -70,6 +68,7 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
     @DeleteMapping("/cart")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> cleanCart(){

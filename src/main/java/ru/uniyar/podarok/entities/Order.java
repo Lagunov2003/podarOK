@@ -13,10 +13,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDate deliveryDate;
-    private Integer rating;
     private String status;
-    @Column(columnDefinition = "text")
-    private String review;
     private String information;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -24,4 +21,7 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "gift_id", nullable = false)
     private Gift gift;
+    @OneToOne
+    @JoinColumn(name = "review_id")
+    private Review review;
 }

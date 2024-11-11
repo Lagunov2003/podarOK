@@ -5,12 +5,13 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "gift_recommendations")
-public class GiftRecommendation {
+@Table(name = "gift_photo")
+public class GiftPhoto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Boolean gender;
-    private Integer minAge;
-    private Integer maxAge;
+    private String photoUrl;
+    @ManyToOne
+    @JoinColumn(name = "gift_id", nullable = false)
+    private Gift gift;
 }

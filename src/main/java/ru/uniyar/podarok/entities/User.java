@@ -41,8 +41,6 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "gift_id")
     )
     private List<Gift> favorites = new ArrayList<>();
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Survey survey;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Notification> notifications = new ArrayList<>();
 }
