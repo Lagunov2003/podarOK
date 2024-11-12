@@ -12,6 +12,7 @@ import ru.uniyar.podarok.entities.Gift;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface GiftRepository extends JpaRepository<Gift, Long> {
     @Query("SELECT g FROM Gift g")
@@ -63,4 +64,6 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
             @Param("occasions") List<Long> occasions,
             Pageable pageable
     );
+
+    Optional<Gift> findById(Long id);
 }
