@@ -1,5 +1,6 @@
 package ru.uniyar.podarok.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
@@ -17,6 +18,7 @@ public class Category {
     @Column(nullable = false)
     private String name;
     @ManyToMany(mappedBy = "categories")
+    @JsonBackReference
     @ToString.Exclude
     private List<Gift> gifts = new ArrayList<>();
 }

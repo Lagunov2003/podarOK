@@ -4,12 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegistrationUserDto {
-        private Long id;
-        private String firstName;
-        private String email;
-        private String password;
+public class GiftDto {
+    private Long id;
+    private String name;
+    private BigDecimal price;
+    private String photoUrl;
 }

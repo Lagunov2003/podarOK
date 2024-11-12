@@ -1,7 +1,10 @@
 package ru.uniyar.podarok.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -12,7 +15,10 @@ public class Notification {
     private Long id;
     @Column(columnDefinition = "text")
     private String itemValue;
+    @Column(name = "creation_datetime")
+    private LocalDateTime creationDateTime;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 }

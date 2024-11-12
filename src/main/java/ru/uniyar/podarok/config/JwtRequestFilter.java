@@ -48,7 +48,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (!isTokenValid(authHeader, response)) {
             return;
         }
-
         filterChain.doFilter(request, response);
     }
 
@@ -78,7 +77,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             List<GrantedAuthority> authorities = jwtTokenUtils.getRoles(jwt).stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
-
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                     email,
                     null,

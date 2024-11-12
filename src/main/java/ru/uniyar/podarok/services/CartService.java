@@ -1,5 +1,6 @@
 package ru.uniyar.podarok.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.uniyar.podarok.entities.Cart;
@@ -18,7 +19,7 @@ public class CartService {
     private UserService userService;
     private GiftService giftService;
 
-    public void addGifts(Long giftId, Integer count) throws UserNotFoundException, UserNotAuthorizedException {
+    public void addGifts(Long giftId, Integer count) throws UserNotFoundException, UserNotAuthorizedException, EntityNotFoundException {
         Cart cart = new Cart();
         Gift gift = giftService.getGiftById(giftId);
         cart.setGift(gift);

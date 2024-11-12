@@ -1,5 +1,6 @@
 package ru.uniyar.podarok.controllers;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class CartController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> showCart(@RequestParam(defaultValue = "1") int page){
         if (page <= 0) {
-            return ResponseEntity.badRequest().body("Номер страницы должен быть больше 0.");
+            return ResponseEntity.badRequest().body("Номер страницы должен быть больше 0!");
         }
         List<Cart> cartItems = cartService.getCart();
         if (cartItems.isEmpty()) {
@@ -44,7 +45,7 @@ public class CartController {
                 cartService.addGifts(cartDto.getGiftId(), cartDto.getItemCount());
                 return ResponseEntity.ok(cartDto);
             }
-        } catch (UserNotFoundException | UserNotAuthorizedException e) {
+        } catch (UserNotFoundException | UserNotAuthorizedException | EntityNotFoundException e) {
             return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }

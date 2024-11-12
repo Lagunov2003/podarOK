@@ -1,5 +1,6 @@
 package ru.uniyar.podarok.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,5 +17,6 @@ public class GiftFeature {
     private String itemName;
     @ManyToOne
     @JoinColumn(name = "gift_id", nullable = false)
+    @JsonBackReference
     private Gift gift;
 }

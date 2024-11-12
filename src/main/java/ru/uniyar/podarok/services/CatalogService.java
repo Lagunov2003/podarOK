@@ -11,11 +11,12 @@ import ru.uniyar.podarok.repositories.projections.GiftProjection;
 @AllArgsConstructor
 public class CatalogService {
     private GiftService giftService;
+    private GiftFilterService giftFilterService;
 
     public Page<GiftProjection> getGiftsCatalog(GiftFilterRequest giftFilterRequest, Pageable pageable) {
-        GiftFilterRequest effectiveRequest = giftFilterRequest.filterRequest();
+        GiftFilterRequest effectiveRequest = giftFilterService.processRequest(giftFilterRequest);
 
-        return effectiveRequest.hasSurveyData() || effectiveRequest.hasFilters() ?
+        return giftFilterService.hasSurveyData(effectiveRequest) || giftFilterService.hasFilters(effectiveRequest) ?
                 giftService.getGiftsByFilter(effectiveRequest, pageable) :
                 giftService.getAllGifts(pageable);
     }
