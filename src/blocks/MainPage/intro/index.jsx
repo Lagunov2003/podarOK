@@ -1,6 +1,6 @@
 import React from "react";
 import "./style.scss";
-import Button from "../../../component/button";
+import SurveyModal from "../../../component/survey-modal";
 
 function Intro() {
   return (
@@ -15,7 +15,7 @@ function Intro() {
           Пройдите небольшой опрос и мы составим подборку самых подходящих
           подарков именно для вас
         </p>
-        <Button text={"Пройти опрос"} />
+        <SurveyModal />
         <div className="intro__decor-bag">
           <img src="/img/bag-podarOK.png" alt="" />
         </div>

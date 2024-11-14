@@ -1,15 +1,3 @@
-.local-page {
-    .sing-in  {
-        width: 100%;
-        height: 100%;
-
-        &__content {
-            height: 500px;
-            width: 753px;
-        }
-    }
-}
-
 .sing-in {
     position: fixed;
     top: 0;
@@ -21,6 +9,7 @@
     justify-content: center;
     transition: all 0.3s linear;
     &_active {
+        
         .sing-in__block {
             &-title {
                 left: 0px;
@@ -60,6 +49,13 @@
     }
     &_visit {
         background-color: rgba(0, 0, 0, 0.301);
+        width: 100%;
+        height: 100%;
+
+        .sing-in__content {
+            height: 500px;
+            width: 753px;
+        }
         .sing-in__wrapper {
             top: 0;
         }
