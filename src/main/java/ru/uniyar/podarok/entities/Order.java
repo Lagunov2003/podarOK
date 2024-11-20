@@ -16,6 +16,7 @@ public class Order {
     private LocalDate deliveryDate;
     private String status;
     private String information;
+    private Integer itemCount;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference

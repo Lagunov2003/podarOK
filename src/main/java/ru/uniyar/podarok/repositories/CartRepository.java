@@ -12,7 +12,12 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
             "FROM cart c " +
             "WHERE gift_id = :giftId ",
             nativeQuery = true)
-    Optional<Cart> findItemByGiftId(
-            @Param("giftId") Long surveyId
-    );
+    Optional<Cart> findItemByGiftId(@Param("giftId") Long giftId);
+
+    @Query(value = "SELECT c.* " +
+            "FROM cart c " +
+            "WHERE gift_id = :giftId " +
+            "AND user_id = :userId ",
+            nativeQuery = true)
+    Optional<Cart> findItemByGiftIdAndUserId(@Param("giftId") Long giftId, @Param("userId") Long userId);
 }

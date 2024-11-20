@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CartDto {
     private Integer itemCount;
-    private Long giftId;
+    private GiftDto gift;
 }

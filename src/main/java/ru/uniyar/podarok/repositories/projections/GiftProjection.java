@@ -10,8 +10,10 @@ public interface GiftProjection {
     String getName();
     BigDecimal getPrice();
     default String getPhotoUrl() {
-        List<GiftPhoto> photos = getPhotos();
-        return (photos != null && !photos.isEmpty()) ? photos.get(0).getPhotoUrl() : null;
+        return getPhotos().stream()
+                .findFirst()
+                .map(GiftPhoto::getPhotoUrl)
+                .orElse(null);
     }
     List<GiftPhoto> getPhotos();
 }

@@ -17,6 +17,7 @@ public class Gift {
     private Long id;
     @Column(nullable = false)
     private String name;
+    @Column(columnDefinition = "text")
     private String description;
     @Column(nullable = false)
     private BigDecimal price;
@@ -42,5 +43,6 @@ public class Gift {
     @JsonManagedReference
     private List<GiftFeature> features = new ArrayList<>();
     @OneToMany(mappedBy = "gift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<GiftPhoto> photos = new ArrayList<>();
 }

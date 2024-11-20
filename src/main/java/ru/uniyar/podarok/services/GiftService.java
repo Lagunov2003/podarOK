@@ -35,7 +35,7 @@ public class GiftService {
         );
     }
 
-    public Gift getGiftById(Long id){
+    public Gift getGiftById(Long id) throws EntityNotFoundException{
         return  giftRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Подарок не найден!"));
     }
 }

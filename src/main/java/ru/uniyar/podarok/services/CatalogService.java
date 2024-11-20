@@ -1,10 +1,12 @@
 package ru.uniyar.podarok.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.uniyar.podarok.dtos.GiftFilterRequest;
+import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.repositories.projections.GiftProjection;
 
 @Service
@@ -19,5 +21,9 @@ public class CatalogService {
         return giftFilterService.hasSurveyData(effectiveRequest) || giftFilterService.hasFilters(effectiveRequest) ?
                 giftService.getGiftsByFilter(effectiveRequest, pageable) :
                 giftService.getAllGifts(pageable);
+    }
+
+    public Gift getGift(Long giftId) throws EntityNotFoundException {
+        return giftService.getGiftById(giftId);
     }
 }
