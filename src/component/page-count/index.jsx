@@ -8,7 +8,7 @@ function PageCount() {
     return (
         <div className="page-count">
             <div className="page-count__prev">
-                <img src="/img/account/purple-arrow.svg" alt="" />
+                <img src="/img/purple-arrow.svg" alt="" />
             </div>
             <div className="page-count__row">
                 <div className="page-count__number">1</div>
@@ -18,7 +18,7 @@ function PageCount() {
                 <div className="page-count__number">5</div>
             </div>
             <div className="page-count__next">
-                <img src="/img/account/purple-arrow.svg" alt="" />
+                <img src="/img/purple-arrow.svg" alt="" />
             </div>
         </div>
     );

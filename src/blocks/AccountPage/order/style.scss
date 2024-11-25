@@ -211,10 +211,10 @@
                     height: 31px;
                     min-width: 31px;
                     cursor: pointer;
-                    background: url("/public/img/account/star.svg") center/ 100% no-repeat;
+                    background: url("../img/star.svg") center/ 100% no-repeat;
 
                     &:hover {
-                        background: url("/public/img/account/star-hover.svg") center/ 100% no-repeat;
+                        background: url("../img/star-hover.svg") center/ 100% no-repeat;
                     }
                 }
             }
@@ -247,7 +247,7 @@
                     display: inline-block;
                     width: 25px;
                     height: 15px;
-                    background: url("/public/img/account/arrow-black.svg") center/ 100% no-repeat;
+                    background: url("../img/arrow-black.svg") center/ 100% no-repeat;
                 }
 
                 & span {

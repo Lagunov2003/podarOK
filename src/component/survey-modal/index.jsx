@@ -39,28 +39,22 @@ const holidays = [
     "Без повода",
 ];
 
-const age = [
-    "Для детей",
-    "Подросткам",
-    "18-35 лет",
-    "35-60 лет",
-    "60 и старше"
-]
+const age = ["Для детей", "Подросткам", "18-35 лет", "35-60 лет", "60 и старше"];
 
 function SurveyModal() {
     const [open, setOpen] = useState(false);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const handleOpen = () => {
-        document.body.classList.toggle("local-page")
-        setOpen(t => !t)
-    }
+        document.body.classList.toggle("local-page");
+        setOpen((t) => !t);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        document.body.classList.remove("local-page")
-        navigate("/catalog")
-    }
+        document.body.classList.remove("local-page");
+        navigate("/catalog");
+    };
 
     return (
         <div className="survey-modal">
@@ -101,7 +95,7 @@ function SurveyModal() {
                                     <div className="survey-modal__item-content">
                                         <h3 className="survey-modal__text survey-modal__item-title">Возраст:</h3>
                                         <div className="survey-modal__item-wrapper">
-                                            <Dropdown list={age} classBlock="survey-modal__dropdown"/>
+                                            <Dropdown list={age} classBlock="survey-modal__dropdown" />
                                         </div>
                                     </div>
                                 </div>
@@ -144,7 +138,9 @@ function SurveyModal() {
                                 </div>
                             </div>
                         </form>
-                        <button type="submit" form="surveyForm" className="survey-modal__submit">Результат</button>
+                        <button type="submit" form="surveyForm" className="survey-modal__submit">
+                            Результат
+                        </button>
                     </div>
                 </div>
             )}

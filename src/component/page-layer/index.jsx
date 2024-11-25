@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import img from "../../../public/img/circle.jpg";
 import "./style.scss";
 import { Outlet } from "react-router";
 import Header from "../../blocks/LayerPage/header";
@@ -31,7 +30,7 @@ function PageLayer() {
                 <Footer />
             </div>
             <div className="page-layer__bg">
-                <img src={img} alt="" />
+                <img src={"/img/circle.jpg"} alt="" />
             </div>
         </div>
     );

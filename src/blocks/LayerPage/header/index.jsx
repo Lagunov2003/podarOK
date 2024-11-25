@@ -20,12 +20,12 @@ function Header({ handleOpenModal }) {
                     <Link to={"/catalog"} className="header__link">
                         Каталог
                     </Link>
-                    <a href="" className="header__link">
+                    <Link to={"/"} className="header__link">
                         Доставка
-                    </a>
-                    <a href="" className="header__link">
+                    </Link>
+                    <Link to={"/"} className="header__link">
                         Отзывы
-                    </a>
+                    </Link>
                     <Link to={"/basket"} className="header__link">
                         Корзина
                     </Link>

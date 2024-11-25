@@ -1,6 +1,7 @@
 import React from "react";
 import "./style.scss";
 import PageCount from "../../../component/page-count";
+import { Link } from "react-router-dom";
 
 const list = [""];
 
@@ -20,7 +21,7 @@ function List() {
                             </div>
                             <p className="list__item-price">9999 ₽</p>
                             <p className="list__item-name">Кружка стеклянная двойная</p>
-                            <button className="list__item-button">Подробнее</button>
+                            <Link to={"/article/1"} className="list__item-button">Подробнее</Link>
                         </div>
                         <div className="list__item">
                             <div className="list__item-img">
@@ -32,7 +33,7 @@ function List() {
                             </div>
                             <p className="list__item-price">9999 ₽</p>
                             <p className="list__item-name">Название товара</p>
-                            <button className="list__item-button">Подробнее</button>
+                            <Link to={"/article/2"} className="list__item-button">Подробнее</Link>
                         </div>
                     </div>
                     <PageCount />
