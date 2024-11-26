@@ -24,9 +24,9 @@ function PageLayer() {
                     <Header handleOpenModal={handleOpenModal} />
                     <SingIn openModal={handleOpenModal} activeModal={activeModal} />
                 </div>
-                <div className="">
+                <main className="">
                     <Outlet />
-                </div>
+                </main>
                 <Footer />
             </div>
             <div className="page-layer__bg">

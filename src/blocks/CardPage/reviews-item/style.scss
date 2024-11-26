@@ -1,0 +1,50 @@
+.reviews-item {
+    margin-bottom: 55px;
+
+    &__content {
+        margin: 0 120px;
+    }
+
+    &__title {
+        margin-bottom: 30px;
+        font-family: Dela;
+        font-size: 40px;
+        font-weight: 400;
+        line-height: 52px;
+        color: rgba(68, 52, 60, 1);
+    }
+
+    &__list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px 30px;
+    }
+
+    &__item {
+        padding: 22px;
+        width: 380px;
+        height: 215px;
+        border-radius: 30px;
+        background-color: rgba(255, 255, 255, 1);
+
+        &-row {
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        &-name {
+            font-family: Dela;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 26px;
+        }
+
+        &-text {
+            font-family: Dimica;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 20px;
+        }
+    }
+}

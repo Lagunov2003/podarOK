@@ -1,0 +1,109 @@
+.similar-products {
+    margin-bottom: 48px;
+    &__content {
+        margin: 0px 120px;
+    }
+
+    &__title {
+        margin-bottom: 26px;
+        font-family: Dela;
+        font-size: 40px;
+        font-weight: 400;
+        line-height: 52px;
+        color: rgba(68, 52, 60, 1);
+    }
+
+    &__swiper {
+        display: flex; 
+        align-items: center;
+
+        .swiper {
+            max-width: 1077px;
+        }
+
+        &-prev,
+        &-next {
+            width: 33px;
+            height: 64px;
+            background-color: rgba(196, 196, 196, 1);
+        }
+    }
+
+    &__item {
+        padding: 18px 20px;
+        width: 243px;
+        border-radius: 25px;
+        background-color: white;
+
+        &-img {
+            position: relative;
+            width: 203px;
+            height: 188px;
+            border-radius: 20px;
+            background-color: rgba(196, 196, 196, 1);
+        }
+
+        &-avail {
+            position: absolute;
+            top: 11px;
+            left: 9px;
+            padding: 2px 0px 0;
+            font-family: Dimica;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 12px;
+            text-align: center;
+            display: inline-block;
+            width: 90px;
+            border-radius: 5px;
+            background-color: #FF5496;
+            color: #FFFFFF;
+        }
+
+        &-favorite {
+            position: absolute;
+            top: 11px;
+            right: 10px;
+            background-color: transparent;
+        }
+
+        &-price {
+            margin-bottom: 10px;
+            font-family: Dela;
+            font-size: 24px;
+            font-weight: 400;
+            line-height: 31.2px;
+            color: rgba(249, 64, 86, 1);
+        }
+
+        &-name {
+            margin-bottom: 10px;
+            font-family: Dimica;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 16px;
+        }
+
+        &-open {
+            padding: 0px 34px 4px;
+            font-family: Dela;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 32px;
+            text-align: center;
+            border-radius: 12px;
+            color: #FFFFFF;
+            background: linear-gradient(90deg, #F94056 -7.97%, #FF5496 104.58%);
+            transition: all 0.15s linear;
+
+            &:hover {
+                opacity: 0.8;
+                color: white;
+            }
+
+            &:active {
+                transform: scale(0.95);
+            }
+        }
+    }
+}
