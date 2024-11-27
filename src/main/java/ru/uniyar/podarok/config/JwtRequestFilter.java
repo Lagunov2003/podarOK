@@ -15,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.uniyar.podarok.utils.JwtTokenUtils;
 
@@ -27,20 +28,21 @@ import java.util.stream.Collectors;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
     private final JwtTokenUtils jwtTokenUtils;
+    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     @Autowired
     public JwtRequestFilter(JwtTokenUtils jwtTokenUtils) {
         this.jwtTokenUtils = jwtTokenUtils;
     }
 
-    private static final List<String> PERMITTED_URLS = Arrays.asList("/registration", "/login", "/forgot", "/resetPassword", "/catalog");
+    private static final List<String> PERMITTED_URLS = Arrays.asList("/registration", "/login", "/forgot", "/resetPassword", "/catalog", "/gift/**", "/catalogSearch");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         String requestURI = request.getRequestURI();
 
-        if (PERMITTED_URLS.contains(requestURI)) {
+        if (isPermittedUrl(requestURI)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -49,6 +51,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isPermittedUrl(String requestURI) {
+        for (String permittedUrl : PERMITTED_URLS) {
+            if (antPathMatcher.match(permittedUrl, requestURI)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isTokenValid(String authHeader, HttpServletResponse response) {

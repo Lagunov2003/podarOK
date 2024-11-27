@@ -30,16 +30,16 @@ public class GiftFilterService {
 
     private GiftFilterRequest createSurveyRequest(GiftFilterRequest request) {
         return new GiftFilterRequest(
-                null,
-                null,
-                null,
-                null,
-                null,
                 request.getSurveyCategories(),
                 request.getSurveyOccasions(),
                 request.getSurveyGender(),
                 request.getSurveyBudget(),
-                request.getSurveyAge()
+                request.getSurveyAge(),
+                null,
+                null,
+                null,
+                null,
+                null
         );
     }
 

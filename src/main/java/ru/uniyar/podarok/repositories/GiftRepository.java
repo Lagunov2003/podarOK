@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import ru.uniyar.podarok.repositories.projections.GiftProjection;
 import ru.uniyar.podarok.entities.Gift;
 
 import java.math.BigDecimal;
@@ -13,22 +12,21 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GiftRepository extends JpaRepository<Gift, Long> {
-    @Query("SELECT g FROM Gift g")
-    Page<GiftProjection> findAllGifts(Pageable pageable);
+    @Query("SELECT DISTINCT g FROM Gift g " +
+            "LEFT JOIN FETCH g.photos photos")
+    Page<Gift> findAllGifts(Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT g.* " +
-            "FROM gift g " +
-            "JOIN gift_recommendations gr ON g.recommendation_id = gr.id " +
-            "JOIN gift_occasion goc ON goc.gift_id = g.id " +
-            "JOIN gift_category gc ON gc.gift_id = g.id " +
+    @Query("SELECT DISTINCT g FROM Gift g " +
+            "LEFT JOIN FETCH g.photos photos " +
+            "LEFT JOIN FETCH g.recommendation rec " +
+            "LEFT JOIN FETCH g.categories categories " +
+            "LEFT JOIN FETCH g.occasions occasions " +
             "WHERE (:budget IS NULL OR g.price <= :budget) " +
-            "AND (:gender IS NULL OR gr.gender = :gender) " +
-            "AND (:age IS NULL OR gr.min_age <= :age) " +
-            "AND (:age IS NULL OR gr.max_age >= :age) " +
-            "AND (:categories IS NULL OR gc.category_id IN :categories) " +
-            "AND (:occasions IS NULL OR goc.occasion_id IN :occasions)",
-            nativeQuery = true)
-    Page<GiftProjection> findGiftsByFilter(
+            "AND (:gender IS NULL OR rec.gender = :gender) " +
+            "AND (:age IS NULL OR (rec.minAge <= :age AND rec.maxAge >= :age)) " +
+            "AND (:categories IS NULL OR categories.id IN :categories) " +
+            "AND (:occasions IS NULL OR occasions.id IN :occasions)")
+    Page<Gift> findGiftsByFilter(
             @Param("budget") BigDecimal budget,
             @Param("gender") Boolean gender,
             @Param("age") Integer age,
@@ -38,4 +36,18 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
     );
 
     Optional<Gift> findById(Long id);
+
+    @Query("SELECT g FROM Gift g WHERE LOWER(g.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    Page<Gift> findGiftsByName(@Param("name") String name, Pageable pageable);
+
+    @Query("SELECT DISTINCT g FROM Gift g " +
+            "LEFT JOIN FETCH g.photos photos " +
+            "LEFT JOIN FETCH g.categories categories " +
+            "LEFT JOIN FETCH g.occasions occasions " +
+            "WHERE (:categories IS NULL OR categories.id IN :categories) " +
+            "OR (:occasions IS NULL OR occasions.id IN :occasions)")
+    List<Gift> findGiftsByCategoriesOrOccasions(
+            @Param("categories") List<Long> categories,
+            @Param("occasions") List<Long> occasions
+    );
 }

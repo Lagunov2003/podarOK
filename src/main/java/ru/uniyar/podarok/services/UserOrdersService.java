@@ -9,6 +9,8 @@ import ru.uniyar.podarok.entities.Notification;
 import ru.uniyar.podarok.entities.Order;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
+import ru.uniyar.podarok.utils.GiftDtoConverter;
+import ru.uniyar.podarok.utils.OrderDtoConverter;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,34 +19,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserOrdersService {
     private UserService userService;
-
-    private List<GiftDto> convertToDto(List<Gift> gifts) {
-        return gifts.stream().map(gift -> {
-            String photoUrl = (gift.getPhotos() != null && !gift.getPhotos().isEmpty())
-                    ? gift.getPhotos().get(0).getPhotoUrl()
-                    : null;
-            return new GiftDto(gift.getId(), gift.getName(), gift.getPrice(), photoUrl);
-        }).collect(Collectors.toList());
-    }
-
-    private OrderDto convertToOrderDto(Order order) {
-        Gift gift = order.getGift();
-
-        GiftDto giftDto = new GiftDto(
-                gift.getId(),
-                gift.getName(),
-                gift.getPrice(),
-                gift.getPhotos().isEmpty() ? null : gift.getPhotos().get(0).getPhotoUrl()
-        );
-
-        return new OrderDto(
-                order.getId(),
-                order.getDeliveryDate(),
-                order.getStatus(),
-                order.getInformation(),
-                giftDto
-        );
-    }
+    private GiftDtoConverter giftDtoConverter;
+    private OrderDtoConverter orderDtoConverter;
 
     public List<Notification> getUsersNotifications() throws UserNotFoundException, UserNotAuthorizedException {
         return userService.getCurrentAuthenticationUser().getNotifications();
@@ -52,14 +28,14 @@ public class UserOrdersService {
 
     public List<GiftDto> getUsersFavorites() throws UserNotFoundException, UserNotAuthorizedException {
         List<Gift> favoriteGiftsList = userService.getCurrentAuthenticationUser().getFavorites();
-        return convertToDto(favoriteGiftsList);
+        return giftDtoConverter.convertToGiftDtoList(favoriteGiftsList);
     }
 
     public List<OrderDto> getUsersOrdersHistory() throws UserNotFoundException, UserNotAuthorizedException {
         List<Order> ordersHistoryList = userService.getCurrentAuthenticationUser().getOrders();
         return ordersHistoryList.stream()
                 .filter(order -> "Выполнен".equals(order.getStatus()))
-                .map(this::convertToOrderDto)
+                .map(orderDtoConverter::convertToOrderDto)
                 .collect(Collectors.toList());
     }
 
@@ -67,7 +43,7 @@ public class UserOrdersService {
         List<Order> currentOrdersList = userService.getCurrentAuthenticationUser().getOrders();
         return currentOrdersList.stream()
                 .filter(order -> List.of("Исполняется", "Доставляется").contains(order.getStatus()))
-                .map(this::convertToOrderDto)
+                .map(orderDtoConverter::convertToOrderDto)
                 .collect(Collectors.toList());
     }
 }

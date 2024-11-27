@@ -96,6 +96,17 @@ CREATE TABLE IF NOT EXISTS public.cart (
     PRIMARY KEY (id)
 );
 
+-- Таблица отзывов
+CREATE TABLE IF NOT EXISTS public.review (
+    id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1 START 1),
+    user_id BIGINT REFERENCES public.users (id) ON DELETE CASCADE,
+    gift_id BIGINT REFERENCES public.gift (id) ON DELETE CASCADE,
+    text TEXT,
+    rating INT,
+    creation_date DATE,
+    PRIMARY KEY (id)
+);
+
 -- Таблица заказов
 CREATE TABLE IF NOT EXISTS public.orders (
     id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1 START 1),
@@ -104,7 +115,7 @@ CREATE TABLE IF NOT EXISTS public.orders (
     delivery_date DATE,
     rating INT,
     status VARCHAR(255),
-    review BIGINT REFERENCES public.review (id),
+    review_id BIGINT REFERENCES public.review (id),
     information VARCHAR(255),
     item_count INT,
     PRIMARY KEY (id)
@@ -122,17 +133,6 @@ CREATE TABLE IF NOT EXISTS public.notifications (
     user_id BIGINT REFERENCES public.users (id) ON DELETE CASCADE,
     item_value TEXT,
     creation_datetime TIMESTAMP,
-    PRIMARY KEY (id)
-);
-
--- Таблица отзывов
-CREATE TABLE IF NOT EXISTS public.review (
-    id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1 START 1),
-    user_id BIGINT REFERENCES public.users (id) ON DELETE CASCADE,
-    gift_id BIGINT REFERENCES public.gift (id) ON DELETE CASCADE,
-    text TEXT,
-    rating INT,
-    creation_date DATE,
     PRIMARY KEY (id)
 );
 

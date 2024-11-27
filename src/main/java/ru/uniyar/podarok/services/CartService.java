@@ -15,6 +15,7 @@ import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.CartRepository;
+import ru.uniyar.podarok.utils.GiftDtoConverter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,20 +30,10 @@ public class CartService {
     private UserService userService;
     private GiftService giftService;
     private OrderService orderService;
+    private GiftDtoConverter giftDtoConverter;
 
     private CartDto convertToCartDto(Cart cart) {
-        Gift gift = cart.getGift();
-        String photoUrl = (gift.getPhotos() != null && !gift.getPhotos().isEmpty())
-                ? gift.getPhotos().get(0).getPhotoUrl()
-                : null;
-
-        GiftDto giftDto = new GiftDto(
-                gift.getId(),
-                gift.getName(),
-                gift.getPrice(),
-                photoUrl
-        );
-
+        GiftDto giftDto = giftDtoConverter.convertToGiftDto(cart.getGift());
         return new CartDto(cart.getItemCount(), giftDto);
     }
 
