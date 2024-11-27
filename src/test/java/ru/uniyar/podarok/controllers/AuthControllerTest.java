@@ -41,7 +41,7 @@ public class AuthControllerTest {
 
     @Test
     void AuthController_CreateNewUser_ReturnsStatusIsOk() throws Exception {
-        RegistrationUserDto registrationUserDto = new RegistrationUserDto(1, "test", "test@example.com", "12345");
+        RegistrationUserDto registrationUserDto = new RegistrationUserDto(1L, "test", "test@example.com", "12345");
         UserDto userDto = new UserDto(1L, "test@example.com", "test");
 
         Mockito.when(authService.createNewUser(any(RegistrationUserDto.class))).thenReturn(userDto);
@@ -55,7 +55,7 @@ public class AuthControllerTest {
 
     @Test
     void AuthController_CreateNewUser_ReturnsStatusIsConflict() throws Exception {
-        RegistrationUserDto registrationUserDto = new RegistrationUserDto(1, "test", "test@example.com", "12345");
+        RegistrationUserDto registrationUserDto = new RegistrationUserDto(1L, "test", "test@example.com", "12345");
 
         Mockito.when(authService.createNewUser(any(RegistrationUserDto.class)))
                 .thenThrow(new UserAlreadyExistException("Пользователь уже существует!"));

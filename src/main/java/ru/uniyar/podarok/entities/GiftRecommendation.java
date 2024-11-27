@@ -13,5 +13,4 @@ public class GiftRecommendation {
     private Boolean gender;
     private Integer minAge;
     private Integer maxAge;
-    private Boolean urgency;
 }

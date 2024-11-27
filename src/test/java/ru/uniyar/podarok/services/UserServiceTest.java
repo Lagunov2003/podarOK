@@ -61,7 +61,7 @@ class UserServiceTest {
     private Role role;
     @BeforeEach
     void setUp() {
-        registrationUserDto = new RegistrationUserDto(1, "test", "test@example.com", "12345");
+        registrationUserDto = new RegistrationUserDto(1L, "test", "test@example.com", "12345");
 
         user = new User();
         user.setId(1L);
@@ -160,7 +160,9 @@ class UserServiceTest {
     @Test
     void UserService_GetCurrentAuthenticationUser_ThrowsUserNotAuthorizedException() {
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(securityContext.getAuthentication()).thenReturn(null);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(false);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
 
         assertThrows(UserNotAuthorizedException.class, () -> userService.getCurrentAuthenticationUser());

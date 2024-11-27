@@ -42,7 +42,7 @@ class AuthServiceTest {
 
     @Test
     void AuthService_CreateNewUser_ReturnsCreatedUser() throws UserAlreadyExistException {
-        RegistrationUserDto registrationUserDto = new RegistrationUserDto(1, "test", "test@example.com", "12345");
+        RegistrationUserDto registrationUserDto = new RegistrationUserDto(1L, "test", "test@example.com", "12345");
         User user = new User();
         user.setId(1L);
         user.setEmail("test@example.com");

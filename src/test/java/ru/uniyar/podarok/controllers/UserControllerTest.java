@@ -84,7 +84,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateUserDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Все поля должны быть заполнены!"));
+                .andExpect(content().string("Некоторые поля заполнены некорректно!"));
     }
 
     @Test

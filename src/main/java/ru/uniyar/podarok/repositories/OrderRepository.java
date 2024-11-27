@@ -1,0 +1,7 @@
+package ru.uniyar.podarok.repositories;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.uniyar.podarok.entities.Order;
+
+public interface OrderRepository extends JpaRepository<Order, Long> {
+}

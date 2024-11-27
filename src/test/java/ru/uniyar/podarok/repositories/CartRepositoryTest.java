@@ -69,4 +69,20 @@ public class CartRepositoryTest {
         Optional<Cart> result = cartRepository.findItemByGiftId(-1L);
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    public void CartRepository_FindItemByGiftIdAndUserId_ReturnsCart() {
+        Optional<Cart> result = cartRepository.findItemByGiftIdAndUserId(gift.getId(), user.getId());
+        assertTrue(result.isPresent());
+        assertEquals(cart.getId(), result.get().getId());
+        assertEquals(cart.getItemCount(), result.get().getItemCount());
+        assertEquals(cart.getUser().getId(), result.get().getUser().getId());
+        assertEquals(cart.getGift().getId(), result.get().getGift().getId());
+    }
+
+    @Test
+    public void CartRepository_FindItemByGiftIdAndUserId_ReturnsIsEmpty() {
+        Optional<Cart> result = cartRepository.findItemByGiftIdAndUserId(-1L, -1L);
+        assertTrue(result.isEmpty());
+    }
 }

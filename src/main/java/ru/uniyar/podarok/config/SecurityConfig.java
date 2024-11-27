@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -40,8 +41,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/registration", "/login", "/forgot", "/resetPassword", "/catalog").permitAll()
-                        .requestMatchers("/profile").authenticated()
+                        .requestMatchers("/registration", "/login", "/forgot", "/resetPassword", "/catalog",  "/gift/*").permitAll()
+                        .requestMatchers("/profile", "/cart", "/notifications", "/favorites", "/ordersHistory", "/currentOrders", "/order").authenticated()
                         .anyRequest().permitAll())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)

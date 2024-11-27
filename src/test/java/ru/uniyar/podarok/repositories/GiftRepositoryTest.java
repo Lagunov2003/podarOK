@@ -13,14 +13,15 @@ import ru.uniyar.podarok.entities.*;
 import ru.uniyar.podarok.repositories.projections.GiftProjection;
 import ru.uniyar.podarok.testEntities.GiftCategory;
 import ru.uniyar.podarok.testEntities.GiftOccasion;
-import ru.uniyar.podarok.testEntities.SurveyCategory;
 import ru.uniyar.podarok.testRepositories.*;
 
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -33,8 +34,6 @@ public class GiftRepositoryTest {
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
-    private SurveyRepository surveyRepository;
-    @Autowired
     private UserRepository userRepository;
     @Autowired
     private GiftRecomendationsRepository giftRecomendationsRepository;
@@ -43,12 +42,9 @@ public class GiftRepositoryTest {
     @Autowired
     private GiftOccasionRepository giftOccasionRepository;
     @Autowired
-    private SurveyCategoryRepository surveyCategoryRepository;
-    @Autowired
     private OccasionRepository occasionRepository;
     private Pageable pageable;
     private Gift gift1 = new Gift();
-    private Survey survey = new Survey();
     private User user = new User();
 
     @BeforeEach
@@ -69,15 +65,6 @@ public class GiftRepositoryTest {
         occasion.setName("test");
         occasion = occasionRepository.save(occasion);
 
-        survey.setBudget(budget);
-        survey.setGender(gender);
-        survey.setAge(age);
-        survey.setUrgency(urgency);
-        survey.setOccasion(occasion);
-        survey.setUser(user);
-        survey = surveyRepository.save(survey);
-        entityManager.flush();
-
         Category category1 = new Category();
         category1.setName("name1");
         categoryRepository.save(category1);
@@ -87,9 +74,6 @@ public class GiftRepositoryTest {
         category2.setGifts(new ArrayList<>());
         category2 = categoryRepository.save(category2);
         entityManager.flush();
-
-        survey.setCategories(new ArrayList<>(List.of(category2)));
-        survey = surveyRepository.save(survey);
 
         gift1.setCategories(new ArrayList<>(List.of(category2)));
         gift1.setName("test");
@@ -102,12 +86,8 @@ public class GiftRepositoryTest {
         category2 = categoryRepository.save(category2);
         entityManager.flush();
 
-        survey.setCategories(new ArrayList<>(List.of(category2)));
-        survey = surveyRepository.save(survey);
-
         GiftRecommendation giftRecommendation = new GiftRecommendation();
         giftRecommendation.setGender(true);
-        giftRecommendation.setUrgency(true);
         giftRecommendation.setMinAge(18);
         giftRecommendation.setMaxAge(101);
         giftRecomendationsRepository.save(giftRecommendation);
@@ -126,15 +106,6 @@ public class GiftRepositoryTest {
         giftOccasion.setGiftId(gift1.getId());
         giftOccasionRepository.save(giftOccasion);
 
-        SurveyCategory surveyCategory = new SurveyCategory();
-        surveyCategory.setCategoryId(category2.getId());
-        surveyCategory.setSurveyId(survey.getId());
-        surveyCategoryRepository.save(surveyCategory);
-
-        user.setSurvey(survey);
-        user = userRepository.save(user);
-        survey.setUser(user);
-        survey = surveyRepository.save(survey);
     }
 
     @BeforeEach
@@ -142,7 +113,6 @@ public class GiftRepositoryTest {
         entityManager.createNativeQuery("TRUNCATE TABLE gift RESTART IDENTITY CASCADE").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE category RESTART IDENTITY CASCADE").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE occasion RESTART IDENTITY CASCADE").executeUpdate();
-        entityManager.createNativeQuery("TRUNCATE TABLE survey RESTART IDENTITY CASCADE").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE users RESTART IDENTITY CASCADE").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE gift_recommendations RESTART IDENTITY CASCADE").executeUpdate();
     }
@@ -159,45 +129,15 @@ public class GiftRepositoryTest {
     }
 
     @Test
-    public void GiftRepository_FindGiftsBySurvey_ReturnsGift() {
-        Page<GiftProjection> giftsPage = giftRepository.findGiftsBySurvey(
-                survey.getId(), survey.getBudget(), survey.getGender(), survey.getAge(), survey.getUrgency(), survey.getOccasion().getId(), pageable);
-        assertNotNull(giftsPage);
-        assertTrue(giftsPage.hasContent());
-        giftsPage.forEach(gift -> {
-            assertNotNull(gift.getId());
-            assertNotNull(gift.getName());
-            assertTrue(gift.getPrice().compareTo(survey.getBudget()) <= 0);
-        });
-    }
-
-    @Test
-    public void GiftRepository_FindGiftsBySurvey_ReturnsNotNull() {
-        Pageable pageable = PageRequest.of(0, 10);
-        BigDecimal budget = null;
-        Boolean gender = null;
-        Integer age = null;
-        Boolean urgency = null;
-        Long occasionId = null;
-
-        Page<GiftProjection> giftsPage = giftRepository.findGiftsBySurvey(
-                survey.getId(), budget, gender, age, urgency, occasionId, pageable);
-
-        assertNotNull(giftsPage);
-        assertTrue(giftsPage.hasContent());
-    }
-
-    @Test
     public void GiftRepository_FindGiftsByFilter_ReturnsGift() {
         BigDecimal budget = new BigDecimal("150.00");
         Boolean gender = true;
         Integer age = 30;
-        Boolean urgency = true;
         List<Long> categories = List.of(1L, 2L);
         List<Long> occasions = List.of(1L);
 
         Page<GiftProjection> giftsPage = giftRepository.findGiftsByFilter(
-                budget, gender, age, urgency, categories, occasions, pageable);
+                budget, gender, age, categories, occasions, pageable);
 
         assertNotNull(giftsPage);
         assertTrue(giftsPage.hasContent());
@@ -205,5 +145,13 @@ public class GiftRepositoryTest {
             assertNotNull(gift.getId());
             assertTrue(gift.getPrice().compareTo(budget) <= 0);
         });
+    }
+
+    @Test
+    public void GiftRepository_FindById_ReturnsGift() {
+        Optional<Gift> gift = giftRepository.findById(1L);
+        Gift result = gift.get();
+        assertThat(result).isNotNull();
+        assertEquals("test", gift1.getName());
     }
 }

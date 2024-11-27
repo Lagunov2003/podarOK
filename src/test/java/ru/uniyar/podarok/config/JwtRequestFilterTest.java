@@ -114,7 +114,7 @@ class JwtRequestFilterTest {
         printWriter.flush();
         assertTrue(stringWriter.toString().contains("Неправильный формат токена!"));
     }
-    //Каталог без токена
+
     @Test
     void JwtRequestFilter_DoFilterInternal_VerifiesDoFilter_CatalogUrlNotAuthorized() throws Exception {
         Mockito.when(request.getHeader("Authorization")).thenReturn(null);
@@ -130,27 +130,6 @@ class JwtRequestFilterTest {
         assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 
-    //Каталог с токеном
-    @Test
-    void JwtRequestFilter_DoFilterInternal_VerifiesDoFilter_CatalogUrlAuthorized() throws Exception {
-        List<String> roles = List.of("ROLE_USER");
-        Mockito.when(jwtTokenUtils.getUserEmail(validJwt)).thenReturn(email);
-        Mockito.when(jwtTokenUtils.getRoles(validJwt)).thenReturn(roles);
-        Mockito.when(request.getHeader("Authorization")).thenReturn("Bearer " + validJwt);
-        Mockito.when(request.getRequestURI()).thenReturn("/catalog");
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        Mockito.when(response.getWriter()).thenReturn(printWriter);
-
-        jwtRequestFilter.doFilterInternal(request, response, filterChain);
-
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        assertNotNull(authentication);
-        assertEquals(email, authentication.getPrincipal());
-        assertTrue(authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")));
-        Mockito.verify(filterChain).doFilter(request, response);
-    }
-    //Регистрация без токена
     @Test
     void JwtRequestFilter_DoFilterInternal_VerifiesDoFilter_RegistrationUrlNotAuthorized() throws Exception {
         Mockito.when(request.getHeader("Authorization")).thenReturn(null);
@@ -165,7 +144,7 @@ class JwtRequestFilterTest {
         printWriter.flush();
         assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
-    //Форгет без токена
+
     @Test
     void JwtRequestFilter_DoFilterInternal_VerifiesDoFilter_ForgetUrlNotAuthorized() throws Exception {
         Mockito.when(request.getHeader("Authorization")).thenReturn(null);
@@ -180,7 +159,7 @@ class JwtRequestFilterTest {
         printWriter.flush();
         assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
-    //Некорректный URL
+
     @Test
     void JwtRequestFilter_DoFilterInternal_VerifiesDoFilter_InvalidUrl() throws Exception {
         Mockito.when(request.getHeader("Authorization")).thenReturn(null);

@@ -1,5 +1,6 @@
 package ru.uniyar.podarok.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,16 +17,17 @@ public class Gift {
     private Long id;
     @Column(nullable = false)
     private String name;
+    @Column(columnDefinition = "text")
     private String description;
     @Column(nullable = false)
     private BigDecimal price;
-    private String photoFilePath;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "gift_category",
             joinColumns = @JoinColumn(name = "gift_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
+    @JsonManagedReference
     private List<Category> categories = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "recommendation_id")
@@ -38,5 +40,9 @@ public class Gift {
     )
     private List<Occasion> occasions = new ArrayList<>();
     @OneToMany(mappedBy = "gift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<GiftFeature> features = new ArrayList<>();
+    @OneToMany(mappedBy = "gift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<GiftPhoto> photos = new ArrayList<>();
 }

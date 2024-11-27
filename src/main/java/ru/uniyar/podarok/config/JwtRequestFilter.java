@@ -33,7 +33,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         this.jwtTokenUtils = jwtTokenUtils;
     }
 
-    private static final List<String> PERMITTED_URLS = Arrays.asList("/registration", "/login", "/forgot", "/resetPassword");
+    private static final List<String> PERMITTED_URLS = Arrays.asList("/registration", "/login", "/forgot", "/resetPassword", "/catalog");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -45,22 +45,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        if ("/catalog".equals(requestURI)) {
-            isTokenValid(authHeader, response, false);
-        } else {
-            if (!isTokenValid(authHeader, response, true)) {
-                return;
-            }
+        if (!isTokenValid(authHeader, response)) {
+            return;
         }
-
         filterChain.doFilter(request, response);
     }
 
-    private boolean isTokenValid(String authHeader, HttpServletResponse response, boolean isTokenMandatory) {
+    private boolean isTokenValid(String authHeader, HttpServletResponse response) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            if (isTokenMandatory) {
-                sendErrorResponse(response, "Токен не предоставлен!");
-            }
+            sendErrorResponse(response, "Токен не предоставлен!");
             return false;
         }
 
@@ -84,7 +77,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             List<GrantedAuthority> authorities = jwtTokenUtils.getRoles(jwt).stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
-
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                     email,
                     null,
@@ -98,6 +90,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @SneakyThrows
     private void sendErrorResponse(HttpServletResponse response, String message) {
         if (!response.isCommitted()) {
+            response.reset();
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
             response.getWriter().write(message);

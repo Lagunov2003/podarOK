@@ -16,14 +16,10 @@ public class GiftFilterRequest {
     private Boolean gender;
     private BigDecimal budget;
     private Integer age;
-    private Boolean urgency;
 
-    public boolean hasAnyFilter() {
-        return (categories != null && !categories.isEmpty()) ||
-                (occasions != null && !occasions.isEmpty()) ||
-                gender != null ||
-                budget != null ||
-                age != null ||
-                urgency != null;
-    }
+    private List<Long> surveyCategories;
+    private List<Long> surveyOccasions;
+    private Boolean surveyGender;
+    private BigDecimal surveyBudget;
+    private Integer surveyAge;
 }
