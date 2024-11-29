@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.GiftFilterRequest;
 import ru.uniyar.podarok.entities.Category;
@@ -64,5 +65,17 @@ public class GiftService {
                 .collect(Collectors.toList());
 
         return giftDtoConverter.convertToGiftDtoList(similarGifts);
+    }
+
+    public List<Gift> getGiftsByGroupId(Long groupId) {
+        return giftRepository.findGiftsByGroupId(groupId);
+    }
+
+    @Transactional
+    public void deleteGift(Long id) {
+        if (!giftRepository.existsById(id)) {
+            throw new EntityNotFoundException("Подарок с Id" + id + "не найден!");
+        }
+        giftRepository.deleteById(id);
     }
 }

@@ -7,11 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.GiftFilterRequest;
+import ru.uniyar.podarok.dtos.GiftResponseDto;
 import ru.uniyar.podarok.dtos.GiftToFavoritesDto;
 import ru.uniyar.podarok.entities.Gift;
+import ru.uniyar.podarok.entities.GiftGroup;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -44,5 +47,21 @@ public class CatalogService {
     public List<GiftDto> getSimilarGifts(Long giftId) throws EntityNotFoundException {
         Gift gift = giftService.getGiftById(giftId);
         return giftService.getSimilarGifts(gift);
+    }
+
+    public List<Gift> getGiftsByGroupId(Long groupId) {
+        return giftService.getGiftsByGroupId(groupId);
+    }
+
+    public GiftResponseDto getGiftResponse(Long giftId) throws EntityNotFoundException {
+        Gift gift = getGift(giftId);
+        GiftGroup giftGroup = gift.getGiftGroup();
+        List<Gift> groupGifts = new ArrayList<>(List.of(gift));
+        if (giftGroup != null) {
+            groupGifts.addAll(getGiftsByGroupId(giftGroup.getId()).stream()
+                    .filter(g -> !g.getId().equals(giftId))
+                    .toList());
+        }
+        return new GiftResponseDto(groupGifts, getSimilarGifts(giftId));
     }
 }

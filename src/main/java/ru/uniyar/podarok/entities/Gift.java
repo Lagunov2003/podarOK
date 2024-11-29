@@ -47,4 +47,8 @@ public class Gift {
     @OneToMany(mappedBy = "gift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<GiftPhoto> photos = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    @JsonManagedReference
+    private GiftGroup giftGroup;
 }

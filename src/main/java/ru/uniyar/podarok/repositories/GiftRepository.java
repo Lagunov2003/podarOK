@@ -50,4 +50,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
             @Param("categories") List<Long> categories,
             @Param("occasions") List<Long> occasions
     );
+
+    @Query("SELECT g FROM Gift g WHERE g.giftGroup.id = :groupId")
+    List<Gift> findGiftsByGroupId(@Param("groupId") Long groupId);
 }

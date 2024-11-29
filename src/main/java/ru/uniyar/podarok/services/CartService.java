@@ -64,14 +64,15 @@ public class CartService {
     @Transactional
     public void changeGiftsAmount(Long giftId, Integer count) throws NoSuchElementException {
         Cart cartItem = cartRepository.findItemByGiftId(giftId)
-                .orElseThrow(() -> new NoSuchElementException("Подарок с ID " + giftId + " не найден в корзине."));
+                .orElseThrow(() -> new NoSuchElementException("Подарок с Id " + giftId + " не найден в корзине!"));
         cartItem.setItemCount(count);
         cartRepository.save(cartItem);
     }
 
     @Transactional
-    public void cleanCart() {
-        cartRepository.deleteAll();
+    public void cleanCart() throws UserNotFoundException, UserNotAuthorizedException {
+        User user = userService.getCurrentAuthenticationUser();
+        cartRepository.deleteAllByUserId(user.getId());
     }
 
     public List<CartDto> getCart() throws UserNotFoundException, UserNotAuthorizedException {

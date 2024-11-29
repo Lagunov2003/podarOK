@@ -35,7 +35,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         this.jwtTokenUtils = jwtTokenUtils;
     }
 
-    private static final List<String> PERMITTED_URLS = Arrays.asList("/registration", "/login", "/forgot", "/resetPassword", "/catalog", "/gift/**", "/catalogSearch");
+    private static final List<String> PERMITTED_URLS = Arrays.asList(
+            "/registration", "/login", "/forgot", "/resetPassword", "/catalog", "/gift/**", "/catalogSearch"
+    );
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

@@ -11,6 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GiftResponseDto {
-    private Gift gift;
+    private List<Gift> groupGifts;
     private List<GiftDto> similarGifts;
 }

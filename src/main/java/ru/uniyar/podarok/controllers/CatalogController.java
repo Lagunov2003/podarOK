@@ -13,9 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.GiftFilterRequest;
-import ru.uniyar.podarok.dtos.GiftResponseDto;
 import ru.uniyar.podarok.dtos.GiftToFavoritesDto;
-import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.services.CatalogService;
@@ -48,9 +46,7 @@ public class CatalogController {
     @GetMapping("/gift/{id}")
     public ResponseEntity<?> getGiftById(@PathVariable Long id) {
         try {
-            Gift gift = catalogService.getGift(id);
-            List<GiftDto> similarGifts = catalogService.getSimilarGifts(id);
-            return ResponseEntity.ok(new GiftResponseDto(gift, similarGifts));
+            return ResponseEntity.ok(catalogService.getGiftResponse(id));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Подарок с ID " + id + " не найден!");
         }
@@ -80,7 +76,7 @@ public class CatalogController {
             catalogService.addGiftToFavorites(giftToFavoritesDto);
             return ResponseEntity.status(HttpStatus.OK).body("Подарок добавлен в избранные!");
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Подарок с ID " + giftToFavoritesDto.getGiftId() + " не найден!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Подарок с Id " + giftToFavoritesDto.getGiftId() + " не найден!");
         } catch(UserNotAuthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch(UserNotFoundException e) {
