@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import Header from "../../blocks/LayerPage/header";
 import SingIn from "../sing-in";
 import Footer from "../../blocks/LayerPage/footer";
+import ChatHelper from "../chat-helper";
 
 function PageLayer() {
     const [activeModal, setActiveModal] = useState(false);
+    const location = useLocation();
 
     useEffect(() => {
         document.title = "podarOK | Главная";
@@ -16,6 +18,11 @@ function PageLayer() {
         document.body.classList.toggle("local-page");
         setActiveModal((v) => !v);
     };
+
+    useEffect(() => {
+        const scroll = sessionStorage.getItem("scroll");
+        if (!scroll) window.scrollTo({ top: 0, behavior: "smooth" });
+    }, [location.pathname]);
 
     return (
         <div className="page-layer">
@@ -32,6 +39,7 @@ function PageLayer() {
             <div className="page-layer__bg">
                 <img src={"/img/circle.jpg"} alt="" />
             </div>
+            <ChatHelper />
         </div>
     );
 }

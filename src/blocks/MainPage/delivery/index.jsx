@@ -4,9 +4,9 @@ import Dropdown from "../../../component/dropdown";
 
 const list = ["С 8:00 до 11:00", "С 11:00 до 14:00", "С 14:00 до 17:00", "С 17:00 до 20:00", "С 20:00 до 23:00", "Любое время"];
 
-function Delivery() {
+function Delivery({ refDelivery }) {
     return (
-        <section className="delivery">
+        <section className="delivery" ref={refDelivery}>
             <div className="delivery__content padding-style">
                 <h2 className="delivery__title title-style">Рассчитать доставку</h2>
                 <div className="delivery__block">

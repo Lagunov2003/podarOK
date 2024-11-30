@@ -2,9 +2,11 @@ import React from "react";
 import "./style.scss";
 import Button from "../../../component/button";
 import SingIn from "../../../component/sing-in";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate, useNavigation } from "react-router-dom";
 
 function Header({ handleOpenModal }) {
+    const location = useLocation();
+
     return (
         <header className="header">
             <div className="header__content padding-style">
@@ -20,10 +22,26 @@ function Header({ handleOpenModal }) {
                     <Link to={"/catalog"} className="header__link">
                         Каталог
                     </Link>
-                    <Link to={"/"} className="header__link">
+                    <Link
+                        to={"/"}
+                        className="header__link"
+                        onClick={() =>
+                            location.pathname != "/"
+                                ? sessionStorage.setItem("scroll", "delivery")
+                                : document.getElementsByClassName("delivery")[0].scrollIntoView({ behavior: "smooth", block: "center" })
+                        }
+                    >
                         Доставка
                     </Link>
-                    <Link to={"/"} className="header__link">
+                    <Link
+                        to={"/"}
+                        className="header__link"
+                        onClick={() =>
+                            location.pathname != "/"
+                                ? sessionStorage.setItem("scroll", "reviews")
+                                : document.getElementsByClassName("reviews")[0].scrollIntoView({ behavior: "smooth", block: "center" })
+                        }
+                    >
                         Отзывы
                     </Link>
                     <Link to={"/basket"} className="header__link">

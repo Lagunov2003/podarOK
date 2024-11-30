@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Main from "./main";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { BrowserRouter, createBrowserRouter, Route, RouterProvider, Routes, useLocation } from "react-router-dom";
 import PageLayer from "../component/page-layer";
 import PasswordCange from "./password";
 import Account from "./account";
@@ -20,26 +20,6 @@ const router = createBrowserRouter([
         path: "/",
         element: <PageLayer />,
         children: [
-            {
-                path: "",
-                element: <Main />,
-            },
-            {
-                path: "password-change",
-                element: <PasswordCange />,
-            },
-            {
-                path: "catalog",
-                element: <Catalog />
-            },
-            {
-                path: "basket",
-                element: <Basket />
-            },
-            {
-                path: "article/:id",
-                element: <Card />
-            },
             {
                 path: "account",
                 element: <Account />,
@@ -93,7 +73,18 @@ function App() {
         qwe()
     }, [])
 
-    return <RouterProvider router={router} />;
+
+    return <BrowserRouter>
+        <Routes>
+            <Route path="/" element={<PageLayer />}>
+                <Route index element={<Main />} />
+                <Route path="password-change" element={<PasswordCange />} />
+                <Route path="catalog" element={<Catalog />} />
+                <Route path="basket" element={<Basket />} />
+                <Route path="article/:id" element={<Card />} />
+            </Route>
+        </Routes>
+    </BrowserRouter>
 }
 
 export default App;

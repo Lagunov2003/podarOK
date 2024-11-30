@@ -18,7 +18,7 @@ function InfoPassword({ handleOpen }) {
                 <p className="info-password__item">Нельзя использовать цифры и другие символы</p>
             </li>
         </ul>
-        <Button text="ок" classNameText="info-password__button" onClick={() => handleOpen()}/>
+        <Button text="Ok" classNameText="info-password__button" onClick={() => handleOpen()}/>
     </div>
 }
 

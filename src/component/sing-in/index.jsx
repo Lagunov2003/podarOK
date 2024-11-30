@@ -145,6 +145,7 @@ function SingIn({ openModal, activeModal }) {
                                         className="sing-in__input"
                                         placeholder="Имя"
                                         onChange={(e) => handleChangeInputName(e)}
+                                        onBlur={(e) => e.target.value = e.target.value[0].toUpperCase() + e.target.value.slice(1, e.target.value.length)}
                                     />
                                     <input type="email" className="sing-in__input" placeholder="Почта" />
                                     <div className="sing-in__password-wrapper">
@@ -154,7 +155,7 @@ function SingIn({ openModal, activeModal }) {
                                             className="sing-in__input"
                                             placeholder="Пароль"
                                             autoComplete="false"
-                                            maxLength={20}
+                                            maxLength={12}
                                             onChange={(e) => handleChangeInputPassword(e)}
                                         />
                                         <div className="infoBlockPassword" onClick={() => handleOpenModalPassword()}></div>

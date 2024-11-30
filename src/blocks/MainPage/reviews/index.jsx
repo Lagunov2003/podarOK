@@ -1,9 +1,9 @@
 import React from "react";
 import "./style.scss";
 
-function Reviews() {
+function Reviews({ refReviews }) {
     return (
-        <section className="reviews">
+        <section className="reviews" ref={refReviews}>
             <div className="reviews__content padding-style">
                 <h2 className="reviews__title title-style">Отзывы</h2>
                 <div className="reviews__list">

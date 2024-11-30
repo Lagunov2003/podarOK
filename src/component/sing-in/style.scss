@@ -129,10 +129,6 @@
             left: 54px;
             top: 280px; 
             width: 195px;
-            &:hover {            
-                padding: 12px 24px;
-                width: 205px;
-            }
         }
 
         &-bg {
@@ -206,7 +202,7 @@
         &-button {
             align-self: center;
             width: max-content;
-            padding: 8px 10px;
+            padding: 8px 30px;
             color: rgb(255, 255, 255);
             font-family: Dela;
             font-size: 20px;
@@ -214,13 +210,13 @@
             line-height: 29px;
             border-radius: 20px;
             background: linear-gradient(90.00deg, rgb(49, 206, 217),rgb(151, 71, 255) 100%);
-            width: 214px;
-            transition: width 0.2s linear, padding 0.2s linear;
-            &:hover {            
-                padding: 12px 16px;
-                width: 226px;
-            }
+            width: 256px;
+            transition: all 0.15s linear;
 
+            &:hover {
+                color: rgba(55, 13, 109, 1);
+                background: linear-gradient(90deg, rgba(49, 206, 217, 0.3) 0%, rgba(151, 71, 255, 0.3) 100%);
+            }
         }
 
         .sing-in__input {
@@ -255,8 +251,9 @@
         }
 
         &-error {
+            align-self: self-start;
             height: 16px;
-            margin-top: 4px;
+            margin-top: 10px;
             color: rgb(249, 64, 86);
             font-family: Dimica;
             font-size: 16px;

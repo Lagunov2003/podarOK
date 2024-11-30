@@ -1,0 +1,119 @@
+.chat-helper {
+    position: fixed;
+    right: 120px;
+    bottom: 40px;
+    z-index: 50;
+
+    &__button {
+        background-color: transparent;
+        cursor: pointer;
+        transition: all 0.15s linear;
+
+        &:hover {
+            transform: scale(1.1);
+        }
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        right: 0;
+        bottom: -40px;
+        width: 430px;
+        height: 547px;
+        border-radius: 20px 20px 0px 0px;
+        background-color: rgba(102, 136, 237, 1);
+        animation: item-view 0.5s linear forwards;
+    }
+
+    &__list {
+        overflow: auto;
+        max-height: 508px;
+        height: 100%;
+        padding: 10px 30px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        &::-webkit-scrollbar {
+            opacity: 0;
+            width: 0px;
+        }
+    }
+
+    &__item {
+        padding: 8px 15px;
+        font-family: Dimica;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 20px;  
+        background-color: rgba(217, 217, 217, 1);
+        max-width: 280px;
+        border-radius: 0px 24px 24px 24px; 
+
+        &_bot {
+            animation: item-view 0.5s linear 0.8s forwards;
+            opacity: 0;
+        }
+
+        &_user {
+            border-radius: 24px 0px 24px 24px; 
+            align-self: flex-end;
+            animation: item-view 0.5s linear 0.3s forwards;
+            opacity: 0;
+        }
+    }
+
+    &__label {
+        padding: 13px 13px;
+        height: 39px;
+        font-family: Dimica;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 20px;
+        border-radius: 9px 9px 0 0;
+        background-color: rgba(217, 217, 217, 1);
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    &__close {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        padding: 10px;
+        height: 43px;
+        width: 43px;
+        border-radius: 50%;
+        background-color: rgba(217, 217, 217, 1);
+    }
+
+    &__block-ques {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 5px;
+    }
+    
+    &__ques {
+        padding: 8px 15px;
+        max-width: 308px;
+        border-radius: 23px;
+        font-family: Dimica;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 20px;
+        background-color: rgba(223, 182, 198, 1);
+        cursor: pointer;
+    }
+}
+
+
+@keyframes item-view {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}

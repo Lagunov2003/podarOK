@@ -7,12 +7,12 @@ function EmailSend({ setModalEmail }) {
         <div className="email-send">
             <div className="email-send__content">
                 <p className="email-send__text">Укажите почту для восстановления пароля. Мы отправим на неё письмо!</p>
-                <form action="" id="email-send" className="email-send__form">
+                <div className="email-send__form">
                     <input type="email" className="email-send__input" placeholder="Почта" />
-                    <button className="email-send__submit button-style" onClick={() => setModalEmail(true)}>
+                    <button className="email-send__submit button-style" onClick={() => setModalEmail(false)}>
                         Готово
                     </button>
-                </form>
+                </div>
                 <button className="email-send__cancle" onClick={() => setModalEmail(false)}>
                     <svg width="23.000000" height="23.000000" viewBox="0 0 23 23" fill="none">
                         <defs />
