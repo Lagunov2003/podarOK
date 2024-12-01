@@ -3,6 +3,7 @@ package ru.uniyar.podarok.repositories;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.uniyar.podarok.entities.Gift;
@@ -53,4 +54,81 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
 
     @Query("SELECT g FROM Gift g WHERE g.giftGroup.id = :groupId")
     List<Gift> findGiftsByGroupId(@Param("groupId") Long groupId);
+
+    @Modifying
+    @Query(value = "UPDATE Gift " +
+            "SET price=:price, recommendation_id=:recommendation_id, description=:description, name=:name, group_id=:group_id " +
+            "WHERE id=:id", nativeQuery = true)
+    void updateGift(@Param("id") Long id,
+                  @Param("price") BigDecimal price,
+                  @Param("recommendation_id") Long recommendationId,
+                  @Param("description") String description,
+                  @Param("name") String name,
+                  @Param("group_id") Long groupId);
+
+    @Modifying
+    @Query(value = "UPDATE gift_category SET category_id=:category_id " +
+            "WHERE gift_id=:gift_id", nativeQuery = true)
+    void updateGiftCategory(@Param("gift_id") Long giftId, @Param("category_id") Long categoryId);
+
+    @Modifying
+    @Query(value = "UPDATE gift_occasion SET occasion_id=:occasion_id " +
+            "WHERE gift_id=:gift_id", nativeQuery = true)
+    void updateGiftOccasion(@Param("gift_id") Long giftId, @Param("occasion_id") Long occasionId);
+
+    @Modifying
+    @Query(value = "UPDATE Gift_Photo SET photo_url=:photo_url " +
+            "WHERE gift_id=:gift_id", nativeQuery = true)
+    void updateGiftPhoto(@Param("gift_id") Long giftId, @Param("photo_url") String photoUrl);
+
+    @Modifying
+    @Query(value = "UPDATE Gift_Feature " +
+            "SET item_name=:item_name, item_value=:item_value " +
+            "WHERE gift_id=:gift_id", nativeQuery = true)
+    void updateGiftFeature(@Param("gift_id") Long giftId,
+                         @Param("item_name") String itemName,
+                         @Param("item_value") String itemValue);
+
+    @Modifying
+    @Query(value = "UPDATE Gift_Recommendations " +
+            "SET gender=:gender, min_age=:min_age, max_age=:max_age " +
+            "WHERE id=:id", nativeQuery = true)
+    void updateGiftRecommendation(@Param("id") Long id,
+                                  @Param("gender") Boolean gender,
+                                  @Param("min_age") Long minAge,
+                                  @Param("max_age") Long maxAge);
+
+
+    @Query(value = "INSERT INTO Gift(price, recommendation_id, description, name, group_id) " +
+            "VALUES(:price, :recommendation_id, :description, :name, :group_id) RETURNING id", nativeQuery = true)
+    Integer addGift(@Param("price") BigDecimal price,
+                    @Param("recommendation_id") Long recommendationId,
+                    @Param("description") String description,
+                    @Param("name") String name,
+                    @Param("group_id") Long groupId);
+
+    @Modifying
+    @Query(value = "INSERT INTO gift_category(gift_id, category_id) VALUES(:gift_id, :category_id) ", nativeQuery = true)
+    void addGiftCategory(@Param("gift_id") Long giftId, @Param("category_id") Long categoryId);
+
+    @Modifying
+    @Query(value = "INSERT INTO gift_occasion(gift_id, occasion_id) VALUES(:gift_id, :occasion_id)", nativeQuery = true)
+    void addGiftOccasion(@Param("gift_id") Long giftId, @Param("occasion_id") Long occasionId);
+
+    @Modifying
+    @Query(value = "INSERT INTO Gift_Photo(gift_id, photo_url) VALUES(:gift_id, :photo_url)", nativeQuery = true)
+    void addGiftPhoto(@Param("gift_id") Long giftId, @Param("photo_url") String photoUrl);
+
+    @Modifying
+    @Query(value = "INSERT INTO Gift_Feature(gift_id, item_name, item_value) " +
+            "VALUES(:gift_id, :item_name, :item_value)", nativeQuery = true)
+    void addGiftFeature(@Param("gift_id") Long giftId,
+                           @Param("item_name") String itemName,
+                           @Param("item_value") String itemValue);
+
+    @Query(value = "INSERT INTO Gift_Recommendations(gender, min_age, max_age) " +
+            "VALUES(:gender, :min_age, :max_age) RETURNING id", nativeQuery = true)
+    Integer addGiftRecommendation(@Param("gender") Boolean gender,
+                                  @Param("min_age") Long minAge,
+                                  @Param("max_age") Long maxAge);
 }

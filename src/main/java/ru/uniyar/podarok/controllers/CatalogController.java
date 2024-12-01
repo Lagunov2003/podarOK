@@ -18,8 +18,6 @@ import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.services.CatalogService;
 
-import java.util.List;
-
 @Controller
 @AllArgsConstructor
 public class CatalogController {

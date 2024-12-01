@@ -6,16 +6,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.uniyar.podarok.dtos.AddGiftDto;
+import ru.uniyar.podarok.dtos.ChangeGiftDto;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.GiftFilterRequest;
-import ru.uniyar.podarok.entities.Category;
-import ru.uniyar.podarok.entities.Gift;
-import ru.uniyar.podarok.entities.Occasion;
+import ru.uniyar.podarok.entities.*;
 import ru.uniyar.podarok.repositories.GiftRepository;
 import ru.uniyar.podarok.utils.GiftDtoConverter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -77,5 +78,43 @@ public class GiftService {
             throw new EntityNotFoundException("Подарок с Id" + id + "не найден!");
         }
         giftRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void updateGift(ChangeGiftDto changeGiftDto) throws EntityNotFoundException {
+        Long recommendation_id = getGiftById(changeGiftDto.getId()).getRecommendation().getId();
+        giftRepository.updateGift(changeGiftDto.getId(), changeGiftDto.getPrice(), recommendation_id, changeGiftDto.getDescription(), changeGiftDto.getName(), changeGiftDto.getGroupId());
+        for (String photoUrl : changeGiftDto.getPhotos()) {
+            giftRepository.updateGiftPhoto(changeGiftDto.getId(), photoUrl);
+        }
+        for (Long categoryId : changeGiftDto.getCategories()) {
+            giftRepository.updateGiftCategory(changeGiftDto.getId(), categoryId);
+        }
+        for (Long occasionId : changeGiftDto.getOccasions()) {
+            giftRepository.updateGiftOccasion(changeGiftDto.getId(), occasionId);
+        }
+        for (Map.Entry<String, String> feature : changeGiftDto.getFeatures().entrySet()) {
+            giftRepository.updateGiftFeature(changeGiftDto.getId(), feature.getKey(), feature.getValue());
+        }
+        giftRepository.updateGiftRecommendation(recommendation_id, changeGiftDto.getGender(), changeGiftDto.getMinAge(), changeGiftDto.getMaxAge());
+    }
+
+    @Transactional
+    public void addGift(AddGiftDto addGiftDto) {
+        Long recommendation_id = Long.valueOf(giftRepository.addGiftRecommendation(addGiftDto.getGender(), addGiftDto.getMinAge(), addGiftDto.getMaxAge()));
+        Long gift_id = Long.valueOf(giftRepository.addGift(addGiftDto.getPrice(), recommendation_id, addGiftDto.getDescription(), addGiftDto.getName(), addGiftDto.getGroupId()));
+        for (String photoUrl : addGiftDto.getPhotos()) {
+            giftRepository.addGiftPhoto(gift_id, photoUrl);
+        }
+        for (Long categoryId : addGiftDto.getCategories()) {
+            giftRepository.addGiftCategory(gift_id, categoryId);
+        }
+        for (Long occasionId : addGiftDto.getOccasions()) {
+            giftRepository.addGiftOccasion(gift_id, occasionId);
+        }
+        for (Map.Entry<String, String> feature : addGiftDto.getFeatures().entrySet()) {
+            giftRepository.addGiftFeature(gift_id, feature.getKey(), feature.getValue());
+        }
+
     }
 }
