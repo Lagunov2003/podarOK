@@ -50,7 +50,7 @@ public class SecurityConfig {
                                 "/currentOrders", "/order", "/addToFavorites"
                         ).authenticated()
                         .requestMatchers(
-                                "/changeOrderStatus", "/getOrders", "/deleteGift"
+                                "/changeOrderStatus", "/getOrders", "/deleteGift", "/changeGift", "/addGift", "/addGroup"
                         ).hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)
