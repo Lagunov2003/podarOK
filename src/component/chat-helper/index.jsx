@@ -26,7 +26,7 @@ const answer = [
 const listDefault = [
     { type: "", value: "Здравствуйте, я ваш помощник из службы поддержки." },
     { type: "", value: "Какой у вас вопрос?" },
-]
+];
 
 function ChatHelper() {
     const [list, setList] = useState([
@@ -41,14 +41,14 @@ function ChatHelper() {
     };
 
     const handleClose = () => {
-        setShow(false)
-        setList(listDefault)
-    }
+        setShow(false);
+        setList(listDefault);
+    };
 
     return (
         <div className="chat-helper">
             <button className="chat-helper__button" onClick={() => setShow(true)}>
-                <img src="img/chat-helper.svg" alt="" />
+                <img src="/img/chat-helper.svg" alt="" />
             </button>
             {show == true && (
                 <div className="chat-helper__content">

@@ -35,7 +35,7 @@ const textView = [
     },
 ];
 
-function Order() {
+function OrderAccount() {
     const [typeView, setTypeView] = useState(0);
     const [openItem, setOpenItem] = useState(false);
     const [indexItem, setIndexItem] = useState(-1);
@@ -210,4 +210,4 @@ function Order() {
     );
 }
 
-export default Order;
+export default OrderAccount;

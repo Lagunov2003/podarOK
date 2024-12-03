@@ -1,0 +1,16 @@
+.wrapper-order {
+
+    &__title {
+        margin-bottom: 46px;
+        font-family: Dela;
+        font-size: 64px;
+        font-weight: 400;
+        line-height: 83px;      
+        color: #FFFFFF; 
+    }
+
+    &__content {
+        margin: 0 120px;
+        // display: flex;
+    }
+}

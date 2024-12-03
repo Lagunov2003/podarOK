@@ -84,6 +84,7 @@
             gap: 5px;
             position: relative;
             cursor: pointer;
+            
             &:has(input:checked) {
                 &::before {
                     position: absolute;

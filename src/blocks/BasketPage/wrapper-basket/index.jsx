@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
 import BasketItem from "../basket-item";
+import { Link } from "react-router-dom";
 
 function WrapperBasket({ list }) {
     const [selectItem, setSelectItem] = useState([...list]);
@@ -60,7 +61,7 @@ function WrapperBasket({ list }) {
                                         </span>
                                     </div>
                                     <p className="basket-page__info-label">Цена без учета доставки и промокодов</p>
-                                    <button className="basket-page__info-button">К оформлению</button>
+                                    <Link to={"/order/123"} className="basket-page__info-button">К оформлению</Link>
                                 </>
                             )}
                         </div>

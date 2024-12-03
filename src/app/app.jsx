@@ -12,8 +12,9 @@ import ChatHelper from "../blocks/AccountPage/chat-helper";
 import Favorite from "../blocks/AccountPage/favorite";
 import Catalog from "./catalog";
 import Basket from "./basket";
-import Order from "../blocks/AccountPage/order";
+import OrderAccount from "../blocks/AccountPage/order";
 import Card from "./card";
+import Order from "./order";
 
 const router = createBrowserRouter([
     {
@@ -38,7 +39,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "order",
-                        element: <Order />,
+                        element: <OrderAccount />,
                     },
                     {
                         path: "favorite",
@@ -82,6 +83,7 @@ function App() {
                 <Route path="catalog" element={<Catalog />} />
                 <Route path="basket" element={<Basket />} />
                 <Route path="article/:id" element={<Card />} />
+                <Route path="order/:id" element={<Order />} />
             </Route>
         </Routes>
     </BrowserRouter>
