@@ -6,7 +6,9 @@ function WrapperOrder(props) {
         <section className="wrapper-order">
             <div className="wrapper-order__content">
                 <h1 className="wrapper-order__title">Оформление заказа</h1>
-                {props.children}
+                <div className="wrapper-order__block">
+                    {props.children}
+                </div>
             </div>
         </section>
     );

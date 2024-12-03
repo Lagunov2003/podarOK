@@ -14,7 +14,7 @@ module.exports = (env) => {
         output: {
             path: path.resolve(__dirname, "dist"),
             publicPath: "/",
-            assetModuleFilename: 'assets/[name][ext]',
+            // assetModuleFilename: 'assets/[name][ext]',
             clean: true,
         },
         devServer: {

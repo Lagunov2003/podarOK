@@ -11,6 +11,10 @@
 
     &__content {
         margin: 0 120px;
-        // display: flex;
+    }
+
+    &__block {
+        display: flex;
+        gap: 47px;
     }
 }
