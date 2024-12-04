@@ -16,13 +16,16 @@ import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
 import ru.uniyar.podarok.dtos.CurrentUserDto;
 import ru.uniyar.podarok.dtos.RegistrationUserDto;
 import ru.uniyar.podarok.dtos.UpdateUserDto;
+import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.Role;
 import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.*;
 import ru.uniyar.podarok.repositories.UserRepository;
 import ru.uniyar.podarok.utils.JwtTokenUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +54,7 @@ class UserServiceTest {
 
     @Mock
     private JwtTokenUtils jwtTokenUtils;
+
 
     @Spy
     @InjectMocks
@@ -322,6 +326,28 @@ class UserServiceTest {
 
         assertThrows(UserNotFoundException.class, () -> userService.confirmChangePassword(token, changePasswordDto));
         Mockito.verify(userRepository, Mockito.never()).save(any(User.class));
+    }
+
+    @Test
+    void UserService_AddGiftToFavorites_ShouldAddGiftToFavoritesSuccessfully() throws UserNotFoundException, UserNotAuthorizedException {
+        Gift gift = new Gift();
+        gift.setId(1L);
+        gift.setName("test");
+        gift.setPrice(BigDecimal.valueOf(100));
+
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        Mockito.when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.save(user)).thenReturn(user);
+
+        userService.addGiftToFavorites(gift);
+
+        assertTrue(user.getFavorites().contains(gift));
+        Mockito.verify(userRepository, Mockito.times(1)).save(user);
     }
 }
 

@@ -34,7 +34,7 @@ public class UserOrdersControllerTest {
     private UserOrdersService userOrdersService;
 
     @Test
-    void UserOrdersController_GetNotifications_ReturnsNotifications() throws Exception {
+    void UserOrdersController_GetNotifications_ReturnsStatusIsOk() throws Exception {
         Notification notification1 = new Notification();
         notification1.setId(1L);
         Notification notification2 = new Notification();
@@ -48,8 +48,9 @@ public class UserOrdersControllerTest {
                 .andExpect(jsonPath("$[1].id").value("2"));
     }
 
+
     @Test
-    void UserOrdersController_GetFavorites_ReturnsFavorties() throws Exception {
+    void UserOrdersController_GetFavorites_ReturnsStatusIsOk() throws Exception {
         GiftDto giftDto1 = new GiftDto();
         giftDto1.setId(1L);
         GiftDto giftDto2 = new GiftDto();
@@ -64,7 +65,7 @@ public class UserOrdersControllerTest {
     }
 
     @Test
-    void UserOrdersController_GetOrdersHistory_ReturnsOrders() throws Exception {
+    void UserOrdersController_GetOrdersHistory_ReturnsStatusIsOk() throws Exception {
         OrderDto orderDto1 = new OrderDto();
         orderDto1.setId(1L);
         OrderDto orderDto2 = new OrderDto();
@@ -80,7 +81,7 @@ public class UserOrdersControllerTest {
     }
 
     @Test
-    void UserOrdersController_GetCurrentOrders_ReturnsOrders() throws Exception {
+    void UserOrdersController_GetCurrentOrders_ReturnsStatusIsOk() throws Exception {
         OrderDto orderDto1 = new OrderDto();
         orderDto1.setId(1L);
         OrderDto orderDto2 = new OrderDto();
@@ -95,7 +96,7 @@ public class UserOrdersControllerTest {
     }
 
     @Test
-    void UserOrdersController_GetNotifications_ThrowsUserNotAuthorizedException() throws Exception {
+    void UserOrdersController_GetNotifications_ReturnsStatusIsUnauthorized() throws Exception {
         doThrow(new UserNotAuthorizedException("Пользователь не авторизован!"))
                 .when(userOrdersService).getUsersNotifications();
 
@@ -105,11 +106,71 @@ public class UserOrdersControllerTest {
     }
 
     @Test
-    void UserOrdersController_GetNotifications_ThrowsUserNotFoundException() throws Exception {
+    void UserOrdersController_GetNotifications_ReturnsStatusIsNotFound() throws Exception {
+        doThrow(new UserNotFoundException("Пользователь не найден!"))
+                .when(userOrdersService).getUsersNotifications();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/notifications"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Пользователь не найден!"));
+    }
+
+    @Test
+    void UserOrdersController_GetFavorites_ReturnsStatusIsUnauthorized() throws Exception {
+        doThrow(new UserNotAuthorizedException("Пользователь не авторизован!"))
+                .when(userOrdersService).getUsersFavorites();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/favorites"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Пользователь не авторизован!"));
+    }
+
+    @Test
+    void UserOrdersController_GetFavorites_ReturnsStatusIsNotFound() throws Exception {
         doThrow(new UserNotFoundException("Пользователь не найден!"))
                 .when(userOrdersService).getUsersFavorites();
 
         mockMvc.perform(MockMvcRequestBuilders.get("/favorites"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Пользователь не найден!"));
+    }
+
+    @Test
+    void UserOrdersController_GetCurrentOrders_ReturnsStatusIsNotFound() throws Exception {
+        doThrow(new UserNotFoundException("Пользователь не найден!"))
+                .when(userOrdersService).getUsersCurrentOrders();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/currentOrders"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Пользователь не найден!"));
+    }
+
+    @Test
+    void UserOrdersController_GetCurrentOrders_ReturnsStatusIsUnauthorized() throws Exception {
+        doThrow(new UserNotAuthorizedException("Пользователь не авторизован!"))
+                .when(userOrdersService).getUsersCurrentOrders();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/currentOrders"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Пользователь не авторизован!"));
+    }
+
+    @Test
+    void UserOrdersController_GetOrdersHistory_ReturnsStatusIsUnauthorized() throws Exception {
+        doThrow(new UserNotAuthorizedException("Пользователь не авторизован!"))
+                .when(userOrdersService).getUsersOrdersHistory();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/ordersHistory"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Пользователь не авторизован!"));
+    }
+
+    @Test
+    void UserOrdersController_GetOrdersHistory_ReturnsStatusIsNotDount() throws Exception {
+        doThrow(new UserNotFoundException("Пользователь не найден!"))
+                .when(userOrdersService).getUsersOrdersHistory();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/ordersHistory"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Пользователь не найден!"));
     }

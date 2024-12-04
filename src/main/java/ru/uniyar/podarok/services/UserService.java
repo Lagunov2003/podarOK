@@ -13,7 +13,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.uniyar.podarok.dtos.*;
+import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
+import ru.uniyar.podarok.dtos.CurrentUserDto;
+import ru.uniyar.podarok.dtos.RegistrationUserDto;
+import ru.uniyar.podarok.dtos.UpdateUserDto;
+import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.*;
 import ru.uniyar.podarok.repositories.UserRepository;
@@ -59,6 +63,7 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
         user.setFirstName(registrationUserDto.getFirstName());
         user.setRegistrationDate(LocalDate.now());
+        user.setGender(true);
         user.setRoles(List.of(roleService.getUserRole()));
         emailService.sendWelcomeLetter(registrationUserDto.getEmail(), registrationUserDto.getFirstName());
         return userRepository.save(user);
@@ -148,6 +153,13 @@ public class UserService implements UserDetailsService {
         String email = jwtTokenUtils.getUserEmail(token);
         User user = findByEmail(email);
         user.setPassword(passwordEncoder.encode(changeUserPasswordDto.getPassword()));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void addGiftToFavorites(Gift gift) throws UserNotFoundException, UserNotAuthorizedException {
+        User user = getCurrentAuthenticationUser();
+        user.getFavorites().add(gift);
         userRepository.save(user);
     }
 }

@@ -1,3 +1,5 @@
+SET datestyle = 'DMY';
+
 TRUNCATE TABLE cart RESTART IDENTITY CASCADE;
 TRUNCATE TABLE category RESTART IDENTITY CASCADE;
 TRUNCATE TABLE confirmation_code RESTART IDENTITY CASCADE;
@@ -16,7 +18,7 @@ TRUNCATE TABLE roles RESTART IDENTITY CASCADE;
 TRUNCATE TABLE users RESTART IDENTITY CASCADE;
 TRUNCATE TABLE users_roles RESTART IDENTITY CASCADE;
 
-INSERT INTO roles(name) values ('ROLE_USER'), ('ROLE_ ADMIN');
+INSERT INTO roles(name) values ('ROLE_ADMIN'), ('ROLE_USER');
 INSERT INTO category(name) VALUES ('Спорт'), ('Рукоделие'), ('Искусство'), ('Электроника'),
 ('Охота и рыбалка'), ('Аксессуары'), ('Путешествия'), ('Музыка'), ('Кулинария'),
 ('Машины'), ('Мода'), ('Игрушки'), ('Товары для дома'), ('Красота'), ('Книги');
@@ -990,6 +992,7 @@ INSERT INTO gift_photo(gift_id, photo_url) VALUES
 (46, './Свадьба/3.10');
 
 INSERT INTO users(date_of_birth,gender,registration_date,email,first_name,last_name,password,phone_number) VALUES
+    ('01-10-2002', 'true', '01-09-2024', 'artem.tankist.2015@yandex.ru', 'Артём', 'Кудринский', '$2a$10$C5ea89sJseTb/eoN6Ih.E.OYhkxu/RGawIpyN9tu/yEwdO0UI2Mmm', '+77777777777'),
 	('17-05-1995', 'false', '02-11-2024', 'elvira.morozov@gmail.com', 'Эльвира', 'Морозова', '$2a$10$C5ea89sJseTb/eoN6Ih.E.OYhkxu/RGawIpyN9tu/yEwdO0UI2Mmm', '+79271371057'),
     ('20-09-2002', 'false', '18-10-2024', 'larisa.popov@outlook.com', 'Лариса', 'Попова', '$2a$10$C5ea89sJseTb/eoN6Ih.E.OYhkxu/RGawIpyN9tu/yEwdO0UI2Mmm', '+79286477258'),
     ('14-01-1975', 'false', '01-11-2024', 'darina.sokolov@outlook.com', 'Дарина', 'Соколов', '$2a$10$C5ea89sJseTb/eoN6Ih.E.OYhkxu/RGawIpyN9tu/yEwdO0UI2Mmm', '+79593478208'),
@@ -1207,3 +1210,72 @@ INSERT INTO orders(delivery_date,gift_id,user_id,information, status) VALUES
 ('10-11-2024', 21, 25, 'г.Ярославль въезд Косиора д. 6 кв. 8', 'Выполнен'),
 ('26-10-2024', 33, 40, 'г.Ярославль шоссе Ладыгина д. 57 кв. 9', 'Выполнен'),
 ('08-11-2024', 36, 4, 'г.Ярославль ул. Уральская д. 30 кв. 10', 'Выполнен');
+
+
+INSERT INTO users_roles(role_id, user_id) VALUES
+(1, 1),
+(2, 2),
+(2, 3),
+(2, 4),
+(2, 5),
+(2, 6),
+(2, 7),
+(2, 8),
+(2, 9),
+(2, 10),
+(2, 11),
+(2, 12),
+(2, 13),
+(2, 14),
+(2, 15),
+(2, 16),
+(2, 17),
+(2, 18),
+(2, 19),
+(2, 20),
+(2, 21),
+(2, 22),
+(2, 23),
+(2, 24),
+(2, 25),
+(2, 26),
+(2, 27),
+(2, 28),
+(2, 29),
+(2, 30),
+(2, 31),
+(2, 32),
+(2, 33),
+(2, 34),
+(2, 35),
+(2, 36),
+(2, 37),
+(2, 38),
+(2, 39),
+(2, 40),
+(2, 41),
+(2, 42),
+(2, 43),
+(2, 44),
+(2, 45),
+(2, 46),
+(2, 47),
+(2, 48),
+(2, 49),
+(2, 50),
+(2, 51),
+(2, 52),
+(2, 53),
+(2, 54),
+(2, 55),
+(2, 56),
+(2, 57),
+(2, 58),
+(2, 59),
+(2, 60),
+(2, 61),
+(2, 62),
+(2, 63),
+(2, 64),
+(2, 65),
+(2, 66);

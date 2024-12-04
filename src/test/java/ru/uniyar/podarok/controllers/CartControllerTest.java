@@ -62,6 +62,27 @@ public class CartControllerTest {
                 .andExpect(jsonPath("$[0].gift").value(cartDto.getGift()))
                 .andExpect(jsonPath("$[0].itemCount").value(cartDto.getItemCount()));
     }
+    @Test
+    public void CartController_ShowCart_ReturnsStatusIsBadRequest() throws Exception {
+        mockMvc.perform(get("/cart")
+                .param("page", "0"))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    public void CartController_ShowCart_ReturnsStatusIsUnauthorized() throws Exception {
+        doThrow(new UserNotAuthorizedException("Пользователь не авторизован!")).when(cartService).getCart();
+        mockMvc.perform(get("/cart"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Пользователь не авторизован!"));
+    }
+
+    @Test
+    public void CartController_ShowCart_ReturnsStatusIsNotFound() throws Exception {
+        doThrow(new UserNotFoundException("Пользователь не найден!")).when(cartService).getCart();
+        mockMvc.perform(get("/cart"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Пользователь не найден!"));
+    }
 
     @Test
     public void CartController_AddItem_ReturnsStatusIsOk() throws Exception {
@@ -81,6 +102,26 @@ public class CartControllerTest {
     }
 
     @Test
+    public void CartController_AddItem_ReturnsStatusIsUnauthorized() throws Exception {
+        doThrow(new UserNotAuthorizedException("Пользователь не авторизован!")).when(cartService).addGifts(anyLong(), anyInt());
+        mockMvc.perform(post("/cart")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"giftId\":1,\"itemCount\":2}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Пользователь не авторизован!"));
+    }
+
+    @Test
+    public void CartController_AddItem_ReturnsStatusIsNotFound() throws Exception {
+        doThrow(new UserNotFoundException("Пользователь не найден!")).when(cartService).addGifts(anyLong(), anyInt());
+        mockMvc.perform(post("/cart")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"giftId\":1,\"itemCount\":2}"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Пользователь не найден!"));
+    }
+
+    @Test
     public void CartController_AddItem_ReturnsStatusIsBadRequest_WithNegativeItemCount() throws Exception {
         mockMvc.perform(post("/cart")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -92,7 +133,7 @@ public class CartControllerTest {
     }
 
     @Test
-    public void CartController_UpdateCartItem_VerifiesItemIsDeleted() throws Exception {
+    public void CartController_UpdateCartItem_ReturnsStatusIsOk_VerifiesItemIsDeleted() throws Exception {
         GiftDto giftDto = new GiftDto();
         giftDto.setId(1L);
         CartDto cartDto = new CartDto();
@@ -110,7 +151,7 @@ public class CartControllerTest {
     }
 
     @Test
-    public void CartController_UpdateCartItem_ReturnsStatusIsOk() throws Exception {
+    public void CartController_UpdateCartItem_ReturnsStatusIsOk_VerifiesAmountChanged() throws Exception {
         GiftDto giftDto = new GiftDto();
         giftDto.setId(1L);
         CartDto cartDto = new CartDto();
@@ -130,12 +171,57 @@ public class CartControllerTest {
     }
 
     @Test
+    public void CartController_UpdateCartItem_ReturnsStatusIsBadRequest() throws Exception {
+        mockMvc.perform(put("/cart")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"giftId\":1,\"itemCount\":-1}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Количество подарков должно быть не меньше 0!"));
+    }
+
+    @Test
+    public void CartController_UpdateCartItem_ReturnsStatusIsUnauthorized() throws Exception {
+        doThrow(new UserNotAuthorizedException("Пользователь не авторизован!")).when(cartService).changeGiftsAmount(anyLong(), anyInt());
+        mockMvc.perform(put("/cart")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"giftId\":1,\"itemCount\":2}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Пользователь не авторизован!"));
+    }
+
+    @Test
+    public void CartController_UpdateCartItem_ReturnsStatusIsNotFound() throws Exception {
+        doThrow(new UserNotFoundException("Пользователь не найден!")).when(cartService).changeGiftsAmount(anyLong(), anyInt());
+        mockMvc.perform(put("/cart")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"giftId\":1,\"itemCount\":2}"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Пользователь не найден!"));
+    }
+
+    @Test
     public void CartController_CleanCart_ReturnsStatusIsOk() throws Exception {
         mockMvc.perform(delete("/cart"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Корзина очищена!"));
 
         verify(cartService, times(1)).cleanCart();
+    }
+
+    @Test
+    public void CartController_CleanCart_ReturnsStatusIsUnauthorized() throws Exception {
+        doThrow(new UserNotAuthorizedException("Пользователь не авторизован!")).when(cartService).cleanCart();
+        mockMvc.perform(delete("/cart"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Пользователь не авторизован!"));
+    }
+
+    @Test
+    public void CartController_CleanCart_ReturnsStatusIsNotFound() throws Exception {
+        doThrow(new UserNotFoundException("Пользователь не найден!")).when(cartService).cleanCart();
+        mockMvc.perform(delete("/cart"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Пользователь не найден!"));
     }
 
     @Test
@@ -153,7 +239,18 @@ public class CartControllerTest {
     }
 
     @Test
-    void CartController_AddOrder_ThrowsUserNotAuthorizedException() throws Exception {
+    public void CartController_AddOrder_ReturnsStatusIsBadRequest() throws Exception {
+        List<OrderItemDto> itemDtos = Collections.emptyList();
+        OrderRequestDto orderRequestDto = new OrderRequestDto(itemDtos);
+        mockMvc.perform(post("/order")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(orderRequestDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Количество подарков должно быть не меньше 1!"));
+    }
+
+    @Test
+    void CartController_AddOrder_ReturnsStatusIsUnauthorized() throws Exception {
         OrderRequestDto requestDto = new OrderRequestDto(List.of(new OrderItemDto(1, 2L)));
         doThrow(new UserNotAuthorizedException("Пользователь не авторизован!"))
                 .when(cartService).placeOrder(any(OrderRequestDto.class));
@@ -168,7 +265,7 @@ public class CartControllerTest {
     }
 
     @Test
-    void CartController_AddOrder_ThrowsUserNotFoundException() throws Exception {
+    void CartController_AddOrder_ReturnsStatusIsNotFound() throws Exception {
         OrderRequestDto requestDto = new OrderRequestDto(List.of(new OrderItemDto(1, 2L)));
         doThrow(new UserNotFoundException("Пользователь не найден!"))
                 .when(cartService).placeOrder(any(OrderRequestDto.class));

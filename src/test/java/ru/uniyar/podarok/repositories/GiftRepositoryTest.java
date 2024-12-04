@@ -1,6 +1,7 @@
 package ru.uniyar.podarok.repositories;
 
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +11,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.uniyar.podarok.entities.*;
-import ru.uniyar.podarok.repositories.projections.GiftProjection;
 import ru.uniyar.podarok.testEntities.GiftCategory;
+import ru.uniyar.podarok.testEntities.GiftCategoryId;
 import ru.uniyar.podarok.testEntities.GiftOccasion;
 import ru.uniyar.podarok.testRepositories.*;
 
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.math.MathContext;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,6 +43,10 @@ public class GiftRepositoryTest {
     private GiftOccasionRepository giftOccasionRepository;
     @Autowired
     private OccasionRepository occasionRepository;
+    @Autowired
+    private GiftPhotoRepository giftPhotoRepository;
+    @Autowired
+    private GiftFeatureRepository giftFeatureRepository;
     private Pageable pageable;
     private Gift gift1 = new Gift();
     private User user = new User();
@@ -75,9 +79,9 @@ public class GiftRepositoryTest {
         category2 = categoryRepository.save(category2);
         entityManager.flush();
 
-        gift1.setCategories(new ArrayList<>(List.of(category2)));
+        gift1.setCategories(new HashSet<>(List.of(category2)));
         gift1.setName("test");
-        gift1.setOccasions(new ArrayList<>(List.of(occasion)));
+        gift1.setOccasions(new HashSet<>(List.of(occasion)));
         gift1.setPrice(BigDecimal.valueOf(90));
         gift1 = giftRepository.save(gift1);
         entityManager.flush();
@@ -92,7 +96,7 @@ public class GiftRepositoryTest {
         giftRecommendation.setMaxAge(101);
         giftRecomendationsRepository.save(giftRecommendation);
 
-        gift1.setCategories(new ArrayList<>(List.of(category2)));
+        gift1.setCategories(new HashSet<>(List.of(category2)));
         gift1.setRecommendation(giftRecommendation);
         gift1 = giftRepository.save(gift1);
 
@@ -119,11 +123,11 @@ public class GiftRepositoryTest {
 
     @Test
     public void GiftRepository_FindAllGifts_ReturnsGift() {
-        Page<GiftProjection> giftsPage = giftRepository.findAllGifts(pageable);
+        Page<Gift> giftsPage = giftRepository.findAllGifts(pageable);
 
         assertNotNull(giftsPage);
         assertTrue(giftsPage.hasContent());
-        GiftProjection actualGift = giftsPage.getContent().get(0);
+        Gift actualGift = giftsPage.getContent().get(0);
         assertEquals(gift1.getName(), actualGift.getName());
         assertEquals(gift1.getPrice(), actualGift.getPrice());
     }
@@ -136,7 +140,7 @@ public class GiftRepositoryTest {
         List<Long> categories = List.of(1L, 2L);
         List<Long> occasions = List.of(1L);
 
-        Page<GiftProjection> giftsPage = giftRepository.findGiftsByFilter(
+        Page<Gift> giftsPage = giftRepository.findGiftsByFilter(
                 budget, gender, age, categories, occasions, pageable);
 
         assertNotNull(giftsPage);
@@ -153,5 +157,178 @@ public class GiftRepositoryTest {
         Gift result = gift.get();
         assertThat(result).isNotNull();
         assertEquals("test", gift1.getName());
+    }
+
+    @Test
+    @Transactional
+    public void GiftRepository_UpdateGift_VerifiesGiftUpdated() {
+        giftRepository.updateGift(1L, BigDecimal.valueOf(200), 1L, "Updated Description", "Updated Gift", 2L);
+        entityManager.flush();
+        entityManager.clear();
+
+        Gift updatedGift = giftRepository.findById(1L).get();
+        assertNotNull(updatedGift);
+        assertEquals(0, BigDecimal.valueOf(200).compareTo(updatedGift.getPrice()));
+        assertEquals("Updated Description", updatedGift.getDescription());
+        assertEquals("Updated Gift", updatedGift.getName());
+        assertEquals(2L, updatedGift.getGiftGroup().getId());
+    }
+
+    @Test
+    @Transactional
+    public void GiftRepository_AddGift_VerifiesGiftAdded() {
+        Integer addedGiftId = giftRepository.addGift(BigDecimal.valueOf(200), 1L, "Updated Description", "Updated Gift", 2L);
+        entityManager.flush();
+        entityManager.clear();
+
+        Gift addedGift = giftRepository.findById(Long.valueOf(addedGiftId)).get();
+        assertNotNull(addedGift);
+        assertEquals(0, BigDecimal.valueOf(200).compareTo(addedGift.getPrice()));
+        assertEquals("Updated Description", addedGift.getDescription());
+        assertEquals("Updated Gift", addedGift.getName());
+        assertEquals(2L, addedGift.getGiftGroup().getId());
+    }
+
+    @Test
+    @Transactional
+    public void GiftRepository_UpdateGiftCategory_VerifiesCategoryUpdated() {
+        GiftCategory giftCategory = new GiftCategory();
+        giftCategory.setGiftId(1L);
+        giftCategory.setCategoryId(1L);
+        giftCategoryRepository.save(giftCategory);
+        entityManager.flush();
+
+        giftRepository.updateGiftCategory(1L, 2L);
+
+        GiftCategory updatedCategory = giftCategoryRepository.findById(new GiftCategoryId(2L, 1L)).get();
+        assertNotNull(updatedCategory);
+        assertEquals(2L, updatedCategory.getCategoryId());
+    }
+
+    @Test
+    @Transactional
+    public void GiftRepository_AddGiftCategory_VerifiesCategoryAdded() {
+        GiftCategory giftCategory = new GiftCategory();
+        giftCategory.setGiftId(1L);
+        giftCategory.setCategoryId(1L);
+
+        giftRepository.addGiftCategory(1L, 1L);
+
+        GiftCategory addedCategory = giftCategoryRepository.findById(new GiftCategoryId(1L, 1L)).get();
+        assertNotNull(addedCategory);
+        assertEquals(1L, addedCategory.getCategoryId());
+    }
+
+    @Test
+    @Transactional
+    public void GiftRepository_UpdateGiftPhoto_VerifiesPhotoUpdated() {
+        GiftPhoto giftPhoto = new GiftPhoto();
+        Gift gift = new Gift();
+        gift.setId(1L);
+        giftPhoto.setGift(gift);
+        giftPhoto.setPhotoUrl("old_url");
+        giftPhotoRepository.save(giftPhoto);
+        entityManager.flush();
+        entityManager.clear();
+
+        giftRepository.updateGiftPhoto(1L, "new_url");
+
+        GiftPhoto updatedPhoto = giftPhotoRepository.findById(giftPhoto.getId()).get();
+        assertNotNull(updatedPhoto);
+        assertEquals("new_url", updatedPhoto.getPhotoUrl());
+    }
+
+    @Test
+    @Transactional
+    public void GiftRepository_AddGiftPhoto_VerifiesPhotoAdded() {
+        GiftPhoto giftPhoto = new GiftPhoto();
+        Gift gift = new Gift();
+        gift.setId(1L);
+        giftPhoto.setGift(gift);
+        giftPhoto.setPhotoUrl("url");
+
+        giftRepository.addGiftPhoto(1L, "url");
+
+        GiftPhoto addedPhoto = giftPhotoRepository.findById(1L).get();
+        assertNotNull(addedPhoto);
+        assertEquals("url", addedPhoto.getPhotoUrl());
+    }
+
+    @Test
+    @Transactional
+    public void GiftRepository_UpdateGiftFeature_VerifiesFeatureUpdated() {
+        GiftFeature giftFeature = new GiftFeature();
+        Gift gift = new Gift();
+        gift.setId(1L);
+        giftFeature.setGift(gift);
+        giftFeature.setItemName("old_name");
+        giftFeature.setItemValue("old_value");
+        giftFeatureRepository.save(giftFeature);
+        entityManager.flush();
+        entityManager.clear();
+
+        giftRepository.updateGiftFeature(1L, "new_name", "new_value");
+
+        GiftFeature updatedFeature = giftFeatureRepository.findById(giftFeature.getId()).get();
+        assertNotNull(updatedFeature);
+        assertEquals("new_name", updatedFeature.getItemName());
+        assertEquals("new_value", updatedFeature.getItemValue());
+    }
+
+    @Test
+    @Transactional
+    public void GiftRepository_AddGiftFeature_VerifiesFeatureAdded() {
+        GiftFeature giftFeature = new GiftFeature();
+        Gift gift = new Gift();
+        gift.setId(1L);
+        giftFeature.setGift(gift);
+        giftFeature.setItemName("name");
+        giftFeature.setItemValue("value");
+
+        giftRepository.addGiftFeature(1L, "name", "value");
+
+        GiftFeature addedFeature = giftFeatureRepository.findById(1L).get();
+        assertNotNull(addedFeature);
+        assertEquals("name", addedFeature.getItemName());
+        assertEquals("value", addedFeature.getItemValue());
+    }
+
+    @Test
+    @Transactional
+    public void GiftRepository_UpdateGiftRecommendation_VerifiesRecommendationUpdated() {
+        GiftRecommendation recommendation = new GiftRecommendation();
+        recommendation.setId(1L);
+        recommendation.setGender(false);
+        recommendation.setMinAge(18);
+        recommendation.setMaxAge(30);
+        giftRecomendationsRepository.save(recommendation);
+        entityManager.flush();
+        entityManager.clear();
+
+        giftRepository.updateGiftRecommendation(1L, true, 25L, 35L);
+
+        GiftRecommendation updatedRecommendation = giftRecomendationsRepository.findById(1L).get();
+        assertNotNull(updatedRecommendation);
+        assertTrue(updatedRecommendation.getGender());
+        assertEquals(25, updatedRecommendation.getMinAge());
+        assertEquals(35, updatedRecommendation.getMaxAge());
+    }
+
+    @Test
+    @Transactional
+    public void GiftRepository_AddGiftRecommendation_VerifiesRecommendationAdded() {
+        GiftRecommendation recommendation = new GiftRecommendation();
+        recommendation.setId(2L);
+        recommendation.setGender(false);
+        recommendation.setMinAge(18);
+        recommendation.setMaxAge(30);
+
+        giftRepository.addGiftRecommendation(true, 18L, 30L);
+
+        GiftRecommendation addedRecommendation = giftRecomendationsRepository.findById(2L).get();
+        assertNotNull(addedRecommendation);
+        assertTrue(addedRecommendation.getGender());
+        assertEquals(18, addedRecommendation.getMinAge());
+        assertEquals(30, addedRecommendation.getMaxAge());
     }
 }

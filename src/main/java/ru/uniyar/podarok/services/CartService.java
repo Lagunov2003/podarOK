@@ -15,6 +15,7 @@ import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.CartRepository;
+import ru.uniyar.podarok.utils.GiftDtoConverter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,20 +30,10 @@ public class CartService {
     private UserService userService;
     private GiftService giftService;
     private OrderService orderService;
+    private GiftDtoConverter giftDtoConverter;
 
     private CartDto convertToCartDto(Cart cart) {
-        Gift gift = cart.getGift();
-        String photoUrl = (gift.getPhotos() != null && !gift.getPhotos().isEmpty())
-                ? gift.getPhotos().get(0).getPhotoUrl()
-                : null;
-
-        GiftDto giftDto = new GiftDto(
-                gift.getId(),
-                gift.getName(),
-                gift.getPrice(),
-                photoUrl
-        );
-
+        GiftDto giftDto = giftDtoConverter.convertToGiftDto(cart.getGift());
         return new CartDto(cart.getItemCount(), giftDto);
     }
 
@@ -71,16 +62,17 @@ public class CartService {
     }
 
     @Transactional
-    public void changeGiftsAmount(Long giftId, Integer count) throws NoSuchElementException {
+    public void changeGiftsAmount(Long giftId, Integer count) throws UserNotFoundException, UserNotAuthorizedException, NoSuchElementException {
         Cart cartItem = cartRepository.findItemByGiftId(giftId)
-                .orElseThrow(() -> new NoSuchElementException("Подарок с ID " + giftId + " не найден в корзине."));
+                .orElseThrow(() -> new NoSuchElementException("Подарок с Id " + giftId + " не найден в корзине!"));
         cartItem.setItemCount(count);
         cartRepository.save(cartItem);
     }
 
     @Transactional
-    public void cleanCart() {
-        cartRepository.deleteAll();
+    public void cleanCart() throws UserNotFoundException, UserNotAuthorizedException {
+        User user = userService.getCurrentAuthenticationUser();
+        cartRepository.deleteAllByUserId(user.getId());
     }
 
     public List<CartDto> getCart() throws UserNotFoundException, UserNotAuthorizedException {

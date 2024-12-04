@@ -18,6 +18,7 @@ import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.CartRepository;
+import ru.uniyar.podarok.utils.GiftDtoConverter;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +41,8 @@ public class CartServiceTest {
 
     @Mock
     private OrderService orderService;
+    @Mock
+    private GiftDtoConverter giftDtoConverter;
 
     @InjectMocks
     private CartService cartService;
@@ -47,6 +50,7 @@ public class CartServiceTest {
     private User user;
     private Gift gift;
     private Cart cart;
+    private GiftDto giftDto;
 
     @BeforeEach
     void setUp() {
@@ -63,12 +67,27 @@ public class CartServiceTest {
         cart.setUser(user);
         cart.setGift(gift);
         cart.setItemCount(2);
+
+        giftDto = new GiftDto();
+        giftDto.setId(1L);
+        giftDto.setName("gift");
     }
 
     @Test
     public void CartService_AddGifts_VerifiesGiftIsSaved() throws UserNotFoundException, UserNotAuthorizedException {
         when(giftService.getGiftById(gift.getId())).thenReturn(gift);
         when(userService.getCurrentAuthenticationUser()).thenReturn(user);
+
+        cartService.addGifts(gift.getId(), 3);
+
+        verify(cartRepository, times(1)).save(any(Cart.class));
+    }
+
+    @Test
+    public void CartService_AddGifts_VerifiesGiftAmountIsAdded() throws UserNotFoundException, UserNotAuthorizedException {
+        when(giftService.getGiftById(gift.getId())).thenReturn(gift);
+        when(userService.getCurrentAuthenticationUser()).thenReturn(user);
+        when(cartRepository.findItemByGiftId(gift.getId())).thenReturn(Optional.of(cart));
 
         cartService.addGifts(gift.getId(), 3);
 
@@ -85,7 +104,7 @@ public class CartServiceTest {
     }
 
     @Test
-    public void CartService_ChangeGiftsAmount_ReturnsGiftItemAmount() {
+    public void CartService_ChangeGiftsAmount_ReturnsGiftItemAmount() throws UserNotFoundException, UserNotAuthorizedException {
         when(cartRepository.findItemByGiftId(gift.getId())).thenReturn(Optional.of(cart));
 
         cartService.changeGiftsAmount(gift.getId(), 5);
@@ -95,10 +114,11 @@ public class CartServiceTest {
     }
 
     @Test
-    public void CartService_CleanCart_ReturnsIsRepositoryEmpty() {
+    public void CartService_CleanCart_ReturnsIsRepositoryEmpty() throws UserNotFoundException, UserNotAuthorizedException {
+        when(userService.getCurrentAuthenticationUser()).thenReturn(user);
         cartService.cleanCart();
 
-        verify(cartRepository, times(1)).deleteAll();
+        verify(cartRepository, times(1)).deleteAllByUserId(user.getId());
         assertTrue(cartRepository.findAll().isEmpty());
     }
 
@@ -111,6 +131,7 @@ public class CartServiceTest {
         cartDto.setItemCount(2);
         cartDto.setGift(giftDto);
         when(cartRepository.findAll()).thenReturn(List.of(cart));
+        when(giftDtoConverter.convertToGiftDto(gift)).thenReturn(giftDto);
 
         List<CartDto> cartList = cartService.getCart();
 

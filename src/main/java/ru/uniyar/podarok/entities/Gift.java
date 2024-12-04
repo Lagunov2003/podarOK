@@ -3,13 +3,17 @@ package ru.uniyar.podarok.entities;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
+@EqualsAndHashCode(exclude = {"categories"})
 @Table(name = "gift")
 public class Gift {
     @Id
@@ -28,7 +32,7 @@ public class Gift {
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     @JsonManagedReference
-    private List<Category> categories = new ArrayList<>();
+    private Set<Category> categories = new HashSet<>();
     @ManyToOne
     @JoinColumn(name = "recommendation_id")
     private GiftRecommendation recommendation;
@@ -38,11 +42,15 @@ public class Gift {
             joinColumns = @JoinColumn(name = "gift_id"),
             inverseJoinColumns = @JoinColumn(name = "occasion_id")
     )
-    private List<Occasion> occasions = new ArrayList<>();
+    private Set<Occasion> occasions = new HashSet<>();
     @OneToMany(mappedBy = "gift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<GiftFeature> features = new ArrayList<>();
     @OneToMany(mappedBy = "gift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<GiftPhoto> photos = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    @JsonManagedReference
+    private GiftGroup giftGroup;
 }

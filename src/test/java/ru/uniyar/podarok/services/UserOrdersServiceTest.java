@@ -12,6 +12,8 @@ import ru.uniyar.podarok.dtos.OrderDto;
 import ru.uniyar.podarok.entities.*;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
+import ru.uniyar.podarok.utils.GiftDtoConverter;
+import ru.uniyar.podarok.utils.OrderDtoConverter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,7 +29,10 @@ public class UserOrdersServiceTest {
 
     @Mock
     private UserService userService;
-
+    @Mock
+    private GiftDtoConverter giftDtoConverter;
+    @Mock
+    private OrderDtoConverter orderDtoConverter;
     @InjectMocks
     private UserOrdersService userOrdersService;
 
@@ -64,29 +69,23 @@ public class UserOrdersServiceTest {
 
     @Test
     void UserOrdersService_GetUsersFavorites_ReturnsUserFavoriteGifts() throws UserNotFoundException, UserNotAuthorizedException {
-        GiftPhoto giftPhoto1 = new GiftPhoto();
-        giftPhoto1.setPhotoUrl("photo1.png");
-        GiftPhoto giftPhoto2 = new GiftPhoto();
-        giftPhoto2.setPhotoUrl("photo2.png");
         Gift gift1 = new Gift();
         gift1.setId(1L);
         gift1.setName("Gift 1");
         gift1.setPrice(BigDecimal.valueOf(100));
-        gift1.setPhotos(List.of(giftPhoto1));
-        Gift gift2 = new Gift();
-        gift2.setId(2L);
-        gift2.setName("Gift 2");
-        gift2.setPrice(BigDecimal.valueOf(200));
-        gift2.setPhotos(List.of(giftPhoto2));
-        mockUser.setFavorites(List.of(gift1, gift2));
+        GiftDto giftDto = new GiftDto();
+        giftDto.setId(1L);
+        giftDto.setName("Gift 1");
+        giftDto.setPrice(BigDecimal.valueOf(100));
+        mockUser.setFavorites(List.of(gift1));
         Mockito.when(userService.getCurrentAuthenticationUser()).thenReturn(mockUser);
+        Mockito.when(giftDtoConverter.convertToGiftDtoList(List.of(gift1))).thenReturn(List.of(giftDto));
 
         List<GiftDto> result = userOrdersService.getUsersFavorites();
 
         assertNotNull(result);
-        assertEquals(2, result.size());
+        assertEquals(1, result.size());
         assertEquals("Gift 1", result.get(0).getName());
-        assertEquals("photo1.png", result.get(0).getPhotoUrl());
         assertEquals(BigDecimal.valueOf(100), result.get(0).getPrice());
         Mockito.verify(userService, Mockito.times(1)).getCurrentAuthenticationUser();
     }
@@ -112,10 +111,14 @@ public class UserOrdersServiceTest {
         order2.setStatus("Исполняется");
         order2.setInformation("ул. Союзная, д. 144");
         order2.setGift(gift1);
-
+        OrderDto orderDto = new OrderDto();
+        orderDto.setId(1L);
+        orderDto.setDeliveryDate(LocalDate.now());
+        orderDto.setStatus("Выполнен");
+        orderDto.setInformation("ул. Союзная, д. 144");
         mockUser.setOrders(List.of(order1, order2));
-
         Mockito.when(userService.getCurrentAuthenticationUser()).thenReturn(mockUser);
+        Mockito.when(orderDtoConverter.convertToOrderDto(order1)).thenReturn(orderDto);
 
         List<OrderDto> result = userOrdersService.getUsersOrdersHistory();
 
@@ -147,8 +150,14 @@ public class UserOrdersServiceTest {
         order2.setStatus("Исполняется");
         order2.setInformation("ул. Союзная, д. 144");
         order2.setGift(gift1);
+        OrderDto orderDto = new OrderDto();
+        orderDto.setId(2L);
+        orderDto.setDeliveryDate(LocalDate.now());
+        orderDto.setStatus("Исполняется");
+        orderDto.setInformation("ул. Союзная, д. 144");
         mockUser.setOrders(List.of(order1, order2));
         Mockito.when(userService.getCurrentAuthenticationUser()).thenReturn(mockUser);
+        Mockito.when(orderDtoConverter.convertToOrderDto(order2)).thenReturn(orderDto);
 
         List<OrderDto> result = userOrdersService.getUsersCurrentOrders();
 

@@ -11,20 +11,27 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.GiftFilterRequest;
+import ru.uniyar.podarok.dtos.GiftResponseDto;
+import ru.uniyar.podarok.dtos.GiftToFavoritesDto;
 import ru.uniyar.podarok.entities.Gift;
-import ru.uniyar.podarok.repositories.projections.GiftProjection;
+import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
+import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.services.CatalogService;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -40,11 +47,11 @@ public class CatalogControllerTest {
     private CatalogService catalogService;
 
     @MockBean
-    private PagedResourcesAssembler<GiftProjection> pagedResourcesAssembler;
+    private PagedResourcesAssembler<GiftDto> pagedResourcesAssembler;
 
     @Test
     public void CatalogController_ShowCatalog_ReturnsCatalog() throws Exception {
-        Page<GiftProjection> mockPage = new PageImpl<>(Collections.singletonList(mock(GiftProjection.class)));
+        Page<GiftDto> mockPage = new PageImpl<>(Collections.singletonList(mock(GiftDto.class)));
         when(catalogService.getGiftsCatalog(any(GiftFilterRequest.class), any(PageRequest.class))).thenReturn(mockPage);
         when(pagedResourcesAssembler.toModel(mockPage)).thenReturn(null);
 
@@ -63,7 +70,7 @@ public class CatalogControllerTest {
 
     @Test
     public void CatalogController_ShowCatalog_ReturnsNoContentMessage() throws Exception {
-        Page<GiftProjection> emptyPage = Page.empty();
+        Page<GiftDto> emptyPage = Page.empty();
         when(catalogService.getGiftsCatalog(any(GiftFilterRequest.class), any(PageRequest.class))).thenReturn(emptyPage);
 
         mockMvc.perform(get("/catalog").param("page", "1"))
@@ -78,26 +85,108 @@ public class CatalogControllerTest {
         gift.setId(1L);
         gift.setName("test");
         gift.setPrice(BigDecimal.valueOf(100));
-        when(catalogService.getGift(1L)).thenReturn(gift);
+        GiftResponseDto giftResponseDto = new GiftResponseDto();
+        giftResponseDto.setGroupGifts(List.of(gift));
+
+        when(catalogService.getGiftResponse(1L)).thenReturn(giftResponseDto);
 
         mockMvc.perform(get("/gift/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("test"))
-                .andExpect(jsonPath("$.price").value(100));
+                .andExpect(jsonPath("$.groupGifts[0].id").value(1L))
+                .andExpect(jsonPath("$.groupGifts[0].name").value("test"))
+                .andExpect(jsonPath("$.groupGifts[0].price").value(100));
 
-        verify(catalogService, times(1)).getGift(1L);
+        verify(catalogService, times(1)).getGiftResponse(1L);
     }
 
     @Test
-    void CatalogController_GetGiftById_ThrowsEntityNotFoundException() throws Exception {
-        when(catalogService.getGift(1L)).thenThrow(new EntityNotFoundException("Подарок не найден!"));
+    void CatalogController_GetGiftById_ReturnsStatusIsNotFound() throws Exception {
+        when(catalogService.getGiftResponse(1L)).thenThrow(new EntityNotFoundException("Подарок не найден!"));
 
         mockMvc.perform(get("/gift/1"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Подарок с ID 1 не найден!"));
 
-        verify(catalogService, times(1)).getGift(1L);
+        verify(catalogService, times(1)).getGiftResponse(1L);
+    }
+
+    @Test
+    void CatalogController_SearchGiftsByName_ReturnsStatusIsBadRequest_WhenQueryIsBlank() throws Exception {
+        mockMvc.perform(get("/catalogSearch")
+                        .param("query", "")
+                        .param("page", "1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Запрос не может быть пустым!"));
+    }
+
+    @Test
+    void CatalogController_SearchGiftsByName_ReturnsStatusIsBadRequest_WhenPageIsInvalid() throws Exception {
+        mockMvc.perform(get("/catalogSearch")
+                        .param("query", "test")
+                        .param("page", "0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Номер страницы должен быть больше 0!"));
+    }
+
+    @Test
+    void CatalogController_SearchGiftsByName_ReturnsStatusIsOk_WhenNoMatchesFound() throws Exception {
+        String query = "no-match";
+        Page<GiftDto> emptyPage = Page.empty();
+        when(catalogService.searchGiftsByName(eq(query), any(Pageable.class))).thenReturn(emptyPage);
+
+        mockMvc.perform(get("/catalogSearch")
+                        .param("query", query)
+                        .param("page", "1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Нет совпадений для запроса '" + query + "'!"));
+    }
+
+    @Test
+    void CatalogController_AddGiftToFavorites_ReturnsStatusIsOk() throws Exception {
+        GiftToFavoritesDto dto = new GiftToFavoritesDto(1L);
+        doNothing().when(catalogService).addGiftToFavorites(eq(dto));
+
+        mockMvc.perform(post("/addToFavorites")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"giftId\":1}"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Подарок добавлен в избранные!"));
+    }
+
+    @Test
+    void CatalogController_AddGiftToFavorites_ReturnsStatusIsNotFound_WhenGiftNotFound() throws Exception {
+        GiftToFavoritesDto dto = new GiftToFavoritesDto(1L);
+        doThrow(new EntityNotFoundException("Подарок не найден!")).when(catalogService).addGiftToFavorites(eq(dto));
+
+        mockMvc.perform(post("/addToFavorites")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"giftId\":1}"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Подарок с Id 1 не найден!"));
+    }
+
+    @Test
+    void CatalogController_AddGiftToFavorites_ReturnsStatusIsUnauthorized() throws Exception {
+        GiftToFavoritesDto dto = new GiftToFavoritesDto(1L);
+        doThrow(new UserNotAuthorizedException("Пользователь не авторизован!")).when(catalogService).addGiftToFavorites(eq(dto));
+
+        mockMvc.perform(post("/addToFavorites")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"giftId\":1}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Пользователь не авторизован!"));
+    }
+
+    @Test
+    void CatalogController_AddGiftToFavorites_ReturnsStatusIsNotFound_WhenUserNotFound() throws Exception {
+        GiftToFavoritesDto dto = new GiftToFavoritesDto(1L);
+        doThrow(new UserNotFoundException("Пользователь не найден!")).when(catalogService).addGiftToFavorites(eq(dto));
+
+        mockMvc.perform(post("/addToFavorites")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"giftId\":1}"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Пользователь не найден!"));
     }
 }
 

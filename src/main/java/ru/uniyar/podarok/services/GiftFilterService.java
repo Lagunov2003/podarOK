@@ -30,6 +30,7 @@ public class GiftFilterService {
 
     private GiftFilterRequest createSurveyRequest(GiftFilterRequest request) {
         return new GiftFilterRequest(
+
                 null,
                 null,
                 null,

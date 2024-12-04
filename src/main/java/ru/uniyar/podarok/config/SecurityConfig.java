@@ -41,8 +41,17 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/registration", "/login", "/forgot", "/resetPassword", "/catalog",  "/gift/*").permitAll()
-                        .requestMatchers("/profile", "/cart", "/notifications", "/favorites", "/ordersHistory", "/currentOrders", "/order").authenticated()
+                        .requestMatchers(
+                                "/registration", "/login", "/forgot", "/resetPassword",
+                                "/catalog",  "/gift/**", "/catalogSearch"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/profile", "/cart", "/notifications", "/favorites", "/ordersHistory",
+                                "/currentOrders", "/order", "/addToFavorites"
+                        ).authenticated()
+                        .requestMatchers(
+                                "/changeOrderStatus", "/getOrders", "/deleteGift", "/changeGift", "/addGift", "/addGroup"
+                        ).hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)

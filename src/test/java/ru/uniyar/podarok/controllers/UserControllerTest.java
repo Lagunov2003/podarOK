@@ -1,5 +1,6 @@
 package ru.uniyar.podarok.controllers;
 
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import io.jsonwebtoken.ExpiredJwtException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +21,8 @@ import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
 import ru.uniyar.podarok.dtos.CurrentUserDto;
 import ru.uniyar.podarok.dtos.ForgotUserPasswordDto;
 import ru.uniyar.podarok.dtos.UpdateUserDto;
+import ru.uniyar.podarok.exceptions.ExpiredCodeException;
+import ru.uniyar.podarok.exceptions.FakeConfirmationCodeException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.services.UserService;
@@ -62,22 +65,41 @@ class UserControllerTest {
     }
 
     @Test
+    void UserController_ShowProfile_ReturnsStatusIsNotFound() throws Exception {
+        Mockito.when(userService.getCurrentUserProfile()).thenThrow(new UserNotFoundException("Пользователь не найден!"));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/profile"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Пользователь не найден!"));
+    }
+
+    @Test
     void UserController_UpdateProfile_ReturnsStatusIsOk() throws Exception {
         UpdateUserDto updateUserDto = new UpdateUserDto("NewFirstName", "NewLastName", LocalDate.now(), true, "new@example.com", "87654321");
         CurrentUserDto updatedUserDto = new CurrentUserDto(1L, "new@example.com", "NewFirstName", "NewLastName", LocalDate.now(), LocalDate.now(), true, "87654321");
         Mockito.when(userService.updateUserProfile(Mockito.any())).thenReturn(updatedUserDto);
-        ObjectMapper mapper = JsonMapper.builder()
-                .findAndAddModules()
-                .build();
+
         mockMvc.perform(MockMvcRequestBuilders.put("/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(updateUserDto)))
+                        .content(objectMapper.writeValueAsString(updateUserDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("new@example.com"));
     }
 
     @Test
-    void UserController_UpdateProfile_ReturnsStatusIsBadRequest() throws Exception {
+    void UserController_UpdateProfile_ReturnsStatusIsUnauthorized() throws Exception {
+        UpdateUserDto updateUserDto = new UpdateUserDto("NewFirstName", "NewLastName", LocalDate.now(), true, "new@example.com", "87654321");
+        Mockito.when(userService.updateUserProfile(Mockito.any())).thenThrow(new UserNotAuthorizedException("Пользователь не авторизован!"));
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/profile")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(updateUserDto)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Пользователь не авторизован!"));
+    }
+
+    @Test
+    void UserController_UpdateProfile_ReturnsStatusIsBadRequest_WhenSomeFieldsNotFilledIn() throws Exception {
         UpdateUserDto updateUserDto = new UpdateUserDto("", "", null, true, null, "");
 
         mockMvc.perform(MockMvcRequestBuilders.put("/profile")
@@ -86,6 +108,31 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Некоторые поля заполнены некорректно!"));
     }
+
+    @Test
+    void UserController_UpdateProfile_ReturnsStatusIsNotFound() throws Exception {
+        UpdateUserDto updateUserDto = new UpdateUserDto("NewFirstName", "NewLastName", LocalDate.now(), true, "new@example.com", "87654321");
+        Mockito.doThrow(new UserNotFoundException("Пользователь не найден!")).when(userService).updateUserProfile(Mockito.any());
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateUserDto)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Пользователь не найден!"));
+    }
+
+    @Test
+    void UserController_UpdateProfile_ReturnsStatusIsBadRequest_WhenAllFieldsNotFilledIn() throws Exception {
+        UpdateUserDto updateUserDto = new UpdateUserDto("NewFirstName", "NewLastName", LocalDate.now(), true, "new@example.com", "87654321");
+        Mockito.doThrow(new NullPointerException("Все поля должны быть заполнены!")).when(userService).updateUserProfile(Mockito.any());
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateUserDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Все поля должны быть заполнены!"));
+    }
+
 
     @Test
     void UserController_RequestChangeUserPassword_ReturnsStatusIsOk() throws Exception {
@@ -104,6 +151,15 @@ class UserControllerTest {
     }
 
     @Test
+    void UserController_RequestChangeUserPassword_ReturnsStatusIsNotFound() throws Exception {
+        Mockito.doThrow(new UserNotFoundException("Пользователь не найден!")).when(userService).requestChangeUserPassword();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/changePassword"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Пользователь не найден!"));
+    }
+
+    @Test
     void UserController_ConfirmChangeUserPassword_ReturnsStatusIsOk() throws Exception {
         ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com", "newpassword", "newpassword", "123456");
 
@@ -116,7 +172,7 @@ class UserControllerTest {
     }
 
     @Test
-    void UserController_ConfirmChangeUserPassword_ReturnsStatusIsBadRequest() throws Exception {
+    void UserController_ConfirmChangeUserPassword_ReturnsStatusIsBadRequest_PasswordDoesNotMatch() throws Exception {
         ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com","newpassword1", "newpassword2", "123456");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/confirmChanges")
@@ -125,6 +181,66 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(passwordDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Пароли не совпадают!"));
+    }
+
+    @Test
+    void UserController_ConfirmChangeUserPassword_ReturnsStatusIsBadRequest_PasswordTooShort() throws Exception {
+        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com","newpa", "newpa", "123456");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/confirmChanges")
+                        .param("code", "123456")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Пароль должен быть минимум 6 символов!"));
+    }
+
+    @Test
+    void UserController_ConfirmChangeUserPassword_ReturnsStatusIsUnauthorized() throws Exception {
+        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com","newpassword", "newpassword", "123456");
+        Mockito.doThrow(new UserNotAuthorizedException("Пользователь не авторизован!")).when(userService).confirmChangeUserPassword(Mockito.anyString(), Mockito.any());
+        mockMvc.perform(MockMvcRequestBuilders.post("/confirmChanges")
+                        .param("code", "123456")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordDto)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Пользователь не авторизован!"));
+    }
+
+    @Test
+    void UserController_ConfirmChangeUserPassword_ReturnsStatusIsNotFound() throws Exception {
+        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com","newpassword", "newpassword", "123456");
+        Mockito.doThrow(new UserNotFoundException("Пользователь не найден!")).when(userService).confirmChangeUserPassword(Mockito.anyString(), Mockito.any());
+        mockMvc.perform(MockMvcRequestBuilders.post("/confirmChanges")
+                        .param("code", "123456")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordDto)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Пользователь не найден!"));
+    }
+
+    @Test
+    void UserController_ConfirmChangeUserPassword_ReturnsStatusIsForbidden() throws Exception {
+        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com","newpassword", "newpassword", "123456");
+        Mockito.doThrow(new FakeConfirmationCodeException("Неправильный код подтверждения!")).when(userService).confirmChangeUserPassword(Mockito.anyString(), Mockito.any());
+        mockMvc.perform(MockMvcRequestBuilders.post("/confirmChanges")
+                        .param("code", "123456")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordDto)))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string("Неправильный код подтверждения!"));
+    }
+
+    @Test
+    void UserController_ConfirmChangeUserPassword_ReturnsStatusIsGone() throws Exception {
+        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com","newpassword", "newpassword", "123456");
+        Mockito.doThrow(new ExpiredCodeException("Код подтверждения истёк!")).when(userService).confirmChangeUserPassword(Mockito.anyString(), Mockito.any());
+        mockMvc.perform(MockMvcRequestBuilders.post("/confirmChanges")
+                        .param("code", "123456")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordDto)))
+                .andExpect(status().isGone())
+                .andExpect(content().string("Код подтверждения истёк!"));
     }
 
     @Test
@@ -141,6 +257,15 @@ class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/profile"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().string("Пользователь не авторизован!"));
+    }
+
+    @Test
+    void UserController_DeleteUser_ReturnsStatusIsNotFound() throws Exception {
+        Mockito.doThrow(new UserNotFoundException("Пользователь не найден!")).when(userService).deleteCurrentUser();
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/profile"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Пользователь не найден!"));
     }
 
     @Test
@@ -222,6 +347,20 @@ class UserControllerTest {
     }
 
     @Test
+    void UserController_ResetPassword_ReturnsStatusIsUnauthorized_InvalidTokenFormat() throws Exception {
+        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto(1L, "test@examle.com", "newPassword", "newPassword", "code");
+        Mockito.doThrow(new MalformedJwtException("Неправильный формат токена!"))
+                .when(userService).confirmChangePassword(Mockito.anyString(), Mockito.any());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/resetPassword")
+                        .param("token", "invalidToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(changeUserPasswordDto)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Неправильный формат токена!"));
+    }
+
+    @Test
     void UserController_ProcessForgotPassword_ReturnsStatusIsOk() throws Exception {
         ForgotUserPasswordDto forgotUserPasswordDto = new ForgotUserPasswordDto("test@example.com");
 
@@ -244,5 +383,7 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Пользователь не найден!"));
     }
+
+
 }
 

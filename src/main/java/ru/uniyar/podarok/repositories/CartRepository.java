@@ -1,6 +1,7 @@
 package ru.uniyar.podarok.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.uniyar.podarok.entities.Cart;
@@ -20,4 +21,8 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
             "AND user_id = :userId ",
             nativeQuery = true)
     Optional<Cart> findItemByGiftIdAndUserId(@Param("giftId") Long giftId, @Param("userId") Long userId);
+
+    @Modifying
+    @Query(value = "DELETE FROM cart c WHERE c.user_id = :userId", nativeQuery = true)
+    void deleteAllByUserId(@Param("userId") Long userId);
 }
