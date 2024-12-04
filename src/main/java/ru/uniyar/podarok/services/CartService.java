@@ -8,19 +8,14 @@ import ru.uniyar.podarok.dtos.CartDto;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.OrderItemDto;
 import ru.uniyar.podarok.dtos.OrderRequestDto;
-import ru.uniyar.podarok.entities.Cart;
-import ru.uniyar.podarok.entities.Gift;
-import ru.uniyar.podarok.entities.Order;
-import ru.uniyar.podarok.entities.User;
+import ru.uniyar.podarok.entities.*;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.CartRepository;
 import ru.uniyar.podarok.utils.GiftDtoConverter;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,20 +81,58 @@ public class CartService {
     @Transactional
     public void placeOrder(OrderRequestDto orderRequestDto) throws UserNotFoundException, UserNotAuthorizedException, EntityNotFoundException {
         User user = userService.getCurrentAuthenticationUser();
+        Order order = createOrder(orderRequestDto, user);
+
+        BigDecimal totalCost = BigDecimal.ZERO;
+        Set<GiftOrder> giftOrders = new HashSet<>();
 
         for (OrderItemDto itemDto : orderRequestDto.getItems()) {
-            Gift gift = giftService.getGiftById(itemDto.getGiftId());
-
-            Order order = new Order();
-            order.setUser(user);
-            order.setGift(gift);
-            order.setStatus("Оформлен");
-            order.setDeliveryDate(LocalDate.now().plusDays(3));
-            order.setInformation("Информация о заказе получена. Дожидайтесь отправки подарка!");
-
-            orderService.placeNewOrder(order);
-            cartRepository.findItemByGiftIdAndUserId(itemDto.getGiftId(), user.getId())
-                    .ifPresent(cartRepository::delete);
+            GiftOrder giftOrder = createGiftOrder(itemDto, order, user);
+            giftOrders.add(giftOrder);
+            totalCost = totalCost.add(giftOrder.getGift().getPrice().multiply(BigDecimal.valueOf(giftOrder.getItemCount())));
         }
+
+        order.setOrderCost(totalCost);
+        order.setGiftOrders(giftOrders);
+
+        orderService.placeOrder(order);
+    }
+
+    private GiftOrder createGiftOrder(OrderItemDto itemDto, Order order, User user) {
+        Gift gift = giftService.getGiftById(itemDto.getGiftId());
+        GiftOrder giftOrder = new GiftOrder();
+        giftOrder.setOrder(order);
+        giftOrder.setGift(gift);
+        giftOrder.setItemCount(itemDto.getItemCount());
+        cartRepository.findItemByGiftIdAndUserId(itemDto.getGiftId(), user.getId())
+                .ifPresent(cartRepository::delete);
+        return giftOrder;
+    }
+
+    private Order createOrder(OrderRequestDto orderRequestDto, User user) {
+        Order order = new Order();
+        order.setUser(user);
+        order.setStatus("Оформлен");
+        order.setInformation(orderRequestDto.getInformation());
+        order.setDeliveryDate(orderRequestDto.getDeliveryDate());
+        order.setFromDeliveryTime(orderRequestDto.getFromDeliveryTime());
+        order.setToDeliveryTime(orderRequestDto.getToDeliveryTime());
+        order.setPayMethod(orderRequestDto.getPayMethod());
+        order.setRecipientName(
+                (orderRequestDto.getRecipientName() == null) ?
+                        user.getLastName() + " " + user.getFirstName() :
+                        orderRequestDto.getRecipientName()
+        );
+        order.setRecipientEmail(
+                (orderRequestDto.getRecipientEmail() == null) ?
+                        user.getEmail() :
+                        orderRequestDto.getRecipientEmail()
+        );
+        order.setRecipientPhoneNumber(
+                (orderRequestDto.getRecipientPhoneNumber() == null) ?
+                        user.getPhoneNumber() :
+                        orderRequestDto.getRecipientPhoneNumber()
+        );
+        return order;
     }
 }

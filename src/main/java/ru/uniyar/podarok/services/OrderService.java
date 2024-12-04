@@ -2,6 +2,7 @@ package ru.uniyar.podarok.services;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.uniyar.podarok.dtos.OrderDataDto;
 import ru.uniyar.podarok.dtos.OrderDto;
 import ru.uniyar.podarok.entities.Order;
@@ -20,7 +21,7 @@ public class OrderService {
     private OrderRepository orderRepository;
     private OrderDtoConverter orderDtoConverter;
 
-    public void placeNewOrder(Order order) {
+    public void placeOrder(Order order) {
         orderRepository.save(order);
     }
 
@@ -31,6 +32,7 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    @Transactional
     public List<OrderDto> getOrders(String status) {
         Set<String> validStatus = new HashSet<>(Set.of("Оформлен", "Собран", "В пути", "Доставлен", "Отменен"));
         List<Order> orders;

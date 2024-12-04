@@ -17,6 +17,7 @@ import ru.uniyar.podarok.services.AdminService;
 @AllArgsConstructor
 public class AdminPanelController {
     private AdminService adminService;
+
     @GetMapping("/getOrders")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getOrders(@RequestParam String status) {

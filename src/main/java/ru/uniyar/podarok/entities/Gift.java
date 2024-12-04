@@ -1,5 +1,6 @@
 package ru.uniyar.podarok.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -51,4 +52,7 @@ public class Gift {
     @JoinColumn(name = "group_id")
     @JsonManagedReference
     private GiftGroup giftGroup;
+    @OneToMany(mappedBy = "gift", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set<GiftOrder> giftOrders;
 }
