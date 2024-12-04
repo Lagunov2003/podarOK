@@ -64,4 +64,8 @@ public class CatalogService {
         }
         return new GiftResponseDto(groupGifts, getSimilarGifts(giftId));
     }
+
+    public Page<GiftDto> searchGiftsBySortParam(String sortParam, Pageable pageable) {
+        return giftService.searchGiftsBySortParam(sortParam, pageable);
+    }
 }

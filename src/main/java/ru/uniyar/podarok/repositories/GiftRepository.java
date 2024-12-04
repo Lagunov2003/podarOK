@@ -131,4 +131,19 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
     Integer addGiftRecommendation(@Param("gender") Boolean gender,
                                   @Param("min_age") Long minAge,
                                   @Param("max_age") Long maxAge);
+
+    Page<Gift> findAllByOrderByPriceAsc(Pageable pageable);
+
+    Page<Gift> findAllByOrderByPriceDesc(Pageable pageable);
+
+    @Query(value = "SELECT g.* " +
+            "FROM gift g " +
+            "LEFT JOIN review r ON g.id = r.gift_id " +
+            "GROUP BY g.id " +
+            "ORDER BY COALESCE(AVG(r.rating), 0) DESC",
+            countQuery = "SELECT COUNT(DISTINCT g.id) " +
+                    "FROM gift g " +
+                    "LEFT JOIN review r ON g.id = r.gift_id",
+            nativeQuery = true)
+        Page<Gift> findAllOrderByAverageRatingDesc(Pageable pageable);
 }

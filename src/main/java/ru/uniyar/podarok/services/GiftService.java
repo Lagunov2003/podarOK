@@ -75,7 +75,7 @@ public class GiftService {
     @Transactional
     public void deleteGift(Long id) {
         if (!giftRepository.existsById(id)) {
-            throw new EntityNotFoundException("Подарок с Id" + id + "не найден!");
+            throw new EntityNotFoundException("Подарок с id " + id + " не найден!");
         }
         giftRepository.deleteById(id);
     }
@@ -115,6 +115,15 @@ public class GiftService {
         for (Map.Entry<String, String> feature : addGiftDto.getFeatures().entrySet()) {
             giftRepository.addGiftFeature(gift_id, feature.getKey(), feature.getValue());
         }
+    }
 
+    public Page<GiftDto> searchGiftsBySortParam(String sortParam, Pageable pageable) {
+        Page<Gift> sortGifts = switch (sortParam) {
+            case "по возрастанию цены" -> giftRepository.findAllByOrderByPriceAsc(pageable);
+            case "по убыванию цены" -> giftRepository.findAllByOrderByPriceDesc(pageable);
+            case "по рейтингу" -> giftRepository.findAllOrderByAverageRatingDesc(pageable);
+            default -> giftRepository.findAllGifts(pageable);
+        };
+        return giftDtoConverter.convertToGiftDtoPage(sortGifts);
     }
 }

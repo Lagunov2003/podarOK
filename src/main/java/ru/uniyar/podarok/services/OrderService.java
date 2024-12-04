@@ -26,13 +26,13 @@ public class OrderService {
 
     public void changeOrderStatus(OrderDataDto orderDataDto) throws OrderNotFoundException {
         Order order = orderRepository.findById(orderDataDto.getOrderId())
-                .orElseThrow(() -> new OrderNotFoundException("Заказ с Id " + orderDataDto.getOrderId() + "не найден в корзине!"));
+                .orElseThrow(() -> new OrderNotFoundException("Заказ с Id " + orderDataDto.getOrderId() + " не найден в корзине!"));
         order.setStatus(orderDataDto.getNewOrderStatus());
         orderRepository.save(order);
     }
 
     public List<OrderDto> getOrders(String status) {
-        Set<String> validStatus = new HashSet<>(Set.of("Исполняется", "Доставляется", "Выполнен"));
+        Set<String> validStatus = new HashSet<>(Set.of("Оформлен", "Собран", "В пути", "Доставлен", "Отменен"));
         List<Order> orders;
 
         if (!validStatus.contains(status)) {

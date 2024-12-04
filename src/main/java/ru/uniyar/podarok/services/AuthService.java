@@ -23,7 +23,7 @@ public class AuthService {
 
     public UserDto createNewUser(RegistrationUserDto registrationUserDto) throws UserAlreadyExistException {
         User user = userService.createNewUser(registrationUserDto);
-        return new UserDto(user.getId(), user.getEmail(), user.getFirstName());
+        return new UserDto(user.getEmail(), user.getFirstName());
     }
 
     public JwtResponse createAuthToken(JwtRequest authRequest) throws BadCredentialsException {

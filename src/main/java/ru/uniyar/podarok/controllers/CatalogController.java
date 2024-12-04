@@ -46,7 +46,7 @@ public class CatalogController {
         try {
             return ResponseEntity.ok(catalogService.getGiftResponse(id));
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Подарок с ID " + id + " не найден!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Подарок с id " + id + " не найден!");
         }
     }
 
@@ -74,11 +74,28 @@ public class CatalogController {
             catalogService.addGiftToFavorites(giftToFavoritesDto);
             return ResponseEntity.status(HttpStatus.OK).body("Подарок добавлен в избранные!");
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Подарок с Id " + giftToFavoritesDto.getGiftId() + " не найден!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Подарок с id " + giftToFavoritesDto.getGiftId() + " не найден!");
         } catch(UserNotAuthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch(UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/sortCatalog")
+    public ResponseEntity<?> sortCatalog(@RequestParam String sort, @RequestParam(defaultValue = "1") int page) {
+        if (sort.isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Запрос не может быть пустым!");
+        }
+        if (page <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Номер страницы должен быть больше 0!");
+        }
+        Pageable pageable = PageRequest.of(page - 1, 15);
+
+        Page<GiftDto> searchResults = catalogService.searchGiftsBySortParam(sort.toLowerCase(), pageable);
+        if (searchResults.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body("Нет совпадений для запроса '" + sort + "'!");
+        }
+        return ResponseEntity.ok(pagedResourcesAssembler.toModel(searchResults));
     }
 }

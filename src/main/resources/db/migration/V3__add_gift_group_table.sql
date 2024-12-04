@@ -5,4 +5,13 @@ CREATE TABLE IF NOT EXISTS public.gift_group (
 );
 
 -- Добавление поля group_id в таблицу Gift
-ALTER TABLE public.gift ADD COLUMN group_id BIGINT REFERENCES public.gift_group (id) ON DELETE SET NULL;
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_name = 'gift' AND column_name = 'group_id'
+    ) THEN
+        ALTER TABLE public.gift ADD COLUMN group_id BIGINT REFERENCES public.gift_group (id) ON DELETE SET NULL;
+    END IF;
+END $$;

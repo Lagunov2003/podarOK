@@ -34,7 +34,7 @@ public class UserOrdersService {
     public List<OrderDto> getUsersOrdersHistory() throws UserNotFoundException, UserNotAuthorizedException {
         List<Order> ordersHistoryList = userService.getCurrentAuthenticationUser().getOrders();
         return ordersHistoryList.stream()
-                .filter(order -> "Выполнен".equals(order.getStatus()))
+                .filter(order -> List.of("Доставлен", "Отменён").contains(order.getStatus()))
                 .map(orderDtoConverter::convertToOrderDto)
                 .collect(Collectors.toList());
     }
@@ -42,7 +42,7 @@ public class UserOrdersService {
     public List<OrderDto> getUsersCurrentOrders() throws UserNotFoundException, UserNotAuthorizedException {
         List<Order> currentOrdersList = userService.getCurrentAuthenticationUser().getOrders();
         return currentOrdersList.stream()
-                .filter(order -> List.of("Исполняется", "Доставляется").contains(order.getStatus()))
+                .filter(order -> List.of("Оформлен", "Собран", "В пути").contains(order.getStatus()))
                 .map(orderDtoConverter::convertToOrderDto)
                 .collect(Collectors.toList());
     }

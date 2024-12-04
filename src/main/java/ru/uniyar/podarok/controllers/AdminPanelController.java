@@ -69,4 +69,34 @@ public class AdminPanelController {
         adminService.addGroup(addGroupDto);
         return ResponseEntity.ok("Группа подарков успешно добавлена!");
     }
+
+    @GetMapping("/getAcceptedSiteReviews")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> getAcceptedSiteReviews() {
+        return ResponseEntity.ok(adminService.getSiteReviews(true));
+    }
+
+    @GetMapping("/getNotAcceptedSiteReviews")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> getNotAcceptedSiteReviews() {
+        return ResponseEntity.ok(adminService.getSiteReviews(false));
+    }
+
+    @PutMapping("/changeAcceptedStatusSiteReviews")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> changeAcceptedStatusSiteReviews(@RequestParam Long id) {
+        try {
+            adminService.changeAcceptedStatusSiteReviews(id);
+            return ResponseEntity.ok("Отзыв подтверждён!");
+        } catch(EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/deleteNotAcceptedSiteReviews")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> deleteNotAcceptedSiteReviews(@RequestParam Long id) {
+        adminService.deleteNotAcceptedSiteReviews(id);
+        return ResponseEntity.ok("Отзыв о сайте отклонён!");
+    }
 }

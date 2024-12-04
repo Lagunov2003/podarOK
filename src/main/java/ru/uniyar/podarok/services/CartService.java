@@ -77,7 +77,7 @@ public class CartService {
 
     public List<CartDto> getCart() throws UserNotFoundException, UserNotAuthorizedException {
         User user = userService.getCurrentAuthenticationUser();
-        List<Cart> cartItems = cartRepository.findAll();
+        List<Cart> cartItems = user.getCartItems();
         return cartItems.stream()
                 .map(this::convertToCartDto)
                 .collect(Collectors.toList());
@@ -93,7 +93,7 @@ public class CartService {
             Order order = new Order();
             order.setUser(user);
             order.setGift(gift);
-            order.setStatus("Исполняется");
+            order.setStatus("Оформлен");
             order.setDeliveryDate(LocalDate.now().plusDays(3));
             order.setInformation("Информация о заказе получена. Дожидайтесь отправки подарка!");
 
