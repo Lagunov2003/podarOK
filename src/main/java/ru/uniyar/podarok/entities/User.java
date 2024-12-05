@@ -3,6 +3,7 @@ package ru.uniyar.podarok.entities;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class User {
     private List<Cart> cartItems = new ArrayList<>();
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
+    @ToString.Exclude
     private List<Order> orders = new ArrayList<>();
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable (

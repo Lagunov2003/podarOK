@@ -3,6 +3,7 @@ package ru.uniyar.podarok.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Data
@@ -15,8 +16,9 @@ public class GiftOrder {
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     @JsonBackReference
+    @EqualsAndHashCode.Exclude
     private Order order;
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "gift_id", nullable = false)
     @JsonBackReference
     private Gift gift;
