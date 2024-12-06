@@ -30,8 +30,8 @@ const router = createBrowserRouter([
                         element: <User />,
                     },
                     {
-                        path:"user/edit",
-                        element: <Edit />
+                        path: "user/edit",
+                        element: <Edit />,
                     },
                     {
                         path: "notice",
@@ -60,33 +60,31 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-
     useEffect(() => {
         async function qwe(params) {
-
-            const resp = await fetch("/api/catalog")
-            const data = await resp.body
+            const resp = await fetch("/api/catalog");
+            const data = await resp.body;
 
             console.log(data);
-            
         }
 
-        qwe()
-    }, [])
+        qwe();
+    }, []);
 
-
-    return <BrowserRouter>
-        <Routes>
-            <Route path="/" element={<PageLayer />}>
-                <Route index element={<Main />} />
-                <Route path="password-change" element={<PasswordCange />} />
-                <Route path="catalog" element={<Catalog />} />
-                <Route path="basket" element={<Basket />} />
-                <Route path="article/:id" element={<Card />} />
-                <Route path="order/:id" element={<Order />} />
-            </Route>
-        </Routes>
-    </BrowserRouter>
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<PageLayer />}>
+                    <Route index element={<Main />} />
+                    <Route path="password-change" element={<PasswordCange />} />
+                    <Route path="catalog" element={<Catalog />} />
+                    <Route path="basket" element={<Basket />} />
+                    <Route path="article/:id" element={<Card />} />
+                    <Route path="order/:id" element={<Order />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default App;

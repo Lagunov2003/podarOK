@@ -1,5 +1,90 @@
-export async function getResponse() {
+export async function responseRegister(name, email, password) {
 
+    try {
+        const response = await fetch("http://localhost:8080/registration", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "firstName": name,
+                "email": email,
+                "password": password
+            })
+        })
+
+        if (response.status == 200) {
+            return "успешно"
+        } else if (response.status == 409) {
+            return "повтор"
+        } else {
+            return "ошибка"
+        }
+    } catch(e) {
+
+    }
+}
+
+export async function responseLogin(email, password) {
+
+    try {
+        const response = await fetch("http://localhost:8080/login", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "email": email,
+                "password": password
+            })
+        })
+
+        if (response.status == 200) {
+            const data = await response.json()
+            localStorage.setItem("token", data.token)
+            console.log(data.token);
+            return "успешно"
+        } else {
+            return "ошибка"
+        }
+    } catch(e) {
+
+    }
+}
+
+export async function responseGetProfile(token) {
+
+    try {
+        const response = await fetch("http://localhost:8080/profile", {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        })
+
+        if (response.status == 200) {
+            const data = await response.json()
+            return data
+        } else {
+            return "ошибка"
+        }
+    } catch(e) {
+
+    }
+}
+
+export async function responseDataCatalog() {
+
+    const response = await fetch("http://localhost:8080/catalog", {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const data = await response.json();
+    console.log(data);
 }
 
 export const getAdressFromCoordinates = async (lat, lon) => {
@@ -17,6 +102,6 @@ export const getAdressFromCoordinates = async (lat, lon) => {
         const address = firstGeoObject.metaDataProperty.GeocoderMetaData.text;
         return address;
     } else {
-        return "Address not found"; 
+        return "Address not found";
     }
 };

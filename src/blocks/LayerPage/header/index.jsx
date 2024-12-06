@@ -4,7 +4,7 @@ import Button from "../../../component/button";
 import SingIn from "../../../component/sing-in";
 import { Link, useLocation, useNavigate, useNavigation } from "react-router-dom";
 
-function Header({ handleOpenModal }) {
+function Header({ handleOpenModal, data }) {
     const location = useLocation();
 
     return (

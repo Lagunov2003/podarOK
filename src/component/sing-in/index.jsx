@@ -3,6 +3,7 @@ import "./style.scss";
 import { Link } from "react-router-dom";
 import InfoPassword from "../info-password";
 import EmailSend from "../email-send";
+import { responseDataCatalog, responseLogin, responseRegister } from "../../tool/response";
 
 const data = [
     {
@@ -20,7 +21,7 @@ const data = [
 function SingIn({ openModal, activeModal }) {
     const [activeBlock, setActiveBlock] = useState(0);
     const [errorEnter, setErrorEnter] = useState(false);
-    const [errorRegister, setErrorRegister] = useState(false);
+    const [errorRegister, setErrorRegister] = useState("");
     const [modalPassword, setModalPassword] = useState(false);
     const [modalEmail, setModalEmail] = useState(false);
 
@@ -31,7 +32,7 @@ function SingIn({ openModal, activeModal }) {
     const handleClickBB = () => {
         refSingIn.current.classList.toggle("sing-in_active");
         if (activeBlock == 0) {
-            setErrorRegister(false);
+            setErrorRegister("");
         } else {
             setModalPassword(false);
             setErrorEnter(false);
@@ -54,23 +55,8 @@ function SingIn({ openModal, activeModal }) {
         }, 300);
     };
 
-    const handleOnEnter = (e) => {
-        e.preventDefault();
-        setErrorEnter(true);
-    };
-
     const handleOpenModalPassword = () => {
         setModalPassword((v) => !v);
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        if (e.target[2].value.length < 6) {
-            setErrorRegister(true);
-        } else {
-            setErrorRegister(false);
-        }
     };
 
     const handleChangeInputPassword = (e) => {
@@ -84,6 +70,47 @@ function SingIn({ openModal, activeModal }) {
         let str = e.target.value;
         if (str != "" && !str[str.length - 1].match(/[а-яА-Я]/)) {
             e.target.value = str.slice(0, str.length - 1);
+        }
+    };
+
+    const handleBlurInputName = (e) => {
+        if (e.target.value != "") {
+            e.target.value = e.target.value[0].toUpperCase() + e.target.value.slice(1, e.target.value.length);
+        }
+    };
+
+    const handleRegistrer = async (e) => {
+        e.preventDefault();
+        setErrorRegister("");
+
+        if (e.target[2].value.length < 6) {
+            setErrorRegister("Пароль не соответствует требованиям!");
+            return;
+        }
+
+        const status = await responseRegister(e.target[0].value, e.target[1].value, e.target[2].value);
+
+        if (status == "успешно") {
+            refFormEnter.current.reset();
+            alert("Регистрация выполнена!");
+            handleClickBB();
+        } else if (status == "повтор") {
+            setErrorRegister("Такой пользователь уже существует");
+        } else {
+            setErrorRegister("Ошибка сервера");
+        }
+    };
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setErrorRegister("");
+
+        const status = await responseLogin(e.target[0].value, e.target[1].value);
+
+        if (status == "успешно") {
+            handleOpenModal();
+        } else {
+            setErrorRegister("Ошибка сервера");
         }
     };
 
@@ -109,7 +136,7 @@ function SingIn({ openModal, activeModal }) {
                                     action=""
                                     className="sing-in__enter-form"
                                     id="formEnter"
-                                    onSubmit={(e) => handleOnEnter(e)}
+                                    onSubmit={(e) => handleLogin(e)}
                                     ref={refFormEnter}
                                 >
                                     <input type="email" className="sing-in__input" placeholder="Почта" />
@@ -137,21 +164,22 @@ function SingIn({ openModal, activeModal }) {
                                     action=""
                                     className="sing-in__register-form"
                                     id="registerForm"
-                                    onSubmit={(e) => handleSubmit(e)}
+                                    onSubmit={(e) => handleRegistrer(e)}
                                     ref={refFormRegister}
                                 >
                                     <input
                                         type="text"
                                         className="sing-in__input"
+                                        name="name"
                                         placeholder="Имя"
                                         onChange={(e) => handleChangeInputName(e)}
-                                        onBlur={(e) => e.target.value = e.target.value[0].toUpperCase() + e.target.value.slice(1, e.target.value.length)}
+                                        onBlur={(e) => handleBlurInputName(e)}
                                     />
-                                    <input type="email" className="sing-in__input" placeholder="Почта" />
+                                    <input type="email" name="email" className="sing-in__input" placeholder="Почта" />
                                     <div className="sing-in__password-wrapper">
                                         <input
                                             type="password"
-                                            name=""
+                                            name="password"
                                             className="sing-in__input"
                                             placeholder="Пароль"
                                             autoComplete="false"
@@ -161,7 +189,7 @@ function SingIn({ openModal, activeModal }) {
                                         <div className="infoBlockPassword" onClick={() => handleOpenModalPassword()}></div>
                                     </div>
                                 </form>
-                                <p className="sing-in__register-error">{errorRegister == true && "Пароль не соответствует требованиям!"}</p>
+                                <p className="sing-in__register-error">{errorRegister}</p>
                                 <button className="sing-in__enter-button" form="registerForm" type="submit">
                                     Создать
                                 </button>

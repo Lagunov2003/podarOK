@@ -5,13 +5,27 @@ import Header from "../../blocks/LayerPage/header";
 import SingIn from "../sing-in";
 import Footer from "../../blocks/LayerPage/footer";
 import ChatHelper from "../chat-helper";
+import { responseGetProfile } from "../../tool/response";
 
 function PageLayer() {
     const [activeModal, setActiveModal] = useState(false);
     const location = useLocation();
-
+    const [data, setData] = useState();
     useEffect(() => {
         document.title = "podarOK | Главная";
+
+        const asyncFunc = async () => {
+            const token = localStorage.getItem("token")
+
+            if(token) {
+                let d = await responseGetProfile(token)
+                setData(d)
+                console.log(d);
+                
+            }
+        }
+
+        asyncFunc()
     }, []);
 
     const handleOpenModal = () => {
@@ -28,7 +42,7 @@ function PageLayer() {
         <div className="page-layer">
             <div className="page-layer__wrapper">
                 <div className="page-layer__wrapper-header">
-                    <Header handleOpenModal={handleOpenModal} />
+                    <Header handleOpenModal={handleOpenModal} data={data}/>
                     <SingIn openModal={handleOpenModal} activeModal={activeModal} />
                 </div>
                 <main className="">
