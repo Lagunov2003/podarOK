@@ -27,7 +27,6 @@ spring:
     baseline-on-migrate: true
     locations: classpath:db/migration
     clean-disabled: false
-    clean-on-validation-error: true
 jwt:
   secret: 984hg493gh0439rthr0429uruj2309yh937gc763fe87t3f89723g4
   lifetime: 24h

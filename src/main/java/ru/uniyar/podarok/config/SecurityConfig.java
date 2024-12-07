@@ -48,7 +48,8 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(
                                 "/profile", "/cart", "/notifications", "/favorites", "/ordersHistory",
-                                "/currentOrders", "/order", "/addToFavorites", "/addSiteReview"
+                                "/currentOrders", "/order", "/addToFavorites", "/addSiteReview", "/sentMessages",
+                                "/messages", "/newMessages", "/send"
                         ).authenticated()
                         .requestMatchers(
                                 "/changeOrderStatus", "/getOrders", "/deleteGift", "/changeGift", "/addGift",
