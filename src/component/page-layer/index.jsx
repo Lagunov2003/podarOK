@@ -6,6 +6,7 @@ import SingIn from "../sing-in";
 import Footer from "../../blocks/LayerPage/footer";
 import ChatHelper from "../chat-helper";
 import { responseGetProfile } from "../../tool/response";
+import WrapperModal from "../wrapper-modal";
 
 function PageLayer() {
     const [activeModal, setActiveModal] = useState(false);
@@ -35,7 +36,7 @@ function PageLayer() {
 
     useEffect(() => {
         const scroll = sessionStorage.getItem("scroll");
-        if (!scroll) window.scrollTo({ top: 0, behavior: "smooth" });
+        if (!scroll) window.scrollTo({ top: 0 });
     }, [location.pathname]);
 
     return (
@@ -43,7 +44,9 @@ function PageLayer() {
             <div className="page-layer__wrapper">
                 <div className="page-layer__wrapper-header">
                     <Header handleOpenModal={handleOpenModal} data={data}/>
-                    <SingIn openModal={handleOpenModal} activeModal={activeModal} />
+                    <WrapperModal activeModal={activeModal}>
+                        <SingIn openModal={handleOpenModal} />
+                    </WrapperModal>
                 </div>
                 <main className="">
                     <Outlet />

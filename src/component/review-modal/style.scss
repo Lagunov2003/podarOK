@@ -1,0 +1,93 @@
+.review-modal {
+    padding: 22px;
+    width: 477px;
+    border-radius: 30px;
+    background-color: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &__title {
+        margin-bottom: 11px;
+        width: 309px;
+        font-family: Dimica;
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 24px;
+        text-align: center;
+    }
+
+    &__row {
+        margin-bottom: 11px;
+        display: flex;
+        align-items: center;
+        gap: 35px;
+    }
+
+    &__label {
+        font-family: Dimica;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 20px;
+    }
+
+    &__stars-row {
+        display: flex;
+
+        img {
+            cursor: pointer;
+        }
+    }
+    
+    &__textarea {
+        margin-bottom: 18px;
+        height: 195px;
+        width: 100%;
+        padding: 17px 24px;
+        font-family: Dimica;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 20px;
+        border-radius: 19px;
+        background-color: #DCDCDC;
+
+        &::placeholder {
+            font-family: Dimica;
+            font-size: 20px;
+            font-weight: 400;
+            color: #7D7D7D;
+        }
+    }
+
+    &__send {
+        padding: 0 46px;
+        width: max-content;
+        height: 39px;
+        border: 1px solid rgb(255, 84, 150);
+        border-radius: 30px;
+        color: rgb(255, 84, 150);
+        font-family: Dela;
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 130%;
+        text-align: center;
+        transition: all 0.2s linear;
+        background-color: white;
+        &:hover {
+            background-color: rgb(255, 84, 150);
+            color: white;
+            border-color: white;
+        }
+        &:active {
+            transform: translateY(5px);
+        }
+    }
+
+    &__close {
+        position: absolute;
+        top: 22px;
+        right: 22px;
+        background-color: transparent;
+    }
+}

@@ -7,12 +7,29 @@
     &__title {
         margin-bottom: 43px;
     }
-    &__list {
-        margin-bottom: 26px;
+    &__swiper {
         display: flex;
-        justify-content: space-between;
+        align-items: center;
+
+        &-prev,
+        &-next {
+            margin-bottom: 26px;
+            height: 40px;
+            min-width: 25px;
+            background: url("../img/arrow-black-swiper.svg") center / 100% 100% no-repeat;
+        }
+
+        &-prev {
+            transform: rotateZ(180deg);
+            margin-right: 6px;
+        }
+
+        &-next {
+            margin-left: 6px;
+        }
     }
     &__item {
+        margin-bottom: 26px;
         border-radius: 30px;
         padding: 32px 26px 10px;
         box-shadow: inset 0px 4px 4px 0px rgba(0, 0, 0, 0.25),0px 4px 4px 0px rgba(0, 0, 0, 0.25);
@@ -34,13 +51,10 @@
             font-family: Dimica;
             font-size: 20px;
             font-weight: 400;
-
-            span {
-                color: #7D7D7D;
-            }
         }
     }
     &__label {
+        margin-left: 67px;
         margin-bottom: 32px;
         color: rgb(125, 125, 125);
         font-family: Dimica;
@@ -49,5 +63,6 @@
     }
     &__button {
         align-self: center;
+        background-color: white;
     }
 }

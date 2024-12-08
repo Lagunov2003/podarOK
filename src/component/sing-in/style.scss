@@ -1,13 +1,11 @@
 .sing-in {
-    position: fixed;
-    top: 0;
-    left: 0;
     z-index: 150;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s linear;
+    
     &_active {
         
         .sing-in__block {
@@ -47,23 +45,7 @@
             }
         }
     }
-    &_visit {
-        background-color: rgba(0, 0, 0, 0.301);
-        width: 100%;
-        height: 100%;
-
-        .sing-in__content {
-            height: 500px;
-            width: 753px;
-        }
-        .sing-in__wrapper {
-            top: 0;
-        }
-    }
     &__wrapper {
-        top: -100%;
-        position: relative;
-        transition: all 0.3s linear;
 
         .info-password  {
             right: -320px;
@@ -73,6 +55,8 @@
     &__content {
         border-radius: 50px;
         background-color: white;
+        height: 500px;
+        width: 753px;
         display: flex;
         overflow: hidden;
         position: relative;

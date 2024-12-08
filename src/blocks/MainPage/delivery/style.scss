@@ -42,6 +42,7 @@
             font-size: 20px;
             font-weight: 400;
             line-height: 20px;
+            color: black;
             position: relative;
             cursor: pointer;
             &::after {
@@ -120,6 +121,13 @@
         &-wrapper {
             height: 45px;
             margin-bottom: 42px;
+        }
+    }
+
+    &__dropdown {
+
+        &_inactive {
+            opacity: 0.5;
         }
     }
 
