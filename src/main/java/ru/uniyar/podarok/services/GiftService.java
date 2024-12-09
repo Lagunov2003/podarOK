@@ -84,17 +84,18 @@ public class GiftService {
     public void updateGift(ChangeGiftDto changeGiftDto) throws EntityNotFoundException {
         Long recommendation_id = getGiftById(changeGiftDto.getId()).getRecommendation().getId();
         giftRepository.updateGift(changeGiftDto.getId(), changeGiftDto.getPrice(), recommendation_id, changeGiftDto.getDescription(), changeGiftDto.getName(), changeGiftDto.getGroupId());
+        giftRepository.deleteGiftPhotos(changeGiftDto.getId());
         for (String photoUrl : changeGiftDto.getPhotos()) {
-            giftRepository.updateGiftPhoto(changeGiftDto.getId(), photoUrl);
+            giftRepository.addGiftPhoto(changeGiftDto.getId(), photoUrl);
         }
+        giftRepository.deleteGiftCategories(changeGiftDto.getId());
         for (Long categoryId : changeGiftDto.getCategories()) {
-            giftRepository.updateGiftCategory(changeGiftDto.getId(), categoryId);
+            giftRepository.addGiftCategory(changeGiftDto.getId(), categoryId);
         }
-        for (Long occasionId : changeGiftDto.getOccasions()) {
-            giftRepository.updateGiftOccasion(changeGiftDto.getId(), occasionId);
-        }
+        giftRepository.updateGiftOccasion(changeGiftDto.getId(), changeGiftDto.getOccasions());
+        giftRepository.deleteGiftFeatures(changeGiftDto.getId());
         for (Map.Entry<String, String> feature : changeGiftDto.getFeatures().entrySet()) {
-            giftRepository.updateGiftFeature(changeGiftDto.getId(), feature.getKey(), feature.getValue());
+            giftRepository.addGiftFeature(changeGiftDto.getId(), feature.getKey(), feature.getValue());
         }
         giftRepository.updateGiftRecommendation(recommendation_id, changeGiftDto.getGender(), changeGiftDto.getMinAge(), changeGiftDto.getMaxAge());
     }

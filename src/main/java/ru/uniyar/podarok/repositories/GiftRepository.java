@@ -67,9 +67,9 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
                   @Param("group_id") Long groupId);
 
     @Modifying
-    @Query(value = "UPDATE gift_category SET category_id=:category_id " +
+    @Query(value = "DELETE FROM gift_category " +
             "WHERE gift_id=:gift_id", nativeQuery = true)
-    void updateGiftCategory(@Param("gift_id") Long giftId, @Param("category_id") Long categoryId);
+    void deleteGiftCategories(@Param("gift_id") Long giftId);
 
     @Modifying
     @Query(value = "UPDATE gift_occasion SET occasion_id=:occasion_id " +
@@ -77,17 +77,18 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
     void updateGiftOccasion(@Param("gift_id") Long giftId, @Param("occasion_id") Long occasionId);
 
     @Modifying
+    @Query(value = "DELETE FROM gift_photos " +
+            "WHERE gift_id=:gift_id", nativeQuery = true)
+    void deleteGiftPhotos(@Param("gift_id") Long giftId);
+    @Modifying
     @Query(value = "UPDATE Gift_Photo SET photo_url=:photo_url " +
             "WHERE gift_id=:gift_id", nativeQuery = true)
     void updateGiftPhoto(@Param("gift_id") Long giftId, @Param("photo_url") String photoUrl);
 
     @Modifying
-    @Query(value = "UPDATE Gift_Feature " +
-            "SET item_name=:item_name, item_value=:item_value " +
+    @Query(value = "DELETE FROM gift_feature " +
             "WHERE gift_id=:gift_id", nativeQuery = true)
-    void updateGiftFeature(@Param("gift_id") Long giftId,
-                         @Param("item_name") String itemName,
-                         @Param("item_value") String itemValue);
+    void deleteGiftFeatures(@Param("gift_id") Long giftId);
 
     @Modifying
     @Query(value = "UPDATE Gift_Recommendations " +

@@ -28,11 +28,6 @@ INSERT INTO occasion(name) VALUES ('День Рождения'), ('Новый г
 ('1 сентября'), ('Новоселье'), ('День матери/отца'), ('Рождение ребёнка'),
 ('Особенный день'), ('Без повода');
 
-INSERT INTO occasion(name) VALUES ('День Рождения'), ('Новый год'), ('Выпускной'),
-('Свадьба'), ('Годовщина'), ('14 февраля'), ('23 февраля'), ('8 марта'), ('Пасха'),
-('1 сентября'), ('Новоселье'), ('День матери/отца'), ('Рождение ребёнка'),
-('Особенный день'), ('Без повода');
-
 INSERT INTO gift_recommendations(gender, min_age, max_age) VALUES (null, 3, 99),(null, 0, 99),(false, 12, 99),(true, 12, 99),(null, 18, 99);
 
 INSERT INTO gift(price, recommendation_id, description, name) VALUES
