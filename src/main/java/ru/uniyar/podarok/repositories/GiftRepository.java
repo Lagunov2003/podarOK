@@ -80,10 +80,6 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
     @Query(value = "DELETE FROM gift_photos " +
             "WHERE gift_id=:gift_id", nativeQuery = true)
     void deleteGiftPhotos(@Param("gift_id") Long giftId);
-    @Modifying
-    @Query(value = "UPDATE Gift_Photo SET photo_url=:photo_url " +
-            "WHERE gift_id=:gift_id", nativeQuery = true)
-    void updateGiftPhoto(@Param("gift_id") Long giftId, @Param("photo_url") String photoUrl);
 
     @Modifying
     @Query(value = "DELETE FROM gift_feature " +

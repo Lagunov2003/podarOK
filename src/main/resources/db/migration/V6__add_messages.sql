@@ -17,3 +17,8 @@ CREATE TABLE IF NOT EXISTS public.messages
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
+
+-- Очистка таблиц сообщений, заказ-подарок и отзывов на сайт
+TRUNCATE TABLE gift_order RESTART IDENTITY CASCADE;
+TRUNCATE TABLE site_reviews RESTART IDENTITY CASCADE;
+TRUNCATE TABLE messages RESTART IDENTITY CASCADE;

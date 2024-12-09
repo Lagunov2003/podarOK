@@ -92,7 +92,7 @@ public class GiftService {
         for (Long categoryId : changeGiftDto.getCategories()) {
             giftRepository.addGiftCategory(changeGiftDto.getId(), categoryId);
         }
-        giftRepository.updateGiftOccasion(changeGiftDto.getId(), changeGiftDto.getOccasions());
+        giftRepository.updateGiftOccasion(changeGiftDto.getId(), changeGiftDto.getOccasion());
         giftRepository.deleteGiftFeatures(changeGiftDto.getId());
         for (Map.Entry<String, String> feature : changeGiftDto.getFeatures().entrySet()) {
             giftRepository.addGiftFeature(changeGiftDto.getId(), feature.getKey(), feature.getValue());
@@ -110,9 +110,8 @@ public class GiftService {
         for (Long categoryId : addGiftDto.getCategories()) {
             giftRepository.addGiftCategory(gift_id, categoryId);
         }
-        for (Long occasionId : addGiftDto.getOccasions()) {
-            giftRepository.addGiftOccasion(gift_id, occasionId);
-        }
+        giftRepository.addGiftOccasion(gift_id, addGiftDto.getOccasion());
+
         for (Map.Entry<String, String> feature : addGiftDto.getFeatures().entrySet()) {
             giftRepository.addGiftFeature(gift_id, feature.getKey(), feature.getValue());
         }
