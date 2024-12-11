@@ -95,6 +95,7 @@
             font-weight: 400;
             line-height: 20px;
             position: relative;
+            color: black;
             cursor: pointer;
             &::after {
                 content: "";
@@ -242,13 +243,10 @@
         &-top {
             display: flex;
             justify-content: space-between;
-
-            & p {
-                font-size: 16px;
-            }
         }
 
         &-fields {
+            margin-bottom: 20px;
             max-width: 295px;
             display: flex;
             flex-direction: column;
@@ -292,6 +290,12 @@
             display: flex;
             justify-content: space-between;
         }
+
+        &-column {
+            & p {
+                font-size: 16px;
+            }
+        }
     }
 
     &__sum {
@@ -305,7 +309,7 @@
         }
 
         & input {
-            padding: 0px 30px 0 5px;
+            padding: 0px 30px 0 10px;
             height: 36px;
             width: 254px;
             font-family: Dimica;
@@ -313,7 +317,7 @@
             font-size: 18px;
             line-height: 18px;
             border: 1px solid #B0B0B0;
-            border-radius: 5px;    
+            border-radius: 15px;    
         }
 
         &-row {

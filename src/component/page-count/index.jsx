@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import "./style.scss";
 
-function PageCount() {
-
-    
+function PageCount({ count }) {
+    const [page, setPage] = useState(1);
+    const [arr, setArr] = useState(new Array(count).fill(0));
 
     return (
         <div className="page-count">
@@ -11,11 +11,9 @@ function PageCount() {
                 <img src="/img/purple-arrow.svg" alt="" />
             </div>
             <div className="page-count__row">
-                <div className="page-count__number">1</div>
-                <div className="page-count__number page-count__number_active">2</div>
-                <div className="page-count__number">3</div>
-                <div className="page-count__number">4</div>
-                <div className="page-count__number">5</div>
+                {arr.map((v, i) => (
+                    <div className={"page-count__number " + (page == i + 1 ? "page-count__number_active" : "")}>{i + 1}</div>
+                ))}
             </div>
             <div className="page-count__next">
                 <img src="/img/purple-arrow.svg" alt="" />

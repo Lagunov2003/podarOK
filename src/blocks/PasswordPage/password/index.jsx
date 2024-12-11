@@ -57,12 +57,12 @@ function Password() {
                     >
                         <label className="password__label">
                             Придумайте новый пароль:
-                            <input type="password" className="password__input" maxLength={20} name="passwordFirst" onChange={(e) => handleChangeInput(e)}/>
-                            <div className="infoBlockPassword" onClick={() => handleOpenModalPassword()}></div>
+                            <input type="password" className="password__input" maxLength={12} name="passwordFirst" onChange={(e) => handleChangeInput(e)}/>
+                            <button className="infoBlockPassword" type="button" onClick={() => handleOpenModalPassword()}></button>
                         </label>
                         <label className="password__label">
                             Повторите пароль:
-                            <input type="password" className="password__input" maxLength={20} name="passwordSecond" onChange={(e) => handleChangeInput(e)}/>
+                            <input type="password" className="password__input" maxLength={12} name="passwordSecond" onChange={(e) => handleChangeInput(e)}/>
                         </label>
                         <Button
                             text="Установить новый пароль"
@@ -72,8 +72,6 @@ function Password() {
                         />
                     </form>
                     {modalPassword == true && <InfoPassword handleOpen={handleOpenModalPassword}/>}
-
-                   
                 </div>
             </div>
         </section>

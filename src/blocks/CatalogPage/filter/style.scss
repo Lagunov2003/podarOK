@@ -67,15 +67,24 @@
             font-size: 20px;
             font-weight: 400;
             line-height: 20px;
-            line-height: 120%;
-            text-align: left;
             display: flex;
+            align-items: center;
             gap: 15px;
+            position: relative;
+            cursor: pointer;
+            
             input {
-                position: relative;
-                top: 2px;
-                height: 16px;
-                min-width: 16px;
+                min-height: 16px;
+                min-width: 16px;  
+                border: 1px solid black;
+                border-radius: 2px;          
+                appearance: none;
+            }
+
+            &:has(input:checked) {
+                input {
+                    background-color: #F94056;
+                }
             }
 
         }
@@ -86,6 +95,7 @@
                 border-radius: 4px;
                 height: 24px;
                 padding: 5px;
+                font-size: 16px;
             }
 
             .filter__item-input {
@@ -108,5 +118,6 @@
     &__button {
         height: 50px !important;
         width: 100%;
+        background-color: white;
     }
 }

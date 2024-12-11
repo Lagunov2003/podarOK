@@ -53,17 +53,17 @@ function SurveyModal() {
         document.body.classList.toggle("local-page");
         setData({
             price: "0",
-        })
+        });
         setOpen((t) => !t);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setOpen(false)
+        setOpen(false);
         document.body.classList.remove("local-page");
         setTimeout(() => {
-            navigate("/catalog"); 
-        }, 500)
+            navigate("/catalog");
+        }, 500);
     };
 
     const handleChangePrice = (e) => {

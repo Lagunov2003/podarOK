@@ -6,13 +6,15 @@ const list = ["Любое время", "С 8:00 до 11:00", "С 11:00 до 14:0
 
 function Delivery({ refDelivery }) {
     const [price, setPrice] = useState(100);
-    const [distance, setDistance] = useState(1)
-    const [fast, setFast] = useState(false)
+    const [distance, setDistance] = useState(1);
+    const [time, setTime] = useState();
+    const [fast, setFast] = useState(false);
 
     useEffect(() => {
-        const pri = 100 * distance + (fast ? 250 : 0)
-        setPrice(pri)
-    }, [distance, fast])
+        const pri = 100 * distance + (fast ? 250 : 0);
+        setPrice(pri);
+    }, [distance, fast]);
+
 
     return (
         <section className="delivery" ref={refDelivery}>
@@ -32,25 +34,36 @@ function Delivery({ refDelivery }) {
                             <h3 className="delivery__col-title">2. Укажите расстояние доставки:</h3>
                             <p className="delivery__col-label">*Расстояние влияет на стоимость</p>
                             <label className="delivery__col-radio">
-                                <input type="radio" className="delivery__col-type" name="type" defaultChecked onChange={() => setDistance(1)}/>
+                                <input
+                                    type="radio"
+                                    className="delivery__col-type"
+                                    name="type"
+                                    defaultChecked
+                                    onChange={() => setDistance(1)}
+                                />
                                 Доставка в пределах города
                             </label>
                             <label className="delivery__col-radio">
-                                <input type="radio" className="delivery__col-type" name="type" onChange={() => setDistance(2)}/>
+                                <input type="radio" className="delivery__col-type" name="type" onChange={() => setDistance(2)} />
                                 Доставка за город (не более 10 км)
                             </label>
                             <label className="delivery__col-radio">
-                                <input type="radio" className="delivery__col-type" name="type" onChange={() => setDistance(3)}/>
+                                <input type="radio" className="delivery__col-type" name="type" onChange={() => setDistance(3)} />
                                 Доставка за город (более 10 км)
                             </label>
                         </div>
                         <div className="delivery__col">
                             <h3 className="delivery__col-title">3. Выберите время доставки*</h3>
                             <div className="delivery__col-wrapper">
-                                <Dropdown list={list} classBlock={fast ? "delivery__dropdown delivery__dropdown_inactive" : "delivery__dropdown"} inactive={fast}/>
+                                <Dropdown
+                                    list={list}
+                                    classBlock={fast ? "delivery__dropdown dropdown_inactive" : "delivery__dropdown"}
+                                    setData={setTime}
+                                    inactive={fast}
+                                />
                             </div>
                             <label className="delivery__col-radio">
-                                <input type="checkbox" className="delivery__col-fast" name="fast"  onChange={() => setFast(v => !v)}/>
+                                <input type="checkbox" className="delivery__col-fast" name="fast" onChange={() => setFast((v) => !v)} />
                                 Срочная доставка
                             </label>
                         </div>

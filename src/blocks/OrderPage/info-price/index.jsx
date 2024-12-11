@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.scss";
+import { convertPrice } from "../../../tool/tool";
 
-function InfoPrice() {
+function InfoPrice({ dataOrder, handleOrderRegistration, setDataOrder }) {
     const [code, setCode] = useState("");
     const [activeCode, setActiveCode] = useState("");
+    const [discount, setDiscount] = useState(0);
 
     const handleCheck = () => {
         if (code == "CODE10") {
+            setDiscount((dataOrder.price / 100) * 10);
             setActiveCode("true");
         } else {
             setActiveCode("false");
@@ -18,13 +21,23 @@ function InfoPrice() {
         setActiveCode("");
     };
 
+    useEffect(() => {
+        if (activeCode == "true") setDiscount(((dataOrder.price + dataOrder.addressPrice)/ 100) * 10);
+    }, [dataOrder, activeCode]);
+
+    useEffect(() => {
+        if (activeCode == "true") setDataOrder((v) => ({ ...v, discount: discount }));
+    }, [discount]);
+
     return (
         <div className="info-price">
             <div className="info-price__list">
                 <div className="info-price__item">
                     <span className="info-price__item-count">2</span>
                 </div>
-                <div className="info-price__item"></div>
+                <div className="info-price__item">
+                    <span className="info-price__item-count">1</span>
+                </div>
             </div>
             <div className="info-price__line"></div>
             <div className="info-price__center">
@@ -40,27 +53,29 @@ function InfoPrice() {
                         />
                         {activeCode == "" && (
                             <button className="info-price__check" onClick={() => handleCheck()}>
-                                <img src="/img/gray-arrow.svg" alt="" />
+                                <img src="/img/gray-arrow.svg" alt="Проверка промокода" />
                             </button>
                         )}
                     </div>
                 </div>
                 <div className="info-price__row">
                     <p className="info-price__text">Доставка</p>
-                    <p className="info-price__text">9 999 ₽</p>
+                    <p className="info-price__text">{convertPrice(dataOrder.addressPrice)} ₽</p>
                 </div>
                 {activeCode == "true" && (
                     <div className="info-price__row">
                         <p className="info-price__text">Скидка</p>
-                        <p className="info-price__text">6 199 ₽</p>
+                        <p className="info-price__text">- {convertPrice(dataOrder.discount)} ₽</p>
                     </div>
                 )}
             </div>
             <div className="info-price__row">
                 <p className="info-price__text-bold">Итого</p>
-                <p className="info-price__text-bold">22 396 ₽</p>
+                <p className="info-price__text-bold">{convertPrice(dataOrder.price - dataOrder.discount + dataOrder.addressPrice)} ₽</p>
             </div>
-            <button className="info-price__button">Оформить заказ</button>
+            <button className="info-price__button" onClick={() => handleOrderRegistration()}>
+                Оформить заказ
+            </button>
         </div>
     );
 }

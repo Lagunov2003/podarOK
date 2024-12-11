@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import "./style.scss";
 import BasketItem from "../basket-item";
 import { Link } from "react-router-dom";
+import { convertPrice } from "../../../tool/tool";
 
-function WrapperBasket({ list }) {
+function WrapperBasket({ list, setList }) {
     const [selectItem, setSelectItem] = useState([...list]);
     const [priceAll, setPriceAll] = useState(0);
 
@@ -25,8 +26,14 @@ function WrapperBasket({ list }) {
                     <div className="basket-page__main">
                         <div className="basket-page__wrapper-left">
                             <div className="basket-page__list">
-                                {list.map((v, i) => (
-                                    <BasketItem itemValue={v} key={i} setSelectItem={setSelectItem} selectItem={selectItem} />
+                                {list.map((v) => (
+                                    <BasketItem
+                                        itemValue={v}
+                                        key={v.id}
+                                        setList={setList}
+                                        setSelectItem={setSelectItem}
+                                        selectItem={selectItem}
+                                    />
                                 ))}
                             </div>
                             <p className="basket-page__label">
@@ -45,23 +52,21 @@ function WrapperBasket({ list }) {
                                 <>
                                     <h3 className="basket-page__info-title">Подтверждение товаров</h3>
                                     <div className="basket-page__info-list">
-                                        {selectItem.map((_, i) => (
-                                            <div className="basket-page__info-item" key={i}></div>
+                                        {selectItem.map((v, i) => (
+                                            <div className="basket-page__info-item" key={i}>
+                                                {/* <img src="#" alt="Картинка товара" /> */}
+                                                <span className="basket-page__info-count">{v.count}</span>
+                                            </div>
                                         ))}
                                     </div>
                                     <div className="basket-page__info-price">
                                         <span>Итого</span>
-                                        <span>
-                                            {[...priceAll.toString().slice("")]
-                                                .reverse()
-                                                .map((v, i) => ((i + 1) % 3 == 0 ? " " + v : v))
-                                                .reverse()
-                                                .join("")}{" "}
-                                            ₽
-                                        </span>
+                                        <span>{convertPrice(priceAll)} ₽</span>
                                     </div>
                                     <p className="basket-page__info-label">Цена без учета доставки и промокодов</p>
-                                    <Link to={"/order/123"} className="basket-page__info-button">К оформлению</Link>
+                                    <Link to={"/order/123"} className="basket-page__info-button">
+                                        К оформлению
+                                    </Link>
                                 </>
                             )}
                         </div>
@@ -70,6 +75,9 @@ function WrapperBasket({ list }) {
                     <div className="basket-page__empty">
                         <h2 className="basket-page__empty-title">В корзине ничего нет</h2>
                         <p className="basket-page__empty-text">Вы можете пройти опрос или начать свои покупки в каталоге</p>
+                        <Link to={"/catalog"} className="basket-page__button-catalog">
+                            В каталог
+                        </Link>
                     </div>
                 )}
             </div>

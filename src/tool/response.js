@@ -20,7 +20,7 @@ export async function responseRegister(name, email, password) {
         } else {
             return "ошибка"
         }
-    } catch(e) {
+    } catch (e) {
 
     }
 }
@@ -47,7 +47,7 @@ export async function responseLogin(email, password) {
         } else {
             return "ошибка"
         }
-    } catch(e) {
+    } catch (e) {
 
     }
 }
@@ -69,22 +69,28 @@ export async function responseGetProfile(token) {
         } else {
             return "ошибка"
         }
-    } catch(e) {
+    } catch (e) {
 
     }
 }
 
-export async function responseDataCatalog() {
+export async function responseGetCatalog(setList) {
 
-    const response = await fetch("http://localhost:8080/catalog", {
-        method: "GET",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
 
-    const data = await response.json();
-    console.log(data);
+    try {
+        const response = await fetch("http://localhost:8080/catalog", {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await response.json();
+        console.log(data);
+        setList(data["_embedded"].giftList)
+    } catch (e) {
+
+    }
 }
 
 export const getAdressFromCoordinates = async (lat, lon) => {

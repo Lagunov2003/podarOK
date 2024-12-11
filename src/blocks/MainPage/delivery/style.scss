@@ -124,13 +124,6 @@
         }
     }
 
-    &__dropdown {
-
-        &_inactive {
-            opacity: 0.5;
-        }
-    }
-
     &__dropdown + .delivery__col-radio {
         margin-bottom: 25px;
     }

@@ -31,7 +31,7 @@
         display: flex;
         flex-direction: column;
         width: 750px;
-        gap: 50px;
+        gap: 30px;
     }
 
     &__label {
@@ -49,6 +49,7 @@
         flex-direction: column;
         border-radius: 25px;
         background-color: white;
+        min-width: 385px;
 
         &-text {
             margin-bottom: 21px;
@@ -70,9 +71,16 @@
             font-weight: 400;
             line-height: 44px;
             text-align: center;
+            border: 1px solid #1389E9;
+            transition: all 0.2s linear;
 
             &:hover {
-                color: white;
+                background: linear-gradient(90deg, rgba(49, 206, 217, 0.3) 0%, rgba(151, 71, 255, 0.3) 100%);
+                color: #370D6D;
+            }
+
+            &:active {
+                transform: translateY(3px);
             }
         }
 
@@ -89,15 +97,34 @@
             margin-bottom: 10px;
             padding-bottom: 17px;
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
             border-bottom: 1px solid #D9D9D9;
+            position: relative;
         }
 
         &-item {
             border-radius: 20px;
             height: 80px;
-            width: 80px;
+            min-width: 80px;
             background-color: #BABABA;
+            position: relative;
+        }
+
+        &-count {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            font-family: Dela;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 26px;
+            height: 25px;
+            min-width: 25px;
+            border-radius: 50%;
+            text-align: center;
+            color: white;
+            background-color: #FF5496;
         }
 
         &-price {
@@ -124,6 +151,9 @@
     &__empty {
         margin-top: 120px;
         margin-bottom: 258px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         &-title {
             margin-bottom: 14px;
             font-family: Dela;
@@ -141,6 +171,31 @@
             line-height: 20px;
             text-align: center;
             color: white;
+        }
+    }
+
+    &__button-catalog {
+        margin-top: 33px;
+        padding: 18px 49px;
+        width: max-content;
+        height: 67px;
+        border: 1px solid rgb(255, 84, 150);
+        border-radius: 30px;
+        color: rgb(255, 84, 150);
+        font-family: Dela;
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 130%;
+        text-align: center;
+        transition: all 0.2s linear;
+        background-color: white;
+        &:hover {
+            background-color: rgb(255, 84, 150);
+            color: white;
+            border-color: white;
+        }
+        &:active {
+            transform: translateY(5px);
         }
     }
 }

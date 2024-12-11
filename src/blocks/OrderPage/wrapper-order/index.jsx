@@ -2,6 +2,7 @@ import React from "react";
 import "./style.scss";
 
 function WrapperOrder(props) {
+    
     return (
         <section className="wrapper-order">
             <div className="wrapper-order__content">
