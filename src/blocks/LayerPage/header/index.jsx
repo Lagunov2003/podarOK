@@ -15,6 +15,9 @@ function Header({ handleOpenModal, data }) {
                         podar<span>OK</span>
                     </Link>
                 </div>
+                <Link to={"/admin/reviews"}>
+                    <span>админ</span>
+                </Link>
                 <Link to={"/account/user"}>
                     <span>аккаунт</span>
                 </Link>

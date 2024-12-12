@@ -1,0 +1,93 @@
+.admin-reviews {
+    padding: 20px 40px 30px;
+
+    &__title {
+        margin-bottom: 11px;
+        font-family: Dela;
+        font-size: 40px;
+        font-weight: 400;
+        line-height: 60px;
+        text-align: center;     
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+    }
+
+    &__item {
+        &-content {
+            margin-bottom: 10px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            background-color: #E9E9E9;
+        }
+
+        &-row {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-end;
+            height: 31px;
+        }
+
+        &-name {
+            margin-right: 20px;
+            font-family: Dimica;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 20px;
+        }
+
+        &-time {
+            margin-left: auto;
+            font-family: Dimica;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 20px;
+            color: #A3A3A3;
+        }
+
+        &-text {
+            font-family: Dimica;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 20px;
+        }
+
+    }
+
+    &__row {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+    }
+
+    &__button {
+        width: 284px;
+        height: 39px;
+        border-radius: 30px;
+        font-family: Dela;
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 32px;
+        text-align: center;
+        background-color: #FFF6F6;
+        transition: all 0.15s linear;
+
+        &:active {
+            transform: translateY(3px);
+        }
+
+        &_accept {
+            border: 1px solid #43A047;
+            color: #43A047;
+        }
+
+        &_reject {
+            border: 1px solid  #F94056;
+            color: #F94056;
+        }
+
+    }
+}

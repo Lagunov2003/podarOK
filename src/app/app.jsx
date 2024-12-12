@@ -15,6 +15,9 @@ import Basket from "./basket";
 import OrderAccount from "../blocks/AccountPage/order";
 import Card from "./card";
 import Order from "./order";
+import Admin from "./admin/admin";
+import AdminReviews from "../blocks/AdminPage/admin-reviews";
+import AdminOrders from "../blocks/AdminPage/admin-orders";
 
 const router = createBrowserRouter([
     {
@@ -81,6 +84,10 @@ function App() {
                     <Route path="basket" element={<Basket />} />
                     <Route path="article/:id" element={<Card />} />
                     <Route path="order/:id" element={<Order />} />
+                    <Route path="admin" element={<Admin />} >
+                        <Route path="reviews" element={<AdminReviews />} />
+                        <Route path="orders" element={<AdminOrders />} />
+                    </Route>
                 </Route>
             </Routes>
         </BrowserRouter>
