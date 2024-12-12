@@ -64,7 +64,6 @@ CREATE TABLE IF NOT EXISTS public.gift (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     price DECIMAL(10, 2) NOT NULL,
-    category_id BIGINT REFERENCES public.category (id),
     recommendation_id BIGINT REFERENCES public.gift_recommendations (id),
     PRIMARY KEY (id)
 );

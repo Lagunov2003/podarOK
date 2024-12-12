@@ -77,7 +77,7 @@ public class GiftFilterServiceTest {
     }
 
     @Test
-    void GiftFilterService_ProcessRequest_ReturnsRequest_whenOnlySurveyDataIsSet() {
+    void GiftFilterService_ProcessRequest_ReturnsRequest_WhenOnlySurveyDataIsSet() {
         GiftFilterRequest request = new GiftFilterRequest(
                 null, null, null, null, null,
                 List.of(1L),
@@ -90,14 +90,14 @@ public class GiftFilterServiceTest {
         GiftFilterRequest result = giftFilterService.processRequest(request);
 
         assertNotNull(result);
-        assertEquals(List.of(1L), result.getSurveyCategories());
-        assertEquals(false, result.getSurveyGender());
-        assertEquals(BigDecimal.valueOf(150), result.getSurveyBudget());
-        assertEquals(28, result.getSurveyAge());
+        assertEquals(List.of(1L), result.getCategories());
+        assertEquals(false, result.getGender());
+        assertEquals(BigDecimal.valueOf(150), result.getBudget());
+        assertEquals(28, result.getAge());
     }
 
     @Test
-    void GiftFilterService_ProcessRequest_ReturnsRequest_whenOnlyFilterDataIsSet() {
+    void GiftFilterService_ProcessRequest_ReturnsRequest_WhenOnlyFilterDataIsSet() {
         GiftFilterRequest request = new GiftFilterRequest(
                 List.of(1L),
                 List.of(1L),
@@ -118,7 +118,7 @@ public class GiftFilterServiceTest {
     }
 
     @Test
-    void GiftFilterService_ProcessRequest_ReturnsRequest_whenBothFiltersAndSurveyDataAreSet() {
+    void GiftFilterService_ProcessRequest_ReturnsRequest_WhenBothFiltersAndSurveyDataAreSet() {
         GiftFilterRequest request = new GiftFilterRequest(
                 List.of(1L),
                 List.of(1L),

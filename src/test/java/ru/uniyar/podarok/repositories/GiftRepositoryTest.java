@@ -18,7 +18,6 @@ import ru.uniyar.podarok.testRepositories.*;
 
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,6 +46,8 @@ public class GiftRepositoryTest {
     private GiftPhotoRepository giftPhotoRepository;
     @Autowired
     private GiftFeatureRepository giftFeatureRepository;
+    @Autowired
+    private GroupRepository groupRepository;
     private Pageable pageable;
     private Gift gift1 = new Gift();
     private User user = new User();
@@ -54,10 +55,6 @@ public class GiftRepositoryTest {
     @BeforeEach
     void setUp() {
         pageable = PageRequest.of(0, 100);
-        BigDecimal budget = new BigDecimal("100.00");
-        Boolean gender = true;
-        Integer age = 25;
-        Boolean urgency = true;
 
         user.setEmail("test@example.com");
         user.setGender(true);
@@ -96,9 +93,18 @@ public class GiftRepositoryTest {
         giftRecommendation.setMaxAge(101);
         giftRecomendationsRepository.save(giftRecommendation);
 
+        GiftGroup giftGroup0 = new GiftGroup();
+        giftGroup0.setId(1L);
+        groupRepository.save(giftGroup0);
+        GiftGroup giftGroup = new GiftGroup();
+        giftGroup.setId(2L);
+        groupRepository.save(giftGroup);
+
         gift1.setCategories(new HashSet<>(List.of(category2)));
         gift1.setRecommendation(giftRecommendation);
+        gift1.setGiftGroup(null);
         gift1 = giftRepository.save(gift1);
+
 
         GiftCategory giftCategory = new GiftCategory();
         giftCategory.setCategoryId(category2.getId());
@@ -109,7 +115,8 @@ public class GiftRepositoryTest {
         giftOccasion.setOccasionId(occasion.getId());
         giftOccasion.setGiftId(gift1.getId());
         giftOccasionRepository.save(giftOccasion);
-
+        entityManager.flush();
+        entityManager.clear();
     }
 
     @BeforeEach
@@ -119,6 +126,9 @@ public class GiftRepositoryTest {
         entityManager.createNativeQuery("TRUNCATE TABLE occasion RESTART IDENTITY CASCADE").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE users RESTART IDENTITY CASCADE").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE gift_recommendations RESTART IDENTITY CASCADE").executeUpdate();
+        entityManager.createNativeQuery("TRUNCATE TABLE gift_group RESTART IDENTITY CASCADE").executeUpdate();
+        entityManager.createNativeQuery("TRUNCATE TABLE gift_photo RESTART IDENTITY CASCADE").executeUpdate();
+        entityManager.createNativeQuery("TRUNCATE TABLE gift_category RESTART IDENTITY CASCADE").executeUpdate();
     }
 
     @Test
@@ -129,7 +139,7 @@ public class GiftRepositoryTest {
         assertTrue(giftsPage.hasContent());
         Gift actualGift = giftsPage.getContent().get(0);
         assertEquals(gift1.getName(), actualGift.getName());
-        assertEquals(gift1.getPrice(), actualGift.getPrice());
+        assertEquals(0, gift1.getPrice().compareTo(actualGift.getPrice()));
     }
 
     @Test
@@ -191,18 +201,17 @@ public class GiftRepositoryTest {
 
     @Test
     @Transactional
-    public void GiftRepository_UpdateGiftCategory_VerifiesCategoryUpdated() {
+    public void GiftRepository_DeleteGiftCategories_VerifiesCategoryDeleted() {
         GiftCategory giftCategory = new GiftCategory();
         giftCategory.setGiftId(1L);
-        giftCategory.setCategoryId(1L);
+        giftCategory.setCategoryId(2L);
         giftCategoryRepository.save(giftCategory);
         entityManager.flush();
+        entityManager.clear();
+        giftRepository.deleteGiftCategories(1L);
 
-        giftRepository.updateGiftCategory(1L, 2L);
-
-        GiftCategory updatedCategory = giftCategoryRepository.findById(new GiftCategoryId(2L, 1L)).get();
-        assertNotNull(updatedCategory);
-        assertEquals(2L, updatedCategory.getCategoryId());
+        Optional<GiftCategory> deletedCategory = giftCategoryRepository.findById(new GiftCategoryId(2L, 1L));
+        assertTrue(deletedCategory.isEmpty());
     }
 
     @Test
@@ -221,21 +230,20 @@ public class GiftRepositoryTest {
 
     @Test
     @Transactional
-    public void GiftRepository_UpdateGiftPhoto_VerifiesPhotoUpdated() {
+    public void GiftRepository_DeleteGiftPhotos_VerifiesPhotoDeleted() {
         GiftPhoto giftPhoto = new GiftPhoto();
         Gift gift = new Gift();
         gift.setId(1L);
         giftPhoto.setGift(gift);
-        giftPhoto.setPhotoUrl("old_url");
+        giftPhoto.setPhotoUrl("url");
         giftPhotoRepository.save(giftPhoto);
         entityManager.flush();
         entityManager.clear();
 
-        giftRepository.updateGiftPhoto(1L, "new_url");
+        giftRepository.deleteGiftPhotos(1L);
 
-        GiftPhoto updatedPhoto = giftPhotoRepository.findById(giftPhoto.getId()).get();
-        assertNotNull(updatedPhoto);
-        assertEquals("new_url", updatedPhoto.getPhotoUrl());
+        Optional<GiftPhoto> deletedPhoto = giftPhotoRepository.findById(giftPhoto.getId());
+        assertTrue(deletedPhoto.isEmpty());
     }
 
     @Test
@@ -256,23 +264,21 @@ public class GiftRepositoryTest {
 
     @Test
     @Transactional
-    public void GiftRepository_UpdateGiftFeature_VerifiesFeatureUpdated() {
+    public void GiftRepository_DeleteGiftFeatures_VerifiesFeatureDeleted() {
         GiftFeature giftFeature = new GiftFeature();
         Gift gift = new Gift();
         gift.setId(1L);
         giftFeature.setGift(gift);
-        giftFeature.setItemName("old_name");
-        giftFeature.setItemValue("old_value");
+        giftFeature.setItemName("name");
+        giftFeature.setItemValue("value");
         giftFeatureRepository.save(giftFeature);
         entityManager.flush();
         entityManager.clear();
 
-        giftRepository.updateGiftFeature(1L, "new_name", "new_value");
+        giftRepository.deleteGiftFeatures(1L);
 
-        GiftFeature updatedFeature = giftFeatureRepository.findById(giftFeature.getId()).get();
-        assertNotNull(updatedFeature);
-        assertEquals("new_name", updatedFeature.getItemName());
-        assertEquals("new_value", updatedFeature.getItemValue());
+        Optional<GiftFeature> deletedFeature = giftFeatureRepository.findById(giftFeature.getId());
+        assertTrue(deletedFeature.isEmpty());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package ru.uniyar.podarok.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -13,7 +14,6 @@ import java.util.Set;
 
 @Entity
 @Data
-@EqualsAndHashCode(exclude = {"categories"})
 @Table(name = "gift")
 public class Gift {
     @Id
@@ -32,6 +32,7 @@ public class Gift {
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     @JsonManagedReference
+    @EqualsAndHashCode.Exclude
     private Set<Category> categories = new HashSet<>();
     @ManyToOne
     @JoinColumn(name = "recommendation_id")
@@ -53,4 +54,7 @@ public class Gift {
     @JoinColumn(name = "group_id")
     @JsonManagedReference
     private GiftGroup giftGroup;
+    @OneToMany(mappedBy = "gift", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set<GiftOrder> giftOrders;
 }

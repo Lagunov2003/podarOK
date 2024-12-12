@@ -105,7 +105,7 @@ public class CatalogControllerTest {
 
         mockMvc.perform(get("/gift/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Подарок с ID 1 не найден!"));
+                .andExpect(content().string("Подарок с id 1 не найден!"));
 
         verify(catalogService, times(1)).getGiftResponse(1L);
     }
@@ -162,7 +162,7 @@ public class CatalogControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"giftId\":1}"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Подарок с Id 1 не найден!"));
+                .andExpect(content().string("Подарок с id 1 не найден!"));
     }
 
     @Test

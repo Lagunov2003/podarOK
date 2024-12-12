@@ -132,7 +132,7 @@ public class GiftServiceTest {
         when(giftRepository.existsById(giftId)).thenReturn(false);
 
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> giftService.deleteGift(giftId));
-        assertEquals("Подарок с Id 1 не найден!", exception.getMessage());
+        assertEquals("Подарок с id 1 не найден!", exception.getMessage());
         verify(giftRepository, times(1)).existsById(giftId);
         verify(giftRepository, never()).deleteById(anyLong());
     }
@@ -172,7 +172,7 @@ public class GiftServiceTest {
         changeGiftDto.setGroupId(2L);
         changeGiftDto.setPhotos(List.of("photo1.png", "photo2.png"));
         changeGiftDto.setCategories(List.of(1L, 2L));
-        changeGiftDto.setOccasions(List.of(3L, 4L));
+        changeGiftDto.setOccasion(3L);
         changeGiftDto.setFeatures(new HashMap<>(Map.of("цвет", "красный", "размер", "L")));
         changeGiftDto.setGender(true);
         changeGiftDto.setMinAge(18L);
@@ -199,10 +199,10 @@ public class GiftServiceTest {
                 changeGiftDto.getMinAge(),
                 changeGiftDto.getMaxAge()
         );
-        verify(giftRepository, times(2)).updateGiftPhoto(eq(changeGiftDto.getId()), anyString());
-        verify(giftRepository, times(2)).updateGiftCategory(eq(changeGiftDto.getId()), anyLong());
-        verify(giftRepository, times(2)).updateGiftOccasion(eq(changeGiftDto.getId()), anyLong());
-        verify(giftRepository, times(2)).updateGiftFeature(eq(changeGiftDto.getId()), anyString(), anyString());
+        verify(giftRepository, times(1)).deleteGiftPhotos(eq(changeGiftDto.getId()));
+        verify(giftRepository, times(1)).deleteGiftCategories(eq(changeGiftDto.getId()));
+        verify(giftRepository, times(1)).updateGiftOccasion(eq(changeGiftDto.getId()), anyLong());
+        verify(giftRepository, times(1)).deleteGiftFeatures(eq(changeGiftDto.getId()));
     }
 
     @Test
@@ -214,7 +214,7 @@ public class GiftServiceTest {
         addGiftDto.setGroupId(3L);
         addGiftDto.setPhotos(List.of("photo1.png", "photo2.png"));
         addGiftDto.setCategories(List.of(5L, 6L));
-        addGiftDto.setOccasions(List.of(7L, 8L));
+        addGiftDto.setOccasion(7L);
         addGiftDto.setFeatures(new HashMap<>(Map.of("материал", "дерево", "вес", "2кг")));
         addGiftDto.setGender(false);
         addGiftDto.setMinAge(10L);
@@ -247,7 +247,7 @@ public class GiftServiceTest {
         );
         verify(giftRepository, times(2)).addGiftPhoto(eq(giftId), anyString());
         verify(giftRepository, times(2)).addGiftCategory(eq(giftId), anyLong());
-        verify(giftRepository, times(2)).addGiftOccasion(eq(giftId), anyLong());
+        verify(giftRepository, times(1)).addGiftOccasion(eq(giftId), anyLong());
         verify(giftRepository, times(2)).addGiftFeature(eq(giftId), anyString(), anyString());
     }
 

@@ -18,6 +18,7 @@ public class AdminService {
     private OrderService orderService;
     private GiftService giftService;
     private GroupService groupService;
+    private SiteReviewsService siteReviewsService;
 
     public void changeOrderStatus(OrderDataDto orderDataDto) throws OrderNotFoundException {
         orderService.changeOrderStatus(orderDataDto);
@@ -31,17 +32,27 @@ public class AdminService {
         giftService.deleteGift(id);
     }
 
-    public void changeGift(ChangeGiftDto changeGiftDto) throws  EntityNotFoundException{
+    public void changeGift(ChangeGiftDto changeGiftDto) throws EntityNotFoundException{
         giftService.updateGift(changeGiftDto);
     }
-
 
     public void addGift(AddGiftDto addGiftDto) {
         giftService.addGift(addGiftDto);
     }
 
-
     public void addGroup(AddGroupDto addGroupDto) {
         groupService.addGroup(addGroupDto);
+    }
+
+    public List<SiteReviewsDto> getSiteReviews(boolean accepted) {
+        return siteReviewsService.getSiteReviewsByAcceptedStatus(false);
+    }
+
+    public void changeAcceptedStatusSiteReviews(Long id) throws EntityNotFoundException {
+        siteReviewsService.changeAcceptedStatusSiteReviews(id);
+    }
+
+    public void deleteNotAcceptedSiteReviews(Long id) {
+        siteReviewsService.deleteSiteReviews(id);
     }
 }

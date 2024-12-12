@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.OrderDto;
-import ru.uniyar.podarok.entities.Gift;
+import ru.uniyar.podarok.entities.GiftOrder;
 import ru.uniyar.podarok.entities.Order;
+
+import java.util.List;
 
 @Component
 @AllArgsConstructor
@@ -13,15 +15,24 @@ public class OrderDtoConverter {
     private final GiftDtoConverter giftDtoConverter;
 
     public OrderDto convertToOrderDto(Order order) {
-        Gift gift = order.getGift();
-        GiftDto giftDto = giftDtoConverter.convertToGiftDto(gift);
+        List<GiftDto> giftDtos = order.getGiftOrders().stream()
+                .map(GiftOrder::getGift)
+                .map(giftDtoConverter::convertToGiftDto)
+                .toList();
 
         return new OrderDto(
                 order.getId(),
                 order.getDeliveryDate(),
+                order.getFromDeliveryTime(),
+                order.getToDeliveryTime(),
                 order.getStatus(),
                 order.getInformation(),
-                giftDto
+                order.getPayMethod(),
+                order.getOrderCost(),
+                order.getRecipientName(),
+                order.getRecipientEmail(),
+                order.getRecipientPhoneNumber(),
+                giftDtos
         );
     }
 }

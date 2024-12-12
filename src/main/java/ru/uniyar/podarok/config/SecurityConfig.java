@@ -43,14 +43,18 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/registration", "/login", "/forgot", "/resetPassword",
-                                "/catalog",  "/gift/**", "/catalogSearch"
+                                "/catalog",  "/gift/**", "/catalogSearch", "/getSiteReviews",
+                                "/sortCatalog"
                         ).permitAll()
                         .requestMatchers(
                                 "/profile", "/cart", "/notifications", "/favorites", "/ordersHistory",
-                                "/currentOrders", "/order", "/addToFavorites"
+                                "/currentOrders", "/order", "/addToFavorites", "/addSiteReview", "/sentMessages",
+                                "/messages", "/newMessages", "/send"
                         ).authenticated()
                         .requestMatchers(
-                                "/changeOrderStatus", "/getOrders", "/deleteGift", "/changeGift", "/addGift", "/addGroup"
+                                "/changeOrderStatus", "/getOrders", "/deleteGift", "/changeGift", "/addGift",
+                                "/addGroup", "/getAcceptedSiteReviews", "/getNotAcceptedSiteReviews",
+                                "/changeAcceptedStatusSiteReviews", "/deleteNotAcceptedSiteReviews"
                         ).hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)

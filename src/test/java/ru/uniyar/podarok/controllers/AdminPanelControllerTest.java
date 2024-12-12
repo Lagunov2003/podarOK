@@ -18,6 +18,7 @@ import ru.uniyar.podarok.services.AdminService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,8 @@ public class AdminPanelControllerTest {
     @Test
     void AdminController_GetOrders_ReturnsOrders() throws Exception {
         String status = "Исполняется";
-        List<OrderDto> orders = List.of(new OrderDto(1L, LocalDate.now(), "Исполняется", "test", new GiftDto()));
+        List<OrderDto> orders = List.of(new OrderDto(1L, LocalDate.now(), LocalTime.now(), LocalTime.now(), "Исполняется", "test", "card",
+                BigDecimal.valueOf(100), "user", "test@example.com", "8800", List.of(new GiftDto())));
         when(adminService.getOrders(status)).thenReturn(orders);
 
         mockMvc.perform(get("/getOrders")
@@ -107,7 +109,7 @@ public class AdminPanelControllerTest {
     @Test
     void AdminController_ChangeGift_ReturnsStatusIsOk() throws Exception {
         ChangeGiftDto changeGiftDto = new ChangeGiftDto(1L, "GiftName", BigDecimal.valueOf(100),
-                List.of("Photo1", "Photo2"), List.of(1L, 2L), List.of(3L), false, 18L, 30L, 2L,  "Description", new HashMap<>(Map.of("key", "value")));
+                List.of("Photo1", "Photo2"), List.of(1L, 2L), 3L, false, 18L, 30L, 2L,  "Description", new HashMap<>(Map.of("key", "value")));
         doNothing().when(adminService).changeGift(changeGiftDto);
 
         mockMvc.perform(put("/changeGift")
@@ -121,7 +123,7 @@ public class AdminPanelControllerTest {
     @Test
     void AdminController_ChangeGift_ReturnsStatusIsNotFound() throws Exception {
         ChangeGiftDto changeGiftDto = new ChangeGiftDto(1L, "GiftName", BigDecimal.valueOf(100),
-                List.of("Photo1", "Photo2"), List.of(1L, 2L), List.of(3L), false, 18L, 30L, 2L,  "Description", new HashMap<>(Map.of("key", "value")));
+                List.of("Photo1", "Photo2"), List.of(1L, 2L), 3L, false, 18L, 30L, 2L,  "Description", new HashMap<>(Map.of("key", "value")));
         doThrow(new EntityNotFoundException("Подарок не найден!")).when(adminService).changeGift(changeGiftDto);
 
         mockMvc.perform(put("/changeGift")
@@ -135,7 +137,7 @@ public class AdminPanelControllerTest {
     @Test
     void AdminController_AddGift_ReturnsStatusIsOk() throws Exception {
         AddGiftDto addGiftDto = new AddGiftDto("GiftName", BigDecimal.valueOf(100),
-                List.of("Photo1", "Photo2"), List.of(1L, 2L), List.of(3L), false, 18L, 30L, 2L,  "Description", new HashMap<>(Map.of("key", "value")));
+                List.of("Photo1", "Photo2"), List.of(1L, 2L), 3L, false, 18L, 30L, 2L,  "Description", new HashMap<>(Map.of("key", "value")));
         doNothing().when(adminService).addGift(addGiftDto);
 
         mockMvc.perform(post("/addGift")
@@ -157,5 +159,84 @@ public class AdminPanelControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Группа подарков успешно добавлена!"));
         verify(adminService, times(1)).addGroup(addGroupDto);
+    }
+
+    @Test
+    void AdminController_GetAcceptedSiteReviews_ReturnStatusIsOk() throws Exception {
+        List<SiteReviewsDto> siteReviews = List.of(
+                new SiteReviewsDto(1L, "user", "Review 1", 5),
+                new SiteReviewsDto(2L, "user", "Review 2", 4)
+        );
+
+        when(adminService.getSiteReviews(true)).thenReturn(siteReviews);
+
+        mockMvc.perform(get("/getAcceptedSiteReviews")
+                        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].review").value("Review 1"))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].review").value("Review 2"));
+
+        verify(adminService).getSiteReviews(true);
+    }
+
+    @Test
+    void AdminController_GetNotAcceptedSiteReviews_ReturnsStatusIsOk() throws Exception {
+        List<SiteReviewsDto> siteReviews = List.of(
+                new SiteReviewsDto(3L, "user", "Not Accepted Review", 3)
+        );
+
+        when(adminService.getSiteReviews(false)).thenReturn(siteReviews);
+
+        mockMvc.perform(get("/getNotAcceptedSiteReviews")
+                        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(3))
+                .andExpect(jsonPath("$[0].review").value("Not Accepted Review"));
+
+        verify(adminService).getSiteReviews(false);
+    }
+
+    @Test
+    void AdminController_ChangeAcceptedStatusSiteReviews_ReturnsStatusIsOk() throws Exception {
+        Long reviewId = 1L;
+
+        mockMvc.perform(put("/changeAcceptedStatusSiteReviews")
+                        .param("id", String.valueOf(reviewId))
+                        )
+                .andExpect(status().isOk())
+                .andExpect(content().string("Отзыв подтверждён!"));
+
+        verify(adminService).changeAcceptedStatusSiteReviews(reviewId);
+    }
+
+    @Test
+    void AdminController_ChangeAcceptedStatusSiteReviews_ReturnsStatusIsNotFound() throws Exception {
+        Long reviewId = 1L;
+
+        doThrow(new EntityNotFoundException("Отзыв с id " + reviewId + " не найден!"))
+                .when(adminService).changeAcceptedStatusSiteReviews(reviewId);
+
+        mockMvc.perform(put("/changeAcceptedStatusSiteReviews")
+                        .param("id", String.valueOf(reviewId))
+                        )
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Отзыв с id 1 не найден!"));
+
+        verify(adminService).changeAcceptedStatusSiteReviews(reviewId);
+    }
+
+    @Test
+    void AdminController_DeleteNotAcceptedSiteReviews_ReturnsStatusIsOk() throws Exception {
+        Long reviewId = 1L;
+
+        mockMvc.perform(delete("/deleteNotAcceptedSiteReviews")
+                        .param("id", String.valueOf(reviewId))
+                        )
+                .andExpect(status().isOk())
+                .andExpect(content().string("Отзыв о сайте отклонён!"));
+
+        verify(adminService).deleteNotAcceptedSiteReviews(reviewId);
     }
 }

@@ -65,7 +65,7 @@ class UserServiceTest {
     private Role role;
     @BeforeEach
     void setUp() {
-        registrationUserDto = new RegistrationUserDto(1L, "test", "test@example.com", "12345");
+        registrationUserDto = new RegistrationUserDto("test", "test@example.com", "12345");
 
         user = new User();
         user.setId(1L);
@@ -202,7 +202,7 @@ class UserServiceTest {
         assertEquals("user", result.getLastName());
         assertEquals(LocalDate.now(), result.getDateOfBirth());
         assertEquals(LocalDate.now(), result.getRegistrationDate());
-        assertTrue(result.isGender());
+        assertTrue(result.getGender());
         assertEquals("80000000000", result.getPhoneNumber());
     }
 
@@ -217,7 +217,7 @@ class UserServiceTest {
         assertEquals("new@example.com", result.getEmail());
         assertEquals("Jane", result.getFirstName());
         assertEquals("Smith", result.getLastName());
-        assertFalse(result.isGender());
+        assertFalse(result.getGender());
         assertEquals("0987654321", result.getPhoneNumber());
         assertEquals(LocalDate.of(1990, 5, 4), result.getDateOfBirth());
         Mockito.verify(emailService).sendUpdateEmailNotifications("test@example.com", "new@example.com");
@@ -244,7 +244,7 @@ class UserServiceTest {
 
         String code = "validCode";
         String newPassword = "newPassword";
-        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto(1L, "test@example.com", newPassword, newPassword, "validCode");
+        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto(newPassword, newPassword);
         Authentication authentication = Mockito.mock(Authentication.class);
         Mockito.when(authentication.isAuthenticated()).thenReturn(true);
         Mockito.when(authentication.getName()).thenReturn("test@example.com");

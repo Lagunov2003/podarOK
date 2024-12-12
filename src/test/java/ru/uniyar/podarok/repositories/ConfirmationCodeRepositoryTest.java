@@ -22,6 +22,8 @@ public class ConfirmationCodeRepositoryTest {
     @Autowired
     private ConfirmationCodeRepository confirmationCodeRepository;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private EntityManager entityManager;
     private ConfirmationCode code;
     @BeforeEach
@@ -29,22 +31,25 @@ public class ConfirmationCodeRepositoryTest {
         code = new ConfirmationCode();
         code.setId(1L);
         code.setExpiryDate(LocalDate.now().plusDays(1));
-        code.setOwnUserId(0L);
+        code.setOwnUserId(1L);
         code.setCode("12345");
+        User user = new User();
+        user.setEmail("test");
+        userRepository.save(user);
     }
     @BeforeEach
     void cleanDatabase() {
         entityManager.createNativeQuery("TRUNCATE TABLE confirmation_code RESTART IDENTITY CASCADE").executeUpdate();
+        entityManager.createNativeQuery("TRUNCATE TABLE users RESTART IDENTITY CASCADE").executeUpdate();
     }
 
     @Test
     void ConfirmationCodeRepository_SaveCode_ReturnSavedCode(){
         ConfirmationCode savedCode = confirmationCodeRepository.save(code);
-
         assertThat(savedCode).isNotNull();
         assertThat(savedCode.getId()).isGreaterThan(0);
         assertEquals(LocalDate.now().plusDays(1), savedCode.getExpiryDate());
-        assertEquals(0, savedCode.getOwnUserId());
+        assertEquals(1, savedCode.getOwnUserId());
         assertEquals("12345", savedCode.getCode());
     }
 

@@ -18,6 +18,7 @@ import ru.uniyar.podarok.utils.OrderDtoConverter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -102,19 +103,25 @@ public class UserOrdersServiceTest {
         Order order1 = new Order();
         order1.setId(1L);
         order1.setDeliveryDate(LocalDate.now());
-        order1.setStatus("Выполнен");
+        order1.setStatus("Доставлен");
         order1.setInformation("ул. Союзная, д. 144");
-        order1.setGift(gift1);
+        GiftOrder giftOrder1 = new GiftOrder();
+        giftOrder1.setGift(gift1);
+        giftOrder1.setOrder(order1);
+        order1.setGiftOrders(Set.of(giftOrder1));
         Order order2 = new Order();
         order2.setId(2L);
         order2.setDeliveryDate(LocalDate.now());
         order2.setStatus("Исполняется");
         order2.setInformation("ул. Союзная, д. 144");
-        order2.setGift(gift1);
+        GiftOrder giftOrder2 = new GiftOrder();
+        giftOrder2.setGift(gift1);
+        giftOrder2.setOrder(order2);
+        order2.setGiftOrders(Set.of(giftOrder2));
         OrderDto orderDto = new OrderDto();
         orderDto.setId(1L);
         orderDto.setDeliveryDate(LocalDate.now());
-        orderDto.setStatus("Выполнен");
+        orderDto.setStatus("Доставлен");
         orderDto.setInformation("ул. Союзная, д. 144");
         mockUser.setOrders(List.of(order1, order2));
         Mockito.when(userService.getCurrentAuthenticationUser()).thenReturn(mockUser);
@@ -124,7 +131,7 @@ public class UserOrdersServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("Выполнен", result.get(0).getStatus());
+        assertEquals("Доставлен", result.get(0).getStatus());
         assertEquals("ул. Союзная, д. 144", result.get(0).getInformation());
         Mockito.verify(userService, Mockito.times(1)).getCurrentAuthenticationUser();
     }
@@ -143,17 +150,23 @@ public class UserOrdersServiceTest {
         order1.setDeliveryDate(LocalDate.now());
         order1.setStatus("Выполнен");
         order1.setInformation("ул. Союзная, д. 144");
-        order1.setGift(gift1);
+        GiftOrder giftOrder1 = new GiftOrder();
+        giftOrder1.setGift(gift1);
+        giftOrder1.setOrder(order1);
+        order1.setGiftOrders(Set.of(giftOrder1));
         Order order2 = new Order();
         order2.setId(2L);
         order2.setDeliveryDate(LocalDate.now());
-        order2.setStatus("Исполняется");
+        order2.setStatus("В пути");
         order2.setInformation("ул. Союзная, д. 144");
-        order2.setGift(gift1);
+        GiftOrder giftOrder2 = new GiftOrder();
+        giftOrder2.setGift(gift1);
+        giftOrder2.setOrder(order2);
+        order2.setGiftOrders(Set.of(giftOrder2));
         OrderDto orderDto = new OrderDto();
         orderDto.setId(2L);
         orderDto.setDeliveryDate(LocalDate.now());
-        orderDto.setStatus("Исполняется");
+        orderDto.setStatus("В пути");
         orderDto.setInformation("ул. Союзная, д. 144");
         mockUser.setOrders(List.of(order1, order2));
         Mockito.when(userService.getCurrentAuthenticationUser()).thenReturn(mockUser);
@@ -163,7 +176,7 @@ public class UserOrdersServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("Исполняется", result.get(0).getStatus());
+        assertEquals("В пути", result.get(0).getStatus());
         assertEquals("ул. Союзная, д. 144", result.get(0).getInformation());
         Mockito.verify(userService, Mockito.times(1)).getCurrentAuthenticationUser();
     }

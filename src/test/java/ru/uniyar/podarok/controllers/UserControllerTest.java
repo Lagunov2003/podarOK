@@ -161,7 +161,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ConfirmChangeUserPassword_ReturnsStatusIsOk() throws Exception {
-        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com", "newpassword", "newpassword", "123456");
+        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto("newpassword", "newpassword");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/confirmChanges")
                         .param("code", "123456")
@@ -173,7 +173,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ConfirmChangeUserPassword_ReturnsStatusIsBadRequest_PasswordDoesNotMatch() throws Exception {
-        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com","newpassword1", "newpassword2", "123456");
+        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto("newpassword1", "newpassword2");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/confirmChanges")
                         .param("code", "123456")
@@ -185,7 +185,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ConfirmChangeUserPassword_ReturnsStatusIsBadRequest_PasswordTooShort() throws Exception {
-        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com","newpa", "newpa", "123456");
+        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto("newpa", "newpa");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/confirmChanges")
                         .param("code", "123456")
@@ -197,7 +197,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ConfirmChangeUserPassword_ReturnsStatusIsUnauthorized() throws Exception {
-        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com","newpassword", "newpassword", "123456");
+        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto("newpassword", "newpassword");
         Mockito.doThrow(new UserNotAuthorizedException("Пользователь не авторизован!")).when(userService).confirmChangeUserPassword(Mockito.anyString(), Mockito.any());
         mockMvc.perform(MockMvcRequestBuilders.post("/confirmChanges")
                         .param("code", "123456")
@@ -209,7 +209,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ConfirmChangeUserPassword_ReturnsStatusIsNotFound() throws Exception {
-        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com","newpassword", "newpassword", "123456");
+        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto("newpassword", "newpassword");
         Mockito.doThrow(new UserNotFoundException("Пользователь не найден!")).when(userService).confirmChangeUserPassword(Mockito.anyString(), Mockito.any());
         mockMvc.perform(MockMvcRequestBuilders.post("/confirmChanges")
                         .param("code", "123456")
@@ -221,7 +221,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ConfirmChangeUserPassword_ReturnsStatusIsForbidden() throws Exception {
-        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com","newpassword", "newpassword", "123456");
+        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto("newpassword", "newpassword");
         Mockito.doThrow(new FakeConfirmationCodeException("Неправильный код подтверждения!")).when(userService).confirmChangeUserPassword(Mockito.anyString(), Mockito.any());
         mockMvc.perform(MockMvcRequestBuilders.post("/confirmChanges")
                         .param("code", "123456")
@@ -233,7 +233,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ConfirmChangeUserPassword_ReturnsStatusIsGone() throws Exception {
-        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto(1L, "test@example.com","newpassword", "newpassword", "123456");
+        ChangeUserPasswordDto passwordDto = new ChangeUserPasswordDto("newpassword", "newpassword");
         Mockito.doThrow(new ExpiredCodeException("Код подтверждения истёк!")).when(userService).confirmChangeUserPassword(Mockito.anyString(), Mockito.any());
         mockMvc.perform(MockMvcRequestBuilders.post("/confirmChanges")
                         .param("code", "123456")
@@ -270,7 +270,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ResetPassword_ReturnsStatusIsBadRequest_PasswordMismatch() throws Exception {
-        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto(1L, "test@examle.com", "newPassword", "newNewPassword", "code");
+        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto( "newPassword", "newNewPassword");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/resetPassword")
                         .param("token", "token")
@@ -282,7 +282,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ResetPassword_ReturnsStatusIsBadRequest_ShortPassword() throws Exception {
-        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto(1L, "test@examle.com", "12345", "12345", "code");
+        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto("12345", "12345");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/resetPassword")
                         .param("token", "token")
@@ -294,7 +294,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ResetPassword_ReturnsStatusIsOk() throws Exception {
-        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto(1L, "test@examle.com", "newPassword", "newPassword", "code");
+        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto("newPassword", "newPassword");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/resetPassword")
                         .param("token", "token")
@@ -306,7 +306,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ResetPassword_ReturnsStatusIsNotFound() throws Exception {
-        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto(1L, "test@examle.com", "newPassword", "newPassword", "code");
+        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto("newPassword", "newPassword");
         Mockito.doThrow(new UserNotFoundException("Пользователь не найден!"))
                 .when(userService).confirmChangePassword(Mockito.anyString(), Mockito.any(ChangeUserPasswordDto.class));
 
@@ -320,7 +320,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ResetPassword_ReturnsStatusIsUnauthorized_ExpiredToken() throws Exception {
-        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto(1L, "test@examle.com", "newPassword", "newPassword", "code");
+        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto("newPassword", "newPassword");
         Mockito.doThrow(new ExpiredJwtException(null, null, "Токен устарел!"))
                 .when(userService).confirmChangePassword(Mockito.anyString(), Mockito.any(ChangeUserPasswordDto.class));
 
@@ -334,7 +334,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ResetPassword_ReturnsStatusIsUnauthorized_InvalidToken() throws Exception {
-        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto(1L, "test@examle.com", "newPassword", "newPassword", "code");
+        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto("newPassword", "newPassword");
         Mockito.doThrow(new SignatureException("Некорректный токен!"))
                 .when(userService).confirmChangePassword(Mockito.anyString(), Mockito.any(ChangeUserPasswordDto.class));
 
@@ -348,7 +348,7 @@ class UserControllerTest {
 
     @Test
     void UserController_ResetPassword_ReturnsStatusIsUnauthorized_InvalidTokenFormat() throws Exception {
-        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto(1L, "test@examle.com", "newPassword", "newPassword", "code");
+        ChangeUserPasswordDto changeUserPasswordDto = new ChangeUserPasswordDto("newPassword", "newPassword");
         Mockito.doThrow(new MalformedJwtException("Неправильный формат токена!"))
                 .when(userService).confirmChangePassword(Mockito.anyString(), Mockito.any());
 

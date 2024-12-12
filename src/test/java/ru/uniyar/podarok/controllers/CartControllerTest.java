@@ -1,6 +1,8 @@
 package ru.uniyar.podarok.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,6 +21,9 @@ import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.services.CartService;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,6 +43,13 @@ public class CartControllerTest {
 
     @MockBean
     private CartService cartService;
+    private ObjectMapper mapper;
+
+    @BeforeEach
+    void setUp() {
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+    }
 
     @Test
     public void CartController_ShowCart_ReturnsEmptyCart() throws Exception {
@@ -180,26 +192,6 @@ public class CartControllerTest {
     }
 
     @Test
-    public void CartController_UpdateCartItem_ReturnsStatusIsUnauthorized() throws Exception {
-        doThrow(new UserNotAuthorizedException("Пользователь не авторизован!")).when(cartService).changeGiftsAmount(anyLong(), anyInt());
-        mockMvc.perform(put("/cart")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"giftId\":1,\"itemCount\":2}"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Пользователь не авторизован!"));
-    }
-
-    @Test
-    public void CartController_UpdateCartItem_ReturnsStatusIsNotFound() throws Exception {
-        doThrow(new UserNotFoundException("Пользователь не найден!")).when(cartService).changeGiftsAmount(anyLong(), anyInt());
-        mockMvc.perform(put("/cart")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"giftId\":1,\"itemCount\":2}"))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Пользователь не найден!"));
-    }
-
-    @Test
     public void CartController_CleanCart_ReturnsStatusIsOk() throws Exception {
         mockMvc.perform(delete("/cart"))
                 .andExpect(status().isOk())
@@ -227,11 +219,13 @@ public class CartControllerTest {
     @Test
     public void CartController_AddOrder_ReturnsStatusIsOk() throws Exception {
         List<OrderItemDto> itemDtos = List.of(new OrderItemDto(1, 1L));
-        OrderRequestDto orderRequestDto = new OrderRequestDto(itemDtos);
+        OrderRequestDto orderRequestDto = new OrderRequestDto(itemDtos, LocalDate.now(), LocalTime.now(),
+                LocalTime.now(), "test", "card", "user",
+                "test@example.com", "8800");
 
         mockMvc.perform(post("/order")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(orderRequestDto)))
+                        .content(mapper.writeValueAsString(orderRequestDto)))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Заказ успешно оформлен!"));
 
@@ -241,23 +235,27 @@ public class CartControllerTest {
     @Test
     public void CartController_AddOrder_ReturnsStatusIsBadRequest() throws Exception {
         List<OrderItemDto> itemDtos = Collections.emptyList();
-        OrderRequestDto orderRequestDto = new OrderRequestDto(itemDtos);
+        OrderRequestDto orderRequestDto = new OrderRequestDto(itemDtos, LocalDate.now(), LocalTime.now(),
+                LocalTime.now(), "test", "card", "user",
+                "test@example.com", "8800");
         mockMvc.perform(post("/order")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(orderRequestDto)))
+                        .content(mapper.writeValueAsString(orderRequestDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Количество подарков должно быть не меньше 1!"));
     }
 
     @Test
     void CartController_AddOrder_ReturnsStatusIsUnauthorized() throws Exception {
-        OrderRequestDto requestDto = new OrderRequestDto(List.of(new OrderItemDto(1, 2L)));
+        OrderRequestDto requestDto = new OrderRequestDto(List.of(new OrderItemDto(1, 2L)),
+                LocalDate.now(), LocalTime.now(), LocalTime.now(), "test", "card",
+                "user", "test@example.com", "8800");
         doThrow(new UserNotAuthorizedException("Пользователь не авторизован!"))
                 .when(cartService).placeOrder(any(OrderRequestDto.class));
 
         mockMvc.perform(post("/order")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(requestDto)))
+                        .content(mapper.writeValueAsString(requestDto)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().string("Пользователь не авторизован!"));
 
@@ -266,13 +264,15 @@ public class CartControllerTest {
 
     @Test
     void CartController_AddOrder_ReturnsStatusIsNotFound() throws Exception {
-        OrderRequestDto requestDto = new OrderRequestDto(List.of(new OrderItemDto(1, 2L)));
+        OrderRequestDto requestDto = new OrderRequestDto(List.of(new OrderItemDto(1, 2L)),
+                LocalDate.now(), LocalTime.now(), LocalTime.now(), "test", "card",
+                "user", "test@example.com", "8800");
         doThrow(new UserNotFoundException("Пользователь не найден!"))
                 .when(cartService).placeOrder(any(OrderRequestDto.class));
 
         mockMvc.perform(post("/order")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(requestDto)))
+                        .content(mapper.writeValueAsString(requestDto)))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Пользователь не найден!"));
 

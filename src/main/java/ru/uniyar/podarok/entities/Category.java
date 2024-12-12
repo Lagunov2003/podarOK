@@ -3,6 +3,7 @@ package ru.uniyar.podarok.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -20,5 +21,6 @@ public class Category {
     @ManyToMany(mappedBy = "categories")
     @JsonBackReference
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Gift> gifts = new ArrayList<>();
 }

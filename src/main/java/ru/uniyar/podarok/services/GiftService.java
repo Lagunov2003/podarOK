@@ -75,7 +75,7 @@ public class GiftService {
     @Transactional
     public void deleteGift(Long id) {
         if (!giftRepository.existsById(id)) {
-            throw new EntityNotFoundException("Подарок с Id " + id + " не найден!");
+            throw new EntityNotFoundException("Подарок с id " + id + " не найден!");
         }
         giftRepository.deleteById(id);
     }
@@ -84,17 +84,18 @@ public class GiftService {
     public void updateGift(ChangeGiftDto changeGiftDto) throws EntityNotFoundException {
         Long recommendation_id = getGiftById(changeGiftDto.getId()).getRecommendation().getId();
         giftRepository.updateGift(changeGiftDto.getId(), changeGiftDto.getPrice(), recommendation_id, changeGiftDto.getDescription(), changeGiftDto.getName(), changeGiftDto.getGroupId());
+        giftRepository.deleteGiftPhotos(changeGiftDto.getId());
         for (String photoUrl : changeGiftDto.getPhotos()) {
-            giftRepository.updateGiftPhoto(changeGiftDto.getId(), photoUrl);
+            giftRepository.addGiftPhoto(changeGiftDto.getId(), photoUrl);
         }
+        giftRepository.deleteGiftCategories(changeGiftDto.getId());
         for (Long categoryId : changeGiftDto.getCategories()) {
-            giftRepository.updateGiftCategory(changeGiftDto.getId(), categoryId);
+            giftRepository.addGiftCategory(changeGiftDto.getId(), categoryId);
         }
-        for (Long occasionId : changeGiftDto.getOccasions()) {
-            giftRepository.updateGiftOccasion(changeGiftDto.getId(), occasionId);
-        }
+        giftRepository.updateGiftOccasion(changeGiftDto.getId(), changeGiftDto.getOccasion());
+        giftRepository.deleteGiftFeatures(changeGiftDto.getId());
         for (Map.Entry<String, String> feature : changeGiftDto.getFeatures().entrySet()) {
-            giftRepository.updateGiftFeature(changeGiftDto.getId(), feature.getKey(), feature.getValue());
+            giftRepository.addGiftFeature(changeGiftDto.getId(), feature.getKey(), feature.getValue());
         }
         giftRepository.updateGiftRecommendation(recommendation_id, changeGiftDto.getGender(), changeGiftDto.getMinAge(), changeGiftDto.getMaxAge());
     }
@@ -109,12 +110,20 @@ public class GiftService {
         for (Long categoryId : addGiftDto.getCategories()) {
             giftRepository.addGiftCategory(gift_id, categoryId);
         }
-        for (Long occasionId : addGiftDto.getOccasions()) {
-            giftRepository.addGiftOccasion(gift_id, occasionId);
-        }
+        giftRepository.addGiftOccasion(gift_id, addGiftDto.getOccasion());
+
         for (Map.Entry<String, String> feature : addGiftDto.getFeatures().entrySet()) {
             giftRepository.addGiftFeature(gift_id, feature.getKey(), feature.getValue());
         }
+    }
 
+    public Page<GiftDto> searchGiftsBySortParam(String sortParam, Pageable pageable) {
+        Page<Gift> sortGifts = switch (sortParam) {
+            case "по возрастанию цены" -> giftRepository.findAllByOrderByPriceAsc(pageable);
+            case "по убыванию цены" -> giftRepository.findAllByOrderByPriceDesc(pageable);
+            case "по рейтингу" -> giftRepository.findAllOrderByAverageRatingDesc(pageable);
+            default -> giftRepository.findAllGifts(pageable);
+        };
+        return giftDtoConverter.convertToGiftDtoPage(sortGifts);
     }
 }

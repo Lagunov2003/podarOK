@@ -8,14 +8,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.OrderDataDto;
 import ru.uniyar.podarok.dtos.OrderDto;
+import ru.uniyar.podarok.entities.GiftOrder;
 import ru.uniyar.podarok.entities.Order;
 import ru.uniyar.podarok.exceptions.OrderNotFoundException;
 import ru.uniyar.podarok.repositories.OrderRepository;
 import ru.uniyar.podarok.utils.OrderDtoConverter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -29,13 +33,15 @@ public class OrderServiceTest {
     private OrderRepository orderRepository;
     @Mock
     private OrderDtoConverter orderDtoConverter;
+    @Mock
+    private GiftOrderService giftOrderService;
 
     @Test
-    public void OrderService_PlaceNewOrder_VerifiesOrderIsSaved() {
+    public void OrderService_PlaceOrder_VerifiesOrderIsSaved() {
         Order order = new Order();
         order.setId(1L);
 
-        orderService.placeNewOrder(order);
+        orderService.placeOrder(order);
 
         verify(orderRepository, times(1)).save(order);
     }
@@ -69,7 +75,7 @@ public class OrderServiceTest {
                 orderService.changeOrderStatus(orderDataDto)
         );
 
-        assertEquals("Заказ с Id " + orderId + "не найден в корзине!", exception.getMessage());
+        assertEquals("Заказ с Id " + orderId + " не найден в корзине!", exception.getMessage());
         verify(orderRepository, times(1)).findById(orderId);
         verify(orderRepository, never()).save(any(Order.class));
     }
@@ -84,13 +90,18 @@ public class OrderServiceTest {
         order2.setId(2L);
         order2.setStatus("Доставляется");
         List<Order> orders = List.of(order1, order2);
-        List<OrderDto> orderDtos = List.of(new OrderDto(1L, LocalDate.now(), "Исполняется", "Адрес",
-                new GiftDto()), new OrderDto(2L, LocalDate.now(), "Доставляется", "Адрес",
-                new GiftDto()));
+        List<OrderDto> orderDtos = List.of(new OrderDto(3L, LocalDate.now(), LocalTime.now(), LocalTime.now(),
+                "Исполняется", "Адрес", "card",
+                BigDecimal.valueOf(100), "user", "test@example.com", "8800",
+                List.of(new GiftDto())), new OrderDto(3L, LocalDate.now(), LocalTime.now(), LocalTime.now(),
+                "Доставлен", "Адрес", "card",
+                BigDecimal.valueOf(100), "user", "test@example.com", "8800",
+                List.of(new GiftDto())));
         when(orderRepository.findAll()).thenReturn(orders);
         when(orderDtoConverter.convertToOrderDto(any(Order.class))).thenAnswer(invocation -> {
             Order order = invocation.getArgument(0);
-            return new OrderDto(order.getId(), LocalDate.now(), order.getStatus(), "Адрес", new GiftDto());
+            return new OrderDto(order1.getId(), LocalDate.now(), LocalTime.now(), LocalTime.now(), order1.getStatus(), "Адрес", "card",
+                    BigDecimal.valueOf(100), "user", "test@example.com", "8800", List.of(new GiftDto()));
         });
 
         List<OrderDto> result = orderService.getOrders(invalidStatus);
@@ -101,18 +112,24 @@ public class OrderServiceTest {
     }
 
     @Test
-    void GetOrders_ReturnsFilteredOrders_WhenStatusIsValid() {
-        String validStatus = "Выполнен";
+    void OrderService_GetOrders_ReturnsFilteredOrders_WhenStatusIsValid() {
+        String validStatus = "Оформлен";
         Order order = new Order();
-        order.setId(3L);
+        order.setId(1L);
         order.setStatus(validStatus);
         List<Order> orders = List.of(order);
-        List<OrderDto> orderDtos = List.of(new OrderDto(3L, LocalDate.now(), validStatus, "Адрес", new GiftDto()));
+        List<OrderDto> orderDtos = List.of(new OrderDto(1L, LocalDate.now(), LocalTime.now(), LocalTime.now(), "Оформлен", "Адрес", "card",
+                BigDecimal.valueOf(100), "user", "test@example.com", "8800", List.of(new GiftDto())));
+        GiftOrder giftOrder = new GiftOrder();
+        giftOrder.setId(1l);
+        giftOrder.setOrder(order);
         when(orderRepository.findByStatus(validStatus)).thenReturn(orders);
         when(orderDtoConverter.convertToOrderDto(any(Order.class))).thenAnswer(invocation -> {
             Order order1 = invocation.getArgument(0);
-            return new OrderDto(order1.getId(), LocalDate.now(), order1.getStatus(), "Адрес", new GiftDto());
+            return new OrderDto(order1.getId(), LocalDate.now(), LocalTime.now(), LocalTime.now(), order1.getStatus(), "Адрес", "card",
+                    BigDecimal.valueOf(100), "user", "test@example.com", "8800", List.of(new GiftDto()));
         });
+        when(giftOrderService.getGiftsByOrderId(1L)).thenReturn(Set.of(giftOrder));
 
         List<OrderDto> result = orderService.getOrders(validStatus);
 

@@ -18,7 +18,7 @@ public class ChangeGiftDto {
     private List<String> photos;
 
     private List<Long> categories;
-    private List<Long> occasions;
+    private Long occasion;
     private Boolean gender;
     private Long minAge;
     private Long maxAge;

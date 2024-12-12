@@ -20,6 +20,9 @@ import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.CartRepository;
 import ru.uniyar.podarok.utils.GiftDtoConverter;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,12 +64,15 @@ public class CartServiceTest {
         gift = new Gift();
         gift.setId(1L);
         gift.setName("gift");
+        gift.setPrice(BigDecimal.valueOf(100));
 
         cart = new Cart();
         cart.setId(1L);
         cart.setUser(user);
         cart.setGift(gift);
         cart.setItemCount(2);
+
+        user.setCartItems(List.of(cart));
 
         giftDto = new GiftDto();
         giftDto.setId(1L);
@@ -130,9 +136,8 @@ public class CartServiceTest {
         CartDto cartDto = new CartDto();
         cartDto.setItemCount(2);
         cartDto.setGift(giftDto);
-        when(cartRepository.findAll()).thenReturn(List.of(cart));
-        when(giftDtoConverter.convertToGiftDto(gift)).thenReturn(giftDto);
-
+        when(userService.getCurrentAuthenticationUser()).thenReturn(user);
+        when(giftDtoConverter.convertToGiftDto(any())).thenReturn(giftDto);
         List<CartDto> cartList = cartService.getCart();
 
         assertEquals(1, cartList.size());
@@ -142,26 +147,26 @@ public class CartServiceTest {
     @Test
     void CartService_PlaceOrder_VerifiesOrderIsPlaced() throws Exception {
         OrderRequestDto orderRequestDto = new OrderRequestDto(List.of(
-                new OrderItemDto(1, 1L)
-        ));
+                new OrderItemDto(1, 1L)), LocalDate.now(), LocalTime.now(), LocalTime.now(), "test", "card", "user", "test@example.com", "8800"
+        );
         Order order = new Order();
         order.setUser(user);
-        order.setGift(gift);
+        //order.setGiftOrders(gift);
         when(userService.getCurrentAuthenticationUser()).thenReturn(user);
         when(giftService.getGiftById(1L)).thenReturn(gift);
         when(cartRepository.findItemByGiftIdAndUserId(1L, 1L)).thenReturn(Optional.of(cart));
 
         cartService.placeOrder(orderRequestDto);
 
-        verify(orderService).placeNewOrder(any(Order.class));
+        verify(orderService).placeOrder(any(Order.class));
         verify(cartRepository).delete(cart);
     }
 
     @Test
     void CartService_PlaceOrder_ThrowsUserNotFoundException() throws Exception {
         OrderRequestDto orderRequestDto = new OrderRequestDto(List.of(
-                new OrderItemDto(1, 1L)
-        ));
+                new OrderItemDto(1, 1L)), LocalDate.now(), LocalTime.now(), LocalTime.now(), "test", "card", "user", "test@example.com", "8800"
+        );
         when(userService.getCurrentAuthenticationUser()).thenThrow(new UserNotFoundException("Пользователь не найден!"));
 
         assertThrows(UserNotFoundException.class, () -> cartService.placeOrder(orderRequestDto));
@@ -170,8 +175,8 @@ public class CartServiceTest {
     @Test
     void CartService_PlaceOrder_ThrowsEntityNotFoundException() throws Exception {
         OrderRequestDto orderRequestDto = new OrderRequestDto(List.of(
-                new OrderItemDto(1, 1L)
-        ));
+                new OrderItemDto(1, 1L)), LocalDate.now(), LocalTime.now(), LocalTime.now(), "test", "card"
+                , "user", "test@example.com", "8800");
         when(userService.getCurrentAuthenticationUser()).thenReturn(user);
         when(giftService.getGiftById(1L)).thenThrow(new EntityNotFoundException("Подарок не найден!"));
 

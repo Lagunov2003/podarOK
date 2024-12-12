@@ -36,7 +36,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private static final List<String> PERMITTED_URLS = Arrays.asList(
-            "/registration", "/login", "/forgot", "/resetPassword", "/catalog", "/gift/**", "/catalogSearch"
+            "/registration", "/login", "/forgot", "/resetPassword",
+            "/catalog", "/gift/**", "/catalogSearch", "/getSiteReviews",
+            "/sortCatalog"
     );
 
     @Override
