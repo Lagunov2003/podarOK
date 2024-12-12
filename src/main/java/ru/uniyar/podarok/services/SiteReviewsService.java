@@ -9,6 +9,8 @@ import ru.uniyar.podarok.dtos.AddSiteReviewDto;
 import ru.uniyar.podarok.dtos.SiteReviewsDto;
 import ru.uniyar.podarok.entities.SiteReviews;
 import ru.uniyar.podarok.entities.User;
+import ru.uniyar.podarok.exceptions.GiftNotFoundException;
+import ru.uniyar.podarok.exceptions.SiteReviewNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.SiteReviewsRepository;
@@ -55,15 +57,18 @@ public class SiteReviewsService {
     }
 
     @Transactional
-    public void changeAcceptedStatusSiteReviews(Long id) throws EntityNotFoundException {
+    public void changeAcceptedStatusSiteReviews(Long id) throws SiteReviewNotFoundException {
         SiteReviews siteReviews = siteReviewsRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Отзыв с id " + id + " не найден!"));
+                .orElseThrow(() -> new SiteReviewNotFoundException("Отзыв с id " + id + " не найден!"));
         siteReviews.setAccepted(true);
         siteReviewsRepository.save(siteReviews);
     }
 
     @Transactional
-    public void deleteSiteReviews(Long id) {
+    public void deleteSiteReviews(Long id) throws SiteReviewNotFoundException {
+        if (!siteReviewsRepository.existsById(id)) {
+            throw new SiteReviewNotFoundException("Отзыв о сайте с id " + id + " не найден!");
+        }
         siteReviewsRepository.deleteById(id);
     }
 }

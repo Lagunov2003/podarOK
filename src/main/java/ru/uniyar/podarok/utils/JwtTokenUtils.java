@@ -15,6 +15,9 @@ import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Утилитный класс для генерации и обработки JWT токенов.
+ */
 @Component
 public class JwtTokenUtils {
     @Value("${jwt.secret}")

@@ -1,6 +1,5 @@
 package ru.uniyar.podarok.controllers;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,18 +13,32 @@ import org.springframework.web.bind.annotation.*;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.GiftFilterRequest;
 import ru.uniyar.podarok.dtos.GiftToFavoritesDto;
+import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.services.CatalogService;
 
+/**
+ * Контроллер для управления каталогом подарков, включая фильтрацию, поиск, сортировку и добавление подарков в избранное.
+ */
 @Controller
 @AllArgsConstructor
 public class CatalogController {
     private CatalogService catalogService;
     private PagedResourcesAssembler<GiftDto> pagedResourcesAssembler;
 
+    /**
+     * Показать каталог подарков с фильтрацией (по фильтрам или по опросу).
+     *
+     * @param giftFilterRequest объект с параметрами фильтрации.
+     * @param page номер страницы (по умолчанию 1).
+     * @return отфильтрованный список подарков.
+     */
     @GetMapping("/catalog")
-    public ResponseEntity<?> showCatalog(@RequestBody(required = false) GiftFilterRequest giftFilterRequest, @RequestParam(defaultValue = "1") int page) {
+    public ResponseEntity<?> showCatalog(
+            @RequestBody(required = false) GiftFilterRequest giftFilterRequest,
+            @RequestParam(defaultValue = "1") int page
+    ) {
         if (page <= 0) {
             return ResponseEntity.badRequest().body("Номер страницы должен быть больше 0.");
         }
@@ -41,15 +54,25 @@ public class CatalogController {
         return ResponseEntity.ok(pagedResourcesAssembler.toModel(giftsPage));
     }
 
+    /**
+     * Получить подробную информацию о подарке по id.
+     *
+     * @param id идентификатор подарка.
+     * @return подробные данные о подарке.
+     * @throws GiftNotFoundException если подарок с указанным id не найден.
+     */
     @GetMapping("/gift/{id}")
-    public ResponseEntity<?> getGiftById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(catalogService.getGiftResponse(id));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Подарок с id " + id + " не найден!");
-        }
+    public ResponseEntity<?> getGiftById(@PathVariable Long id) throws GiftNotFoundException {
+        return ResponseEntity.ok(catalogService.getGiftResponse(id));
     }
 
+    /**
+     * Поиск подарков по имени.
+     *
+     * @param query поисковый запрос.
+     * @param page номер страницы (по умолчанию 1).
+     * @return список подарков по результатам поиска.
+     */
     @GetMapping("/catalogSearch")
     public ResponseEntity<?> searchGiftsByName(@RequestParam String query, @RequestParam(defaultValue = "1") int page) {
         if (query.isBlank()) {
@@ -67,21 +90,30 @@ public class CatalogController {
         return ResponseEntity.ok(pagedResourcesAssembler.toModel(searchResults));
     }
 
+    /**
+     * Добавить подарок в избранное.
+     * Доступно только для авторизованных пользователей.
+     * @param giftToFavoritesDto объект с id подарка для добавления в избранное.
+     * @return сообщение с подтверждением добавления подарка в избраноое.
+     * @throws UserNotAuthorizedException если пользователь не авторизован.
+     * @throws UserNotFoundException если пользователь не найден.
+     * @throws GiftNotFoundException если подарок с указанным id не найден.
+     */
     @PostMapping("/addToFavorites")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> addGiftToFavorites(@RequestBody GiftToFavoritesDto giftToFavoritesDto) {
-        try {
-            catalogService.addGiftToFavorites(giftToFavoritesDto);
-            return ResponseEntity.status(HttpStatus.OK).body("Подарок добавлен в избранные!");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Подарок с id " + giftToFavoritesDto.getGiftId() + " не найден!");
-        } catch(UserNotAuthorizedException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch(UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<?> addGiftToFavorites(@RequestBody GiftToFavoritesDto giftToFavoritesDto)
+            throws UserNotAuthorizedException, UserNotFoundException, GiftNotFoundException {
+        catalogService.addGiftToFavorites(giftToFavoritesDto);
+        return ResponseEntity.status(HttpStatus.OK).body("Подарок добавлен в избранные!");
     }
 
+    /**
+     * Сортировка каталога подарков по указанному параметру.
+     *
+     * @param sort параметр сортировки.
+     * @param page номер страницы (по умолчанию 1).
+     * @return отсортированный список подарков.
+     */
     @GetMapping("/sortCatalog")
     public ResponseEntity<?> sortCatalog(@RequestParam String sort, @RequestParam(defaultValue = "1") int page) {
         if (sort.isBlank()) {

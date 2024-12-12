@@ -7,6 +7,9 @@ import ru.uniyar.podarok.entities.User;
 
 import java.time.LocalDateTime;
 
+/**
+ * Конвертер для преобразования объектов типа Message в DTO.
+ */
 @Component
 public class MessageDtoConverter {
     public Message convertToMessage(String content, User sender, User receiver) {

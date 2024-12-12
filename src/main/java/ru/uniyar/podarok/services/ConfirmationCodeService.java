@@ -9,6 +9,7 @@ import ru.uniyar.podarok.exceptions.NotValidCodeException;
 import ru.uniyar.podarok.repositories.ConfirmationCodeRepository;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Random;
 
 @Service
@@ -25,7 +26,7 @@ public class ConfirmationCodeService {
         return LocalDate.now().isBefore(expiryDate);
     }
 
-    public void sendConfirmationCode(long userId, String email) {
+    public void sendConfirmationCode(Long userId, String email) {
         String code = generateConfirmationCode();
         ConfirmationCode confirmationCode = new ConfirmationCode();
         confirmationCode.setOwnUserId(userId);
@@ -35,11 +36,11 @@ public class ConfirmationCodeService {
         emailService.sendConfirmationLetter(email, code);
     }
 
-    public boolean checkConfirmationCode(long userId, String code) throws NotValidCodeException, ExpiredCodeException, FakeConfirmationCodeException {
+    public boolean checkConfirmationCode(Long userId, String code) throws NotValidCodeException, ExpiredCodeException, FakeConfirmationCodeException {
         ConfirmationCode confirmationCode = confirmationCodeRepository.findByCode(code)
                 .orElseThrow(() -> new NotValidCodeException("Некорректный код подтверждения!"));
-        if (confirmationCode.getOwnUserId() != userId) {
-            throw new FakeConfirmationCodeException("Подделаный код пользователя!");
+        if (!Objects.equals(confirmationCode.getOwnUserId(), userId)) {
+            throw new FakeConfirmationCodeException("Подделанный код пользователя!");
         }
         if (!isExpiryDateValid(confirmationCode.getExpiryDate())) {
             confirmationCodeRepository.delete(confirmationCode);

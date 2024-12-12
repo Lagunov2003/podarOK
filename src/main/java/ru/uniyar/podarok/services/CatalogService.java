@@ -1,6 +1,5 @@
 package ru.uniyar.podarok.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +10,7 @@ import ru.uniyar.podarok.dtos.GiftResponseDto;
 import ru.uniyar.podarok.dtos.GiftToFavoritesDto;
 import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.GiftGroup;
+import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 
@@ -31,7 +31,7 @@ public class CatalogService {
                 giftService.getAllGifts(pageable);
     }
 
-    public Gift getGift(Long giftId) throws EntityNotFoundException {
+    public Gift getGift(Long giftId) throws GiftNotFoundException {
         return giftService.getGiftById(giftId);
     }
 
@@ -39,12 +39,12 @@ public class CatalogService {
         return giftService.searchGiftsByName(query, pageable);
     }
 
-    public void addGiftToFavorites(GiftToFavoritesDto giftToFavoritesDto) throws UserNotFoundException, UserNotAuthorizedException, EntityNotFoundException {
+    public void addGiftToFavorites(GiftToFavoritesDto giftToFavoritesDto) throws UserNotFoundException, UserNotAuthorizedException, GiftNotFoundException {
         Gift gift = giftService.getGiftById(giftToFavoritesDto.getGiftId());
         userService.addGiftToFavorites(gift);
     }
 
-    public List<GiftDto> getSimilarGifts(Long giftId) throws EntityNotFoundException {
+    public List<GiftDto> getSimilarGifts(Long giftId) throws GiftNotFoundException {
         Gift gift = giftService.getGiftById(giftId);
         return giftService.getSimilarGifts(gift);
     }
@@ -53,7 +53,7 @@ public class CatalogService {
         return giftService.getGiftsByGroupId(groupId);
     }
 
-    public GiftResponseDto getGiftResponse(Long giftId) throws EntityNotFoundException {
+    public GiftResponseDto getGiftResponse(Long giftId) throws GiftNotFoundException {
         Gift gift = getGift(giftId);
         GiftGroup giftGroup = gift.getGiftGroup();
         List<Gift> groupGifts = new ArrayList<>(List.of(gift));

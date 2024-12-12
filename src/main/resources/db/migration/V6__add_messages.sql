@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.messages
         REFERENCES public.users (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
-)
+);
 
 -- Очистка таблиц сообщений, заказ-подарок и отзывов на сайт
 TRUNCATE TABLE gift_order RESTART IDENTITY CASCADE;

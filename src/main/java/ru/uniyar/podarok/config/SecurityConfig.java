@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,6 +20,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+/**
+ * Конфигурация безопасности для Spring приложения с использованием JWT и настройки прав доступа для различных запросов.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -30,11 +32,25 @@ public class SecurityConfig {
     private JwtRequestFilter jwtRequestFilter;
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Конфигурирует менеджер аутентификации.
+     *
+     * @param authenticationConfiguration объект AuthenticationConfiguration для получения AuthenticationManager.
+     * @return экземпляр AuthenticationManager.
+     * @throws Exception если произошла ошибка при создании менеджера аутентификации.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    /**
+     * Конфигурирует цепочку фильтров безопасности для обработки запросов.
+     *
+     * @param http объект HttpSecurity для настройки фильтров безопасности.
+     * @return настроенная цепочка фильтров безопасности.
+     * @throws Exception если произошла ошибка при настройке безопасности.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -62,6 +78,11 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     * Конфигурирует источник CORS.
+     *
+     * @return объект CorsConfigurationSource для настройки CORS.
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();

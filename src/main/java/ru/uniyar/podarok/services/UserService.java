@@ -1,8 +1,5 @@
 package ru.uniyar.podarok.services;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,12 +18,18 @@ import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.*;
 import ru.uniyar.podarok.repositories.UserRepository;
+import ru.uniyar.podarok.utils.Builder.UserBuilder;
 import ru.uniyar.podarok.utils.JwtTokenUtils;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис для управления пользователями и выполнения связанных операций.
+ * Предоставляет методы для работы с профилем пользователя, авторизацией,
+ * регистрацией и управления избранными подарками.
+ */
 @Service
 @AllArgsConstructor
 public class UserService implements UserDetailsService {
@@ -58,13 +61,16 @@ public class UserService implements UserDetailsService {
         if (userRepository.findUserByEmail(registrationUserDto.getEmail()).isPresent()) {
             throw new UserAlreadyExistException("Пользователь уже существует!");
         }
-        User user = new User();
-        user.setEmail(registrationUserDto.getEmail());
-        user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
-        user.setFirstName(registrationUserDto.getFirstName());
-        user.setRegistrationDate(LocalDate.now());
-        user.setGender(true);
-        user.setRoles(List.of(roleService.getUserRole()));
+
+        User user = new UserBuilder()
+                .setEmail(registrationUserDto.getEmail())
+                .setPassword(passwordEncoder.encode(registrationUserDto.getPassword()))
+                .setFirstName(registrationUserDto.getFirstName())
+                .setRegistrationDate(LocalDate.now())
+                .setGender(true)
+                .setRoles(List.of(roleService.getUserRole()))
+                .build();
+
         emailService.sendWelcomeLetter(registrationUserDto.getEmail(), registrationUserDto.getFirstName());
         return userRepository.save(user);
     }
@@ -84,7 +90,7 @@ public class UserService implements UserDetailsService {
                             .collect(Collectors.toList())
             );
         } catch (UserNotFoundException e) {
-            throw new UsernameNotFoundException(String.format("Пользователь с email %s не найден", email), e);
+            throw new UsernameNotFoundException(String.format("Пользователь с email %s не найден!", email), e);
         }
     }
 
@@ -122,6 +128,12 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    public void deleteCurrentUser() throws UserNotFoundException, UserNotAuthorizedException {
+        User currentUser = getCurrentAuthenticationUser();
+        userRepository.delete(currentUser);
+    }
+
+    @Transactional
     public void requestChangeUserPassword() throws UserNotFoundException, UserNotAuthorizedException {
         User currentUser = getCurrentAuthenticationUser();
         confirmationCodeService.sendConfirmationCode(currentUser.getId(), currentUser.getEmail());
@@ -136,12 +148,6 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    @Transactional
-    public void deleteCurrentUser() throws UserNotFoundException, UserNotAuthorizedException {
-        User currentUser = getCurrentAuthenticationUser();
-        userRepository.delete(currentUser);
-    }
-
     public void sendPasswordResetLink(String email) throws UserNotFoundException {
         findByEmail(email);
         String token = jwtTokenUtils.generatePasswordResetToken(email);
@@ -149,7 +155,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void confirmChangePassword(String token, ChangeUserPasswordDto changeUserPasswordDto) throws ExpiredJwtException, SignatureException, MalformedJwtException, UserNotFoundException {
+    public void confirmChangePassword(String token, ChangeUserPasswordDto changeUserPasswordDto) throws UserNotFoundException {
         String email = jwtTokenUtils.getUserEmail(token);
         User user = findByEmail(email);
         user.setPassword(passwordEncoder.encode(changeUserPasswordDto.getPassword()));

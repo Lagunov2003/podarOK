@@ -20,6 +20,7 @@ public class ChatService {
     private UserService userService;
     private MessageDtoConverter messageDtoConverter;
     private final Sort sort = Sort.by("timestamp").ascending();
+
     public List<MessageDto> getSentChatMessages(String receiverEmail) throws UserNotFoundException, UserNotAuthorizedException {
         Long senderId = userService.getCurrentAuthenticationUser().getId();
         if (receiverEmail == null) {

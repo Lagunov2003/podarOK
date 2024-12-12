@@ -7,6 +7,10 @@ import ru.uniyar.podarok.entities.Message;
 
 import java.time.LocalDateTime;
 
+/**
+ * Контроллер для работы с WebSocket сообщениями в чате.
+ * Обрабатывает входящие сообщения и отправляет их всем подписанным пользователям.
+ */
 @Controller
 public class WebSocketChatController {
     @MessageMapping("/chat.sendMessage")

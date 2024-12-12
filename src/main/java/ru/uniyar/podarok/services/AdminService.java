@@ -1,6 +1,5 @@
 package ru.uniyar.podarok.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.uniyar.podarok.dtos.*;
@@ -8,7 +7,9 @@ import ru.uniyar.podarok.dtos.AddGiftDto;
 import ru.uniyar.podarok.dtos.ChangeGiftDto;
 import ru.uniyar.podarok.dtos.OrderDataDto;
 import ru.uniyar.podarok.dtos.OrderDto;
+import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.OrderNotFoundException;
+import ru.uniyar.podarok.exceptions.SiteReviewNotFoundException;
 
 import java.util.List;
 
@@ -28,11 +29,11 @@ public class AdminService {
         return orderService.getOrders(status);
     }
 
-    public void deleteGift(Long id) throws EntityNotFoundException {
+    public void deleteGift(Long id) throws GiftNotFoundException {
         giftService.deleteGift(id);
     }
 
-    public void changeGift(ChangeGiftDto changeGiftDto) throws EntityNotFoundException{
+    public void changeGift(ChangeGiftDto changeGiftDto) throws GiftNotFoundException {
         giftService.updateGift(changeGiftDto);
     }
 
@@ -45,14 +46,14 @@ public class AdminService {
     }
 
     public List<SiteReviewsDto> getSiteReviews(boolean accepted) {
-        return siteReviewsService.getSiteReviewsByAcceptedStatus(false);
+        return siteReviewsService.getSiteReviewsByAcceptedStatus(accepted);
     }
 
-    public void changeAcceptedStatusSiteReviews(Long id) throws EntityNotFoundException {
+    public void changeAcceptedStatusSiteReviews(Long id) throws SiteReviewNotFoundException {
         siteReviewsService.changeAcceptedStatusSiteReviews(id);
     }
 
-    public void deleteNotAcceptedSiteReviews(Long id) {
+    public void deleteNotAcceptedSiteReviews(Long id) throws SiteReviewNotFoundException {
         siteReviewsService.deleteSiteReviews(id);
     }
 }

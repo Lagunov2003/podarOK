@@ -9,6 +9,10 @@ import ru.uniyar.podarok.entities.Gift;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Класс-конвертер, преобразующий объекты типа Gift в DTO
+ * и обеспечивающий работу с коллекциями этих объектов.
+ */
 @Component
 public class GiftDtoConverter {
     public GiftDto convertToGiftDto(Gift gift) {

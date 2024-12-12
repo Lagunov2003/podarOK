@@ -1,6 +1,5 @@
 package ru.uniyar.podarok.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +8,7 @@ import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.OrderItemDto;
 import ru.uniyar.podarok.dtos.OrderRequestDto;
 import ru.uniyar.podarok.entities.*;
+import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.CartRepository;
@@ -33,7 +33,7 @@ public class CartService {
     }
 
     @Transactional
-    public void addGifts(Long giftId, Integer count) throws UserNotFoundException, UserNotAuthorizedException, EntityNotFoundException {
+    public void addGifts(Long giftId, Integer count) throws UserNotFoundException, UserNotAuthorizedException, GiftNotFoundException {
         User user = userService.getCurrentAuthenticationUser();
         Gift gift = giftService.getGiftById(giftId);
 
@@ -59,7 +59,7 @@ public class CartService {
     @Transactional
     public void changeGiftsAmount(Long giftId, Integer count) throws NoSuchElementException {
         Cart cartItem = cartRepository.findItemByGiftId(giftId)
-                .orElseThrow(() -> new NoSuchElementException("Подарок с Id " + giftId + " не найден в корзине!"));
+                .orElseThrow(() -> new NoSuchElementException("Подарок с id " + giftId + " не найден в корзине!"));
         cartItem.setItemCount(count);
         cartRepository.save(cartItem);
     }
@@ -79,7 +79,7 @@ public class CartService {
     }
 
     @Transactional
-    public void placeOrder(OrderRequestDto orderRequestDto) throws UserNotFoundException, UserNotAuthorizedException, EntityNotFoundException {
+    public void placeOrder(OrderRequestDto orderRequestDto) throws UserNotFoundException, UserNotAuthorizedException, GiftNotFoundException {
         User user = userService.getCurrentAuthenticationUser();
         Order order = createOrder(orderRequestDto, user);
 
@@ -98,7 +98,7 @@ public class CartService {
         orderService.placeOrder(order);
     }
 
-    private GiftOrder createGiftOrder(OrderItemDto itemDto, Order order, User user) {
+    private GiftOrder createGiftOrder(OrderItemDto itemDto, Order order, User user) throws GiftNotFoundException {
         Gift gift = giftService.getGiftById(itemDto.getGiftId());
         GiftOrder giftOrder = new GiftOrder();
         giftOrder.setOrder(order);

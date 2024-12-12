@@ -20,15 +20,19 @@ public class OrderService {
     private OrderRepository orderRepository;
     private OrderDtoConverter orderDtoConverter;
     private GiftOrderService giftOrderService;
+    private NotificationService notificationService;
 
     public void placeOrder(Order order) {
         orderRepository.save(order);
+        notificationService.createPlaceOrderNotification(order);
     }
 
+    @Transactional
     public void changeOrderStatus(OrderDataDto orderDataDto) throws OrderNotFoundException {
         Order order = orderRepository.findById(orderDataDto.getOrderId())
                 .orElseThrow(() -> new OrderNotFoundException("Заказ с Id " + orderDataDto.getOrderId() + " не найден в корзине!"));
         order.setStatus(orderDataDto.getNewOrderStatus());
+        notificationService.createOrderStatusChangeNotification(order, orderDataDto);
         orderRepository.save(order);
     }
 

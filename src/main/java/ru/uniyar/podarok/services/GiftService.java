@@ -11,6 +11,7 @@ import ru.uniyar.podarok.dtos.ChangeGiftDto;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.GiftFilterRequest;
 import ru.uniyar.podarok.entities.*;
+import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.repositories.GiftRepository;
 import ru.uniyar.podarok.utils.GiftDtoConverter;
 
@@ -44,8 +45,8 @@ public class GiftService {
         return giftDtoConverter.convertToGiftDtoPage(giftsPage);
     }
 
-    public Gift getGiftById(Long id) throws EntityNotFoundException {
-        return  giftRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Подарок не найден!"));
+    public Gift getGiftById(Long id) throws GiftNotFoundException {
+        return giftRepository.findById(id).orElseThrow(() -> new GiftNotFoundException("Подарок с id " + id + " не найден!"));
     }
 
     public Page<GiftDto> searchGiftsByName(String name, Pageable pageable) {
@@ -73,15 +74,15 @@ public class GiftService {
     }
 
     @Transactional
-    public void deleteGift(Long id) {
+    public void deleteGift(Long id) throws GiftNotFoundException {
         if (!giftRepository.existsById(id)) {
-            throw new EntityNotFoundException("Подарок с id " + id + " не найден!");
+            throw new GiftNotFoundException("Подарок с id " + id + " не найден!");
         }
         giftRepository.deleteById(id);
     }
 
     @Transactional
-    public void updateGift(ChangeGiftDto changeGiftDto) throws EntityNotFoundException {
+    public void updateGift(ChangeGiftDto changeGiftDto) throws GiftNotFoundException {
         Long recommendation_id = getGiftById(changeGiftDto.getId()).getRecommendation().getId();
         giftRepository.updateGift(changeGiftDto.getId(), changeGiftDto.getPrice(), recommendation_id, changeGiftDto.getDescription(), changeGiftDto.getName(), changeGiftDto.getGroupId());
         giftRepository.deleteGiftPhotos(changeGiftDto.getId());

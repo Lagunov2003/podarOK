@@ -9,6 +9,10 @@ import ru.uniyar.podarok.entities.Order;
 
 import java.util.List;
 
+/**
+ * Конвертер для преобразования объектов типа Order в DTO,
+ * с использованием другого конвертера для преобразования подарков.
+ */
 @Component
 @AllArgsConstructor
 public class OrderDtoConverter {

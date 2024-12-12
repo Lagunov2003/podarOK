@@ -95,7 +95,6 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
                                   @Param("min_age") Long minAge,
                                   @Param("max_age") Long maxAge);
 
-
     @Query(value = "INSERT INTO Gift(price, recommendation_id, description, name, group_id) " +
             "VALUES(:price, :recommendation_id, :description, :name, :group_id) RETURNING id", nativeQuery = true)
     Integer addGift(@Param("price") BigDecimal price,
@@ -142,5 +141,5 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
                     "FROM gift g " +
                     "LEFT JOIN review r ON g.id = r.gift_id",
             nativeQuery = true)
-        Page<Gift> findAllOrderByAverageRatingDesc(Pageable pageable);
+    Page<Gift> findAllOrderByAverageRatingDesc(Pageable pageable);
 }
