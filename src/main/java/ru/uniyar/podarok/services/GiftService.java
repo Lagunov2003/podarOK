@@ -1,6 +1,5 @@
 package ru.uniyar.podarok.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +12,7 @@ import ru.uniyar.podarok.dtos.GiftFilterRequest;
 import ru.uniyar.podarok.entities.*;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.repositories.GiftRepository;
-import ru.uniyar.podarok.utils.GiftDtoConverter;
+import ru.uniyar.podarok.utils.Converters.GiftDtoConverter;
 
 import java.util.*;
 import java.util.stream.Collectors;

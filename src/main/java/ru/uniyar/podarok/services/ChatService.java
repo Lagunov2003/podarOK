@@ -9,7 +9,7 @@ import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.MessageRepository;
-import ru.uniyar.podarok.utils.MessageDtoConverter;
+import ru.uniyar.podarok.utils.Converters.MessageDtoConverter;
 
 import java.util.List;
 
@@ -54,11 +54,11 @@ public class ChatService {
     public List<MessageDto> getNotReadChatMessages(String senderEmail) throws UserNotFoundException, UserNotAuthorizedException {
         Long receiverId = userService.getCurrentAuthenticationUser().getId();
         if (senderEmail == null) {
-            List<Message> foundedMessages = messageRepository.findByReceiverIdAndIsRead(receiverId, false, sort);
+            List<Message> foundedMessages = messageRepository.findByReceiverIdAndRead(receiverId, false, sort);
             return foundedMessages.stream().map(messageDtoConverter::convertToMessageDto).toList();
         }
         Long senderId = userService.findByEmail(senderEmail).getId();
-        List<Message> foundedMessages = messageRepository.findBySenderIdAndReceiverIdAndIsRead(senderId, receiverId, false, sort);
+        List<Message> foundedMessages = messageRepository.findBySenderIdAndReceiverIdAndRead(senderId, receiverId, false, sort);
         return foundedMessages.stream().map(messageDtoConverter::convertToMessageDto).toList();
     }
 }

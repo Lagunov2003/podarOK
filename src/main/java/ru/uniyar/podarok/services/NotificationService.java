@@ -6,7 +6,7 @@ import ru.uniyar.podarok.dtos.OrderDataDto;
 import ru.uniyar.podarok.entities.Notification;
 import ru.uniyar.podarok.entities.Order;
 import ru.uniyar.podarok.entities.User;
-import ru.uniyar.podarok.utils.Builder.NotificationBuilder;
+import ru.uniyar.podarok.utils.Builders.NotificationBuilder;
 
 import java.time.LocalDateTime;
 

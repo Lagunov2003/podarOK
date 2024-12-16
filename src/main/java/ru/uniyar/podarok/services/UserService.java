@@ -18,7 +18,7 @@ import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.*;
 import ru.uniyar.podarok.repositories.UserRepository;
-import ru.uniyar.podarok.utils.Builder.UserBuilder;
+import ru.uniyar.podarok.utils.Builders.UserBuilder;
 import ru.uniyar.podarok.utils.JwtTokenUtils;
 
 import java.time.LocalDate;

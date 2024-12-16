@@ -15,7 +15,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     List<Message> findByReceiverId(Long receiverId, Sort sort);
     @Query("SELECT m FROM Message m WHERE m.sender = :senderId AND m.receiver = :receiverId")
     List<Message> findBySenderIdAndReceiverId(@Param("senderId") Long senderId, @Param("receiverId") Long receiverId, Sort sort);
-
-    List<Message> findByReceiverIdAndIsRead(Long receiverId, Boolean isRead, Sort sort);
-    List<Message> findBySenderIdAndReceiverIdAndIsRead(Long senderId, Long receiverId, Boolean isRead, Sort sort);
+    List<Message> findByReceiverIdAndRead(Long receiverId, Boolean read, Sort sort);
+    List<Message> findBySenderIdAndReceiverIdAndRead(Long senderId, Long receiverId, Boolean read, Sort sort);
 }

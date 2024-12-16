@@ -12,7 +12,7 @@ import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.CartRepository;
-import ru.uniyar.podarok.utils.GiftDtoConverter;
+import ru.uniyar.podarok.utils.Converters.GiftDtoConverter;
 
 import java.math.BigDecimal;
 import java.util.*;

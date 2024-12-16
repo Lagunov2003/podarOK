@@ -32,7 +32,6 @@ public class SiteReviewsController {
 
     /**
      * Добавить новый отзыв о сайте.
-     *
      * Доступно только для авторизованных пользователей.
      *
      * @param addSiteReviewDto DTO с данными отзыва.

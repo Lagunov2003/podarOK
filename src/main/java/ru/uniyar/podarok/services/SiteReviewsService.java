@@ -1,20 +1,17 @@
 package ru.uniyar.podarok.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.uniyar.podarok.dtos.AddSiteReviewDto;
 import ru.uniyar.podarok.dtos.SiteReviewsDto;
 import ru.uniyar.podarok.entities.SiteReviews;
 import ru.uniyar.podarok.entities.User;
-import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.SiteReviewNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.SiteReviewsRepository;
-import ru.uniyar.podarok.utils.SiteReviewsDtoConverter;
+import ru.uniyar.podarok.utils.Converters.SiteReviewsDtoConverter;
 
 import java.util.List;
 import java.util.stream.Collectors;

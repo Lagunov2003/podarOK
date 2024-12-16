@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.GiftFilterRequest;
 import ru.uniyar.podarok.dtos.GiftToFavoritesDto;
+import ru.uniyar.podarok.dtos.ReviewRequestDto;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
@@ -82,5 +83,13 @@ public class CatalogController {
             return ResponseEntity.status(HttpStatus.OK).body("Нет элементов на странице!");
         }
         return ResponseEntity.ok(pagedResourcesAssembler.toModel(giftsPage));
+    }
+
+    @PostMapping("/addGiftReview")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> addGiftReview(@RequestBody ReviewRequestDto reviewRequestDto)
+            throws  UserNotAuthorizedException, UserNotFoundException, GiftNotFoundException {
+        catalogService.addGiftReview(reviewRequestDto);
+        return ResponseEntity.ok("Отзыв успешно добавлен!");
     }
 }
