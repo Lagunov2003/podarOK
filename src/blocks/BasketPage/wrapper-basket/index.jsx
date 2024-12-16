@@ -1,20 +1,27 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
 import BasketItem from "../basket-item";
-import { Link } from "react-router-dom";
-import { convertPrice } from "../../../tool/tool";
+import { Link, useNavigate } from "react-router-dom";
+import { convertImg, convertPrice } from "../../../tool/tool";
 
-function WrapperBasket({ list, setList }) {
+function WrapperBasket({ list, setList, setOrder }) {
+    const navigate = useNavigate()
     const [selectItem, setSelectItem] = useState([...list]);
     const [priceAll, setPriceAll] = useState(0);
+
+    
+    useEffect(() => {
+        setPriceAll(selectItem.reduce((acc, v) => (acc += v?.gift.price * v.itemCount), 0));
+    }, [selectItem]);
 
     const handleSelectAll = () => {
         setSelectItem([...list]);
     };
 
-    useEffect(() => {
-        setPriceAll(selectItem.reduce((acc, v) => (acc += v.price * v.count), 0));
-    }, [selectItem]);
+    const handleCreateOrder = () => {
+        setOrder({gift: [...selectItem], price: priceAll})
+        navigate("/order/123")
+    }
 
     return (
         <section className="basket-page">
@@ -29,7 +36,7 @@ function WrapperBasket({ list, setList }) {
                                 {list.map((v) => (
                                     <BasketItem
                                         itemValue={v}
-                                        key={v.id}
+                                        key={v?.gift?.id}
                                         setList={setList}
                                         setSelectItem={setSelectItem}
                                         selectItem={selectItem}
@@ -54,8 +61,8 @@ function WrapperBasket({ list, setList }) {
                                     <div className="basket-page__info-list">
                                         {selectItem.map((v, i) => (
                                             <div className="basket-page__info-item" key={i}>
-                                                {/* <img src="#" alt="Картинка товара" /> */}
-                                                <span className="basket-page__info-count">{v.count}</span>
+                                                <img src={convertImg(v?.gift?.photoUrl)} alt="Картинка товара" />
+                                                <span className="basket-page__info-count">{v.itemCount}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -64,9 +71,9 @@ function WrapperBasket({ list, setList }) {
                                         <span>{convertPrice(priceAll)} ₽</span>
                                     </div>
                                     <p className="basket-page__info-label">Цена без учета доставки и промокодов</p>
-                                    <Link to={"/order/123"} className="basket-page__info-button">
+                                    <button className="basket-page__info-button" onClick={() => handleCreateOrder()}>
                                         К оформлению
-                                    </Link>
+                                    </button>
                                 </>
                             )}
                         </div>

@@ -20,6 +20,14 @@
         background-color: #BABABA;
         position: relative;
 
+        & img {
+            height: 80px;
+            width: 80px;
+            border-radius: 20px;
+            object-fit: cover;
+            object-position: top center;
+        }
+
         &-count {
             position: absolute;
             bottom: -4px;

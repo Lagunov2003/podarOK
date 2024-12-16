@@ -1,11 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./style.scss";
 import Button from "../../../component/button";
 import SingIn from "../../../component/sing-in";
 import { Link, useLocation, useNavigate, useNavigation } from "react-router-dom";
+import { ContextData } from "../../../app/app";
+import { ModalAuth } from "../layer-page";
 
-function Header({ handleOpenModal, data }) {
+function Header({ handleOpenModal }) {
+    const data = useContext(ContextData)
+    const handleOpenAuth = useContext(ModalAuth)
     const location = useLocation();
+    const navigate = useNavigate();
+
+    const handleClickBasket = () => {
+        if(data == null) {
+            handleOpenAuth()
+        } else {
+            navigate("/basket")
+        }
+    }
 
     return (
         <header className="header">
@@ -17,9 +30,6 @@ function Header({ handleOpenModal, data }) {
                 </div>
                 <Link to={"/admin/reviews"}>
                     <span>админ</span>
-                </Link>
-                <Link to={"/account/user"}>
-                    <span>аккаунт</span>
                 </Link>
                 <nav className="header__nav">
                     <Link to={"/catalog"} className="header__link">
@@ -47,13 +57,19 @@ function Header({ handleOpenModal, data }) {
                     >
                         Отзывы
                     </Link>
-                    <Link to={"/basket"} className="header__link">
+                    <button className="header__link" onClick={() => handleClickBasket()}>
                         Корзина
-                    </Link>
+                    </button>
                 </nav>
-                <button className="header__sing-in" onClick={() => handleOpenModal()}>
-                    Вход
-                </button>
+                {data?.firstName ? (
+                    <Link to={"/account"} className="header__sing-in">
+                        <span>{data?.firstName}</span>
+                    </Link>
+                ) : (
+                    <button className="header__sing-in" onClick={() => handleOpenModal()}>
+                        Вход
+                    </button>
+                )}
             </div>
         </header>
     );

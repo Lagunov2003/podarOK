@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
-import { convertPrice } from "../../../tool/tool";
+import { convertImg, convertPrice } from "../../../tool/tool";
 
-function InfoPrice({ dataOrder, handleOrderRegistration, setDataOrder }) {
+function InfoPrice({ dataOrder, handleOrderRegistration, setDataOrder, order }) {
     const [code, setCode] = useState("");
     const [activeCode, setActiveCode] = useState("");
     const [discount, setDiscount] = useState(0);
@@ -22,7 +22,7 @@ function InfoPrice({ dataOrder, handleOrderRegistration, setDataOrder }) {
     };
 
     useEffect(() => {
-        if (activeCode == "true") setDiscount(((dataOrder.price + dataOrder.addressPrice)/ 100) * 10);
+        if (activeCode == "true") setDiscount(((dataOrder.price + dataOrder.addressPrice) / 100) * 10);
     }, [dataOrder, activeCode]);
 
     useEffect(() => {
@@ -32,12 +32,12 @@ function InfoPrice({ dataOrder, handleOrderRegistration, setDataOrder }) {
     return (
         <div className="info-price">
             <div className="info-price__list">
-                <div className="info-price__item">
-                    <span className="info-price__item-count">2</span>
-                </div>
-                <div className="info-price__item">
-                    <span className="info-price__item-count">1</span>
-                </div>
+                {order.gift?.map((v) => (
+                    <div className="info-price__item" key={v?.gift?.id}>
+                        <img src={convertImg(v?.gift?.photoUrl)} alt="Фотография товара" />
+                        <span className="info-price__item-count">{v?.itemCount}</span>
+                    </div>
+                ))}
             </div>
             <div className="info-price__line"></div>
             <div className="info-price__center">

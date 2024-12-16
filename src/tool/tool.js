@@ -6,3 +6,7 @@ export function convertPrice(price) {
         .reverse()
         .join("")
 }
+
+export function convertImg(url) {
+    return "/img/photos" + url.slice(1, url.length) + ".png"
+}

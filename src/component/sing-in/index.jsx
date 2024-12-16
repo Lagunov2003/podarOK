@@ -103,7 +103,7 @@ function SingIn({ openModal, activeModal }) {
         setErrorRegister("");
 
         const status = await responseLogin(e.target[0].value, e.target[1].value);
-
+        
         if (status == "успешно") {
             handleOpenModal();
         } else {

@@ -99,9 +99,10 @@
         &-wrapper {
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             gap: 14px;
+            max-height: 493px;
         }
 
         &-prev {
@@ -119,14 +120,29 @@
         &-scroll {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            height: 420px;
+
+            .swiper {
+
+                &-slide {
+                    max-height: max-content;
+                }
+            }
         }
 
         &-img {
             width: 99px;
             height: 132px;
             border-radius: 20px;    
+            overflow: hidden;
             background-color: rgba(186, 186, 186, 1);      
+
+            img {
+                object-fit: cover;
+                object-position: center;
+                width: 99px;
+                height: 132px;
+            }
         }
 
         &-main-img {
@@ -135,6 +151,13 @@
             height: 493px;
             border-radius: 30px;
             background-color: rgba(186, 186, 186, 1);
+            overflow: hidden;
+            
+            img {
+                object-fit: cover;
+                width: 369px;
+                height: 493px;
+            }
         }
 
         
@@ -171,7 +194,7 @@
             font-family: Dimica;
             font-size: 14px;
             font-weight: 400;
-            line-height: 13px;
+            line-height: 120%;
         }
 
         &-list {
@@ -258,6 +281,29 @@
                 color: rgba(55, 13, 109, 1);
                 background: linear-gradient(90deg, rgba(151, 71, 255, 0.3) 0%, rgba(49, 206, 217, 0.3) 100%);
             }
+
+            &:active {
+                transform: translateY(3px);
+            }
+        }
+
+        &-basket {
+            margin-bottom: 10px;
+            height: 44px;
+            border-radius: 20px;
+            font-family: Dela;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 28px;
+            text-align: center;
+            border: 1px solid rgba(19, 137, 233, 1);
+            color: #370D6D;
+            background: #74C7EE;
+            transition: all 0.15s linear;
+
+            &:active {
+                transform: translateY(3px);
+            }
         }
 
         &-buy {
@@ -278,13 +324,17 @@
                 color: white;
                 background: linear-gradient(90deg, #31CED9 0%, #9747FF 100%);
             }
+
+            &:active {
+                transform: translateY(3px);
+            }
         }
 
         &-text-small {
             font-family: Dimica;
             font-size: 12px;
             font-weight: 400;
-            line-height: 12px;
+            line-height: 120%;
         }
     }
 }

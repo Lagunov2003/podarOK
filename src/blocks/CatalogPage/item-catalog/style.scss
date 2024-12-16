@@ -1,13 +1,26 @@
 .item-catalog {
     padding: 18px;
-    height: 394px;
+    height: 402px;
     width: 285px;
     border-radius: 25px;
     background-color: white;
 
-    &__img {
+    &__wrapper-img {
         position: relative;
         margin-bottom: 5px;
+        height: 227px;
+    }
+
+    &__img {
+        height: 227px;
+        width: 249px;
+        img {
+            object-fit: cover;
+            object-position: top center;
+            border-radius: 20px;
+            width: 249px;
+            height: 227px;
+        }
     }
 
     &__label {
@@ -55,17 +68,18 @@
         font-family: Dimica;
         font-size: 16px;
         font-weight: 400;
-        line-height: 16px;
+        line-height: 130%;
         text-align: left;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
-        height: 32px;
+        height: 40px;
     }
 
     &__button {
+        width: 100%;
         padding: 2px 41px 10px;
         font-family: Dela;
         font-size: 24px;

@@ -1,13 +1,22 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./style.scss";
+import { ContextLogin } from "../../../app/app";
 
 function Setting() {
+    const navigate = useNavigate()
+    const asyncLogin = useContext(ContextLogin)
     const [activeModal, setActiveModal] = useState(false);
 
     const handleOpenModal = () => {
         setActiveModal((v) => !v);
     };
+
+    const handleClickExit = () => {
+        localStorage.removeItem("token")
+        asyncLogin()
+        navigate("/")
+    }
 
     return (
         <div className="account-setting">
@@ -16,6 +25,9 @@ function Setting() {
             </Link>
             <button className="account-setting__delete-password" onClick={() => handleOpenModal()}>
                 Удалить аккаунт
+            </button>
+            <button className="account-setting__delete-password" onClick={() => handleClickExit()}>
+                Выйти из аккаунта
             </button>
 
             {activeModal == true && (

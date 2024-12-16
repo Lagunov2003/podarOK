@@ -16,6 +16,10 @@
         height: 64px; 
         width: 285px;
 
+        .dropdown_active {
+            height: 205px;
+        }
+
         .dropdown__text {
             margin-bottom: 5px;
             width: 285px;
@@ -63,8 +67,11 @@
         }
     }
 
-    &__button {
-        width: 283px !important;
-        height: 64px !important;
+
+    &__wrapper-button {
+
+        & .survey-modal__button {
+            width: 285px;
+        }
     }
 }

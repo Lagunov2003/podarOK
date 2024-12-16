@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import Main from "./main";
-import { BrowserRouter, createBrowserRouter, Route, RouterProvider, Routes, useLocation } from "react-router-dom";
-import PageLayer from "../component/page-layer";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import PasswordCange from "./password";
 import Account from "./account";
 import User from "../blocks/AccountPage/user";
@@ -18,79 +17,71 @@ import Order from "./order";
 import Admin from "./admin/admin";
 import AdminReviews from "../blocks/AdminPage/admin-reviews";
 import AdminOrders from "../blocks/AdminPage/admin-orders";
+import LayerPage from "../blocks/LayerPage/layer-page";
+import { responseGetProfile } from "../tool/response";
+import ErrorPage from "../blocks/ErrorPage";
 
-const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <PageLayer />,
-        children: [
-            {
-                path: "account",
-                element: <Account />,
-                children: [
-                    {
-                        path: "user",
-                        element: <User />,
-                    },
-                    {
-                        path: "user/edit",
-                        element: <Edit />,
-                    },
-                    {
-                        path: "notice",
-                        element: <Notice />,
-                    },
-                    {
-                        path: "order",
-                        element: <OrderAccount />,
-                    },
-                    {
-                        path: "favorite",
-                        element: <Favorite />,
-                    },
-                    {
-                        path: "help",
-                        element: <ChatHelper />,
-                    },
-                    {
-                        path: "setting",
-                        element: <Setting />,
-                    },
-                ],
-            },
-        ],
-    },
-]);
+export const ContextData = createContext();
+export const ContextLogin = createContext();
 
 function App() {
-    useEffect(() => {
-        async function qwe(params) {
-            const resp = await fetch("/api/catalog");
-            const data = await resp.body;
+    const [data, setData] = useState(null);
+    const [order, setOrder] = useState(null)
 
-            console.log(data);
+    const asyncLogin = async () => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            let d = await responseGetProfile(token);
+            setData(d);
+        } else {
+            setData(null)
         }
+    };
 
-        qwe();
+    useEffect(() => {
+        console.log(order);     
+    }, [order])
+
+
+    useEffect(() => {
+        asyncLogin();
     }, []);
 
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<PageLayer />}>
-                    <Route index element={<Main />} />
-                    <Route path="password-change" element={<PasswordCange />} />
-                    <Route path="catalog" element={<Catalog />} />
-                    <Route path="basket" element={<Basket />} />
-                    <Route path="article/:id" element={<Card />} />
-                    <Route path="order/:id" element={<Order />} />
-                    <Route path="admin" element={<Admin />} >
-                        <Route path="reviews" element={<AdminReviews />} />
-                        <Route path="orders" element={<AdminOrders />} />
-                    </Route>
-                </Route>
-            </Routes>
-        </BrowserRouter>
+        <ContextData.Provider value={data}>
+            <ContextLogin.Provider value={asyncLogin}>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" element={<LayerPage />}>
+                            <Route index element={<Main />} />
+                            <Route path="catalog" element={<Catalog />} />
+                            <Route path="article/:id" element={<Card />} />
+                            {data != null && (
+                                <>
+                                    <Route path="order/:id" element={<Order order={order}/>} />
+                                    <Route path="basket" element={<Basket setOrder={setOrder}/>} />
+                                    <Route path="password-change" element={<PasswordCange />} />
+                                    <Route path="account" element={<Account />}>
+                                        <Route index element={<User />} />
+                                        <Route path="edit" element={<Edit />} />
+                                        <Route path="notice" element={<Notice />} />
+                                        <Route path="order" element={<OrderAccount />} />
+                                        <Route path="favorite" element={<Favorite />} />
+                                        <Route path="help" element={<ChatHelper />} />
+                                        <Route path="setting" element={<Setting />} />
+                                    </Route>
+                                    <Route path="admin" element={<Admin />}>
+                                        <Route path="reviews" element={<AdminReviews />} />
+                                        <Route path="orders" element={<AdminOrders />} />
+                                    </Route>
+                                </>
+                            )}
+                            <Route path="*" element={<ErrorPage />} />
+                        </Route>
+                    </Routes>
+                </BrowserRouter>
+            </ContextLogin.Provider>
+        </ContextData.Provider>
     );
 }
 

@@ -3,7 +3,7 @@ import "./style.scss";
 
 const arr = new Array(5).fill("");
 
-function ReviewModal({ setOpen }) {
+function ReviewModal({ handleOpen }) {
     const refTextarea = useRef(null);
     const [rate, setRate] = useState(0);
     const refRate = useRef(0)
@@ -11,7 +11,7 @@ function ReviewModal({ setOpen }) {
     const handleSend = () => {
         refTextarea.current.value = "";
         refRate.current = 0
-        setOpen(false);
+        handleOpen()
     };
 
     return (
@@ -22,9 +22,9 @@ function ReviewModal({ setOpen }) {
                 <div className="review-modal__stars-row" onMouseLeave={() => setRate(0)}>
                     {arr.map((v, i) =>
                         (rate > i) || (refRate.current > i && rate == 0) ? (
-                            <img src="/img/rating-star.svg" alt="Звезда рейтинга" onMouseMove={() => setRate(i + 1)} onClick={() => refRate.current = i + 1} />
+                            <img src="/img/rating-star.svg" alt="Звезда рейтинга" key={i} onMouseMove={() => setRate(i + 1)} onClick={() => refRate.current = i + 1} />
                         ) : (
-                            <img src="/img/rating-star-empty.svg" alt="Звезда рейтинга" onMouseMove={() => setRate(i + 1)} onClick={() => refRate.current = i + 1} />
+                            <img src="/img/rating-star-empty.svg" alt="Звезда рейтинга" key={i} onMouseMove={() => setRate(i + 1)} onClick={() => refRate.current = i + 1} />
                         )
                     )}
                 </div>

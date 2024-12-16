@@ -1,8 +1,9 @@
 .chat-helper {
     position: fixed;
-    right: 120px;
+    left: 87vw;
     bottom: 40px;
     z-index: 50;
+    scrollbar-gutter: stable;
 
     &__button {
         background-color: transparent;

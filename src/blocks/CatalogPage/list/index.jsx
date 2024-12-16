@@ -4,17 +4,19 @@ import PageCount from "../../../component/page-count";
 import { Link } from "react-router-dom";
 import ItemCatalog from "../item-catalog";
 
-function List({ list }) {
+function List({ list, page, setCurrentPage, currentPage }) {
+
+    
     return (
         <div className="list">
-            {list.length != 0 ? (
+            {list?.length != 0 ? (
                 <>
                     <div className="list__content">
-                        {list.map((v, i) => (
+                        {list?.map((v) => (
                             <ItemCatalog item={v} />
                         ))}
                     </div>
-                    <PageCount />
+                    <PageCount count={page.totalPages} setCurrentPage={setCurrentPage} currentPage={currentPage}/>
                 </>
             ) : (
                 <div className="list__empty">

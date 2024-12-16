@@ -1,15 +1,29 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import "./style.scss";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import WrapperModal from "../../../component/wrapper-modal";
 import ReviewModal from "../../../component/review-modal";
+import SingIn from "../../../component/sing-in";
+import { ContextData } from "../../../app/app";
+import { ModalAuth } from "../../LayerPage/layer-page";
 
 function Reviews({ refReviews }) {
-    const [open, setOpen] = useState(false)
+    const data = useContext(ContextData);
+    const handleOpenModal = useContext(ModalAuth)
+    const [open, setOpen] = useState(false);
     const prevBt = useRef(null);
     const nextBt = useRef(null);
+
+    const handleOpen = () => {
+        if(data == null) {
+            handleOpenModal()
+        } else {
+            document.body.classList.toggle("local-page");
+            setOpen(v => !v)
+        }
+    }
 
     return (
         <section className="reviews" ref={refReviews}>
@@ -96,9 +110,11 @@ function Reviews({ refReviews }) {
                     <button className="reviews__swiper-next" ref={nextBt}></button>
                 </div>
                 <p className="reviews__label">Последние отзывы о нашем сервисе</p>
-                <button className="reviews__button button-style" onClick={() => setOpen(true)}>Оставить отзыв</button>
+                <button className="reviews__button button-style" onClick={() => handleOpen()}>
+                    Оставить отзыв
+                </button>
                 <WrapperModal activeModal={open}>
-                    <ReviewModal setOpen={setOpen}/>
+                    <ReviewModal handleOpen={handleOpen} />
                 </WrapperModal>
             </div>
         </section>

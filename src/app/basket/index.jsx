@@ -1,71 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import WrapperBasket from "../../blocks/BasketPage/wrapper-basket";
+import { responseGetCart } from "../../tool/response";
 
-const defList = [
-    {
-        name: "Кружка стеклянная двойная с медведем",
-        price: 1199,
-        count: 1,
-        id: 1,
-        categorie: "Товары для дома",
-        holidays: "Новоселье",
-    },
-    {
-        name: "Название товара",
-        price: 9999,
-        count: 1,
-        id: 2,
-        categorie: "Товары для дома",
-        holidays: "Новоселье",
-    },
-    {
-        name: "Название товара",
-        price: 3400,
-        count: 1,
-        id: 3,
-        categorie: "Товары для дома",
-        holidays: "Новоселье",
-    },
-    {
-        name: "Название товара",
-        price: 9999,
-        count: 1,
-        id: 4,
-        categorie: "Товары для дома",
-        holidays: "Новоселье",
-    },
-    {
-        name: "Название товара",
-        price: 3400,
-        count: 1,
-        id: 5,
-        categorie: "Товары для дома",
-        holidays: "Новоселье",
-    },
-    {
-        name: "Название товара",
-        price: 9999,
-        count: 1,
-        id: 6,
-        categorie: "Товары для дома",
-        holidays: "Новоселье",
-    },
-    {
-        name: "Название товара",
-        price: 3400,
-        count: 1,
-        id: 7,
-        categorie: "Товары для дома",
-        holidays: "Новоселье",
-    },
-];
 
-function Basket() {
-    const [list, setList] = useState(defList);
+function Basket({ setOrder }) {
+    const [list, setList] = useState([]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token")
+
+        if(token) {
+            responseGetCart(token, setList)
+        }
+    }, [])
 
     return (
         <>
-            <WrapperBasket list={list} setList={setList} />
+            <WrapperBasket list={list} setList={setList} setOrder={setOrder}/>
         </>
     );
 }

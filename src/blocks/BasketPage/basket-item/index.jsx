@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
-import { convertPrice } from "../../../tool/tool";
+import { convertImg, convertPrice } from "../../../tool/tool";
+import { responsePutCart } from "../../../tool/response";
 
 function BasketItem({ itemValue, setSelectItem, selectItem, setList }) {
-    const [count, setCount] = useState(1);
+    const [count, setCount] = useState(itemValue?.itemCount);
 
     useEffect(() => {
-        setSelectItem((list) => [...list.map((v) => (v.id != itemValue.id ? v : { ...itemValue, count: count }))]);
+        const token = localStorage.getItem("token");
+
+        setSelectItem((list) => [...list.map((v) => (v?.gift?.id != itemValue?.gift?.id ? v : { ...itemValue, itemCount: count }))]);
+
+        if (token) responsePutCart(token, itemValue?.gift?.id, count);
+
     }, [count]);
 
     const handleMinus = () => {
@@ -23,28 +29,28 @@ function BasketItem({ itemValue, setSelectItem, selectItem, setList }) {
 
     const handleSelect = (e) => {
         if (e.target.checked) {
-            setSelectItem((list) => [...list, { ...itemValue, count: count }]);
+            setSelectItem((list) => [...list, { ...itemValue, itemCount: count }]);
         } else {
-            setSelectItem((list) => [...list.filter((v) => v.id != itemValue.id)]);
+            setSelectItem((list) => [...list.filter((v) => v?.gift?.id != itemValue?.gift?.id)]);
         }
     };
 
     const handleDelete = () => {
-        setList(list => [...list.filter(v => v.id != itemValue.id)])
-        setSelectItem((list) => [...list.filter(v => v.id != itemValue.id)]);
-    }
+        const token = localStorage.getItem("token");
+
+        setList((list) => [...list.filter((v) => v?.gift?.id != itemValue?.gift?.id)]);
+        setSelectItem((list) => [...list.filter((v) => v?.gift?.id != itemValue?.gift?.id)]);
+
+        if (token) responsePutCart(token, itemValue?.gift?.id, 0);
+    };
 
     return (
         <div className="basket-item">
             <div className="basket-item__img">
-                <img src="" alt="Изображение товара" />
+                <img src={convertImg(itemValue?.gift?.photoUrl)} alt="Изображение товара" />
             </div>
             <div className="basket-item__info">
-                <h2 className="basket-item__title">{itemValue?.name}</h2>
-                <div className="basket-item__descr">
-                    <p className="basket-item__text">Категория: {itemValue?.categorie}</p>
-                    <p className="basket-item__text">Повод: {itemValue?.holidays}</p>
-                </div>
+                <h2 className="basket-item__title">{itemValue?.gift?.name}</h2>
                 <div className="basket-item__count">
                     <button className="basket-item__button" onClick={() => handleMinus()}>
                         -
@@ -55,13 +61,13 @@ function BasketItem({ itemValue, setSelectItem, selectItem, setList }) {
                     </button>
                 </div>
             </div>
-            <p className="basket-item__price">{convertPrice(itemValue?.price)} ₽</p>
+            <p className="basket-item__price">{convertPrice(itemValue?.gift?.price)} ₽</p>
             <div className="basket-item__column">
                 <input
                     type="checkbox"
                     className="basket-item__input"
                     onChange={(e) => handleSelect(e)}
-                    checked={selectItem.filter((v) => v.id == itemValue.id)?.length != 0 ? true : false}
+                    checked={selectItem.filter((v) => v?.gift?.id == itemValue?.gift?.id)?.length != 0 ? true : false}
                 />
                 <button className="basket-item__delete" onClick={() => handleDelete()}>
                     <img src="/img/delete-basket.svg" alt="Кнопка удаления товара" />

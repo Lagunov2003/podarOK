@@ -1,8 +1,10 @@
-import React from "react";
-import "./style.scss"
+import React, { useContext } from "react";
+import "./style.scss";
 import { Link } from "react-router-dom";
+import { ContextData } from "../../../app/app";
 
 function User() {
+    const data = useContext(ContextData);
 
     return (
         <div className="user">
@@ -12,32 +14,32 @@ function User() {
                         <img src="" alt="" />
                     </div>
                     <div className="user__top-block">
-                        <p className="user__top-f-name">Имя</p>
                         <div className="user__top-wrapper">
-                            <p className="user__top-s-name">Фамилия</p>
-                            <Link to={"/account/user/edit"} className="user__top-edit">
+                            <p className="user__top-f-name">{data.firstName}</p>
+                            <Link to={"/account/edit"} className="user__top-edit">
                                 <img src="/img/account/pencil.svg" alt="" />
                             </Link>
                         </div>
-                        <p className="user__top-reg">Дата регистрации 01.01.2025</p>
+                        <p className="user__top-s-name">{data.lastName ? data.lastName : ""}</p>
+                        <p className="user__top-reg">Дата регистрации {[...data.registrationDate.split("-")].reverse().join(".")}</p>
                     </div>
                 </div>
                 <div className="user__info">
                     <div className="user__info-item">
                         <p className="user__info-text">Дата Рождения:</p>
-                        <p className="user__info-text">20.02.2002</p>
+                        <p className="user__info-text">{data.dateOfBirth ? data.dateOfBirth : "не указан"}</p>
                     </div>
                     <div className="user__info-item">
                         <p className="user__info-text">Пол:</p>
-                        <p className="user__info-text">Женский</p>
+                        <p className="user__info-text">{data.gender ? "Мужской" : "Женский"}</p>
                     </div>
                     <div className="user__info-item">
                         <p className="user__info-text">Почта:</p>
-                        <p className="user__info-text">user01@mail.ru</p>
+                        <p className="user__info-text">{data.email}</p>
                     </div>
                     <div className="user__info-item">
                         <p className="user__info-text">Телефон:</p>
-                        <p className="user__info-text">не указан</p>
+                        <p className="user__info-text">{data.tel ? data.tel : "не указан"}</p>
                     </div>
                 </div>
             </div>

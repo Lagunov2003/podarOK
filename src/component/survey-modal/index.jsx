@@ -95,7 +95,7 @@ function SurveyModal() {
                     <p className="survey-modal__text">
                         Ответьте на несколько вопросов для подбора наилучшего подарка для выбранного вами человечка❤
                     </p>
-                    <form className="survey-modal__form" id="surveyForm" onSubmit={(e) => handleSubmit(e)}>
+                    <form className="survey-modal__form" onSubmit={(e) => handleSubmit(e)}>
                         <div className="survey-modal__row">
                             <div className="survey-modal__item">
                                 <span className="survey-modal__item-number">{"1)"}</span>

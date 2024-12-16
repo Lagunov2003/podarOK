@@ -10,10 +10,10 @@ function AccountLayer({ children }) {
             <div className="account-layer__content padding-style">
                 <div className="account-layer__menu">
                     <Link
-                        to={"/account/user"}
+                        to={"/account"}
                         className={
                             "account-layer__link" +
-                            (location.pathname == "/account/user" || location.pathname == "/account/user/edit"
+                            (location.pathname == "/account" || location.pathname == "/account/edit"
                                 ? " account-layer__link_active"
                                 : "")
                         }

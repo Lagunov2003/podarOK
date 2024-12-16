@@ -25,6 +25,7 @@
 
 .local-page {
     overflow: hidden;
+    scrollbar-gutter: stable;
 }
 
 section {

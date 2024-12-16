@@ -3,8 +3,10 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "./style.scss";
+import { convertPrice } from "../../../tool/tool";
+import { Link } from "react-router-dom";
 
-function SimilarProducts() {
+function SimilarProducts({ list }) {
     const prevBt = useRef(null);
     const nextBt = useRef(null);
 
@@ -17,7 +19,7 @@ function SimilarProducts() {
                     <Swiper
                         modules={[Navigation]}
                         spaceBetween={35}
-                        slidesPerView={4}
+                        slidesPerView={"auto"}
                         onInit={(swiper) => {
                             swiper.params.navigation.prevEl = prevBt.current;
                             swiper.params.navigation.nextEl = nextBt.current;
@@ -25,90 +27,29 @@ function SimilarProducts() {
                             swiper.navigation.update();
                         }}
                     >
-                        <SwiperSlide>
-                            <div className="similar-products__item">
-                                <div className="similar-products__item-img">
-                                    <span className="similar-products__item-avail">В наличии</span>
-                                    <button className="similar-products__item-favorite">
-                                        <img src="/img/favorite.svg" alt="" />
-                                    </button>
-                                    <img src="" alt="" />
+                        {list.map((v, i) => (
+                            <SwiperSlide key={i}>
+                                <div className="similar-products__item">
+                                    <div className="similar-products__item-wrapper">
+                                        <span className="similar-products__item-avail">В наличии</span>
+                                        <button className="similar-products__item-favorite">
+                                            <img src="/img/favorite.svg" alt="" />
+                                        </button>
+                                        <div className="similar-products__item-img">
+                                            <img
+                                                src={"/img/photos" + v.photoUrl.slice(1, v.photoUrl.length) + ".png"}
+                                                alt="Фотография товара"
+                                            />
+                                        </div>
+                                    </div>
+                                    <p className="similar-products__item-price">{convertPrice(v.price)} ₽</p>
+                                    <p className="similar-products__item-name">{v.name}</p>
+                                    <Link to={"/article/" + v.id} className="similar-products__item-open">
+                                        Подробнее
+                                    </Link>
                                 </div>
-                                <p className="similar-products__item-price">1199 ₽</p>
-                                <p className="similar-products__item-name">Свечи набор 6 штук</p>
-                                <button className="similar-products__item-open">Подробнее</button>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="similar-products__item">
-                                <div className="similar-products__item-img">
-                                    <span className="similar-products__item-avail">В наличии</span>
-                                    <button className="similar-products__item-favorite">
-                                        <img src="/img/favorite.svg" alt="" />
-                                    </button>
-                                    <img src="" alt="" />
-                                </div>
-                                <p className="similar-products__item-price">1199 ₽</p>
-                                <p className="similar-products__item-name">Свечи набор 6 штук</p>
-                                <button className="similar-products__item-open">Подробнее</button>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="similar-products__item">
-                                <div className="similar-products__item-img">
-                                    <span className="similar-products__item-avail">В наличии</span>
-                                    <button className="similar-products__item-favorite">
-                                        <img src="/img/favorite.svg" alt="" />
-                                    </button>
-                                    <img src="" alt="" />
-                                </div>
-                                <p className="similar-products__item-price">1199 ₽</p>
-                                <p className="similar-products__item-name">Свечи набор 6 штук</p>
-                                <button className="similar-products__item-open">Подробнее</button>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="similar-products__item">
-                                <div className="similar-products__item-img">
-                                    <span className="similar-products__item-avail">В наличии</span>
-                                    <button className="similar-products__item-favorite">
-                                        <img src="/img/favorite.svg" alt="" />
-                                    </button>
-                                    <img src="" alt="" />
-                                </div>
-                                <p className="similar-products__item-price">1199 ₽</p>
-                                <p className="similar-products__item-name">Свечи набор 6 штук</p>
-                                <button className="similar-products__item-open">Подробнее</button>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="similar-products__item">
-                                <div className="similar-products__item-img">
-                                    <span className="similar-products__item-avail">В наличии</span>
-                                    <button className="similar-products__item-favorite">
-                                        <img src="/img/favorite.svg" alt="" />
-                                    </button>
-                                    <img src="" alt="" />
-                                </div>
-                                <p className="similar-products__item-price">1199 ₽</p>
-                                <p className="similar-products__item-name">Свечи набор 6 штук</p>
-                                <button className="similar-products__item-open">Подробнее</button>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="similar-products__item">
-                                <div className="similar-products__item-img">
-                                    <span className="similar-products__item-avail">В наличии</span>
-                                    <button className="similar-products__item-favorite">
-                                        <img src="/img/favorite.svg" alt="" />
-                                    </button>
-                                    <img src="" alt="" />
-                                </div>
-                                <p className="similar-products__item-price">1199 ₽</p>
-                                <p className="similar-products__item-name">Свечи набор 6 штук</p>
-                                <button className="similar-products__item-open">Подробнее</button>
-                            </div>
-                        </SwiperSlide>
+                            </SwiperSlide>
+                        ))}
                     </Swiper>
                     <button className="similar-products__swiper-next" ref={nextBt}></button>
                 </div>

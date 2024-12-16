@@ -7,7 +7,7 @@ import EditRecipient from "../../blocks/OrderPage/edit-recipient";
 import EditAddress from "../../blocks/OrderPage/edit-address";
 import { useNavigate } from "react-router";
 
-function Order() {
+function Order({ order }) {
     const [dataOrder, setDataOrder] = useState({
         recipient: {
             name: "",
@@ -21,9 +21,10 @@ function Order() {
         time: "Любое время",
         fastDelivery: false,
         typePay: "card",
-        price: 0,
+        price: order?.price || 0,
         discount: 0
     });
+
     const [modalRecipient, setModalRecipient] = useState(false);
     const [modalAddress, setModalAddress] = useState(false);
     const [acceptAddress, setAcceptAddress] = useState(false);
@@ -43,7 +44,7 @@ function Order() {
     return (
         <WrapperOrder>
             <InfoOrder openModalRecipient={setModalRecipient} openModalAddress={setModalAddress} acceptAddress={acceptAddress} dataOrder={dataOrder} setDataOrder={setDataOrder}/>
-            <InfoPrice dataOrder={dataOrder} handleOrderRegistration={handleOrderRegistration} setDataOrder={setDataOrder}/>
+            <InfoPrice dataOrder={dataOrder} handleOrderRegistration={handleOrderRegistration} setDataOrder={setDataOrder} order={order}/>
             <WrapperModal activeModal={modalRecipient}>
                 <EditRecipient closeModalRecipient={setModalRecipient} recipient={dataOrder.recipient} setDataOrder={setDataOrder} />
             </WrapperModal>

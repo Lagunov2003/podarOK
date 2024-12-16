@@ -4,31 +4,39 @@ import WrapperCatalog from "../../blocks/CatalogPage/wrapper-catalog";
 import BlockCatalog from "../../blocks/CatalogPage/block-catalog";
 import List from "../../blocks/CatalogPage/list";
 import { useNavigate } from "react-router";
-import { responseGetCatalog } from "../../tool/response";
+import { responseGetCatalog, responseGetCatalogSearch, responseGetSortCatalog } from "../../tool/response";
 
 const defaultQuery = {
     search: "",
-    page: 0
-}
-
+    page: 0,
+};
 
 function Catalog() {
-    const [query, setQuery] = useState(defaultQuery)
-    const [list, setList] = useState([])
-    const navigate = useNavigate()
+    const [query, setQuery] = useState(defaultQuery);
+    const [list, setList] = useState([]);
+    const [page, setPage] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [search, setSearch] = useState("");
+    const [sortValue, setSortValue] = useState("")
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const strUrl = `/catalog?search=${query.search}&page=${query.page}`
-        navigate(strUrl)
-
-        responseGetCatalog(setList)
-    }, [])
+        // const strUrl = `/catalog?search=${query.search}&page=${query.page}`
+        // navigate(strUrl)
+        if(search != "") {
+            responseGetCatalogSearch(setList, setPage, currentPage, search)
+        } else if(sortValue != "" && sortValue != "Выбрать всё") {
+            responseGetSortCatalog(setList, setPage, sortValue)
+        } else {
+            responseGetCatalog(setList, setPage, currentPage);
+        }
+    }, [currentPage, search, sortValue]);
 
     return (
         <WrapperCatalog>
-            <BlockCatalog />
+            <BlockCatalog search={search} setSearch={setSearch} setSortValue={setSortValue}/>
             <Filter />
-            <List list={list}/>
+            <List list={list} page={page} setCurrentPage={setCurrentPage} currentPage={currentPage} />
         </WrapperCatalog>
     );
 }
