@@ -15,10 +15,7 @@ import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.repositories.GiftRepository;
 import ru.uniyar.podarok.utils.GiftDtoConverter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -127,4 +124,56 @@ public class GiftService {
         };
         return giftDtoConverter.convertToGiftDtoPage(sortGifts);
     }
+
+    public Page<GiftDto> searchGiftsByFilters(GiftFilterRequest giftFilterRequest, String name, String sort, Pageable pageable) {
+        if (giftFilterRequest.getCategories() == null) {
+            giftFilterRequest.setCategories(Collections.emptyList());
+        }
+        if (giftFilterRequest.getOccasions() == null) {
+            giftFilterRequest.setOccasions(Collections.emptyList());
+        }
+        if (name == null) {
+            name = "";
+        }
+        Page<Gift> filteredGifts = switch (sort) {
+            case "по возрастанию цены" -> giftRepository.findAllByFiltersByNameAndByPriceAsc(
+                    giftFilterRequest.getBudget(),
+                    giftFilterRequest.getGender(),
+                    giftFilterRequest.getAge(),
+                    giftFilterRequest.getCategories(),
+                    giftFilterRequest.getOccasions(),
+                    name,
+                    pageable
+            );
+            case "по убыванию цены" -> giftRepository.findAllByFiltersByNameAndByPriceDesc(
+                    giftFilterRequest.getBudget(),
+                    giftFilterRequest.getGender(),
+                    giftFilterRequest.getAge(),
+                    giftFilterRequest.getCategories(),
+                    giftFilterRequest.getOccasions(),
+                    name,
+                    pageable
+            );
+            case "по рейтингу" -> giftRepository.findAllByFiltersByNameAndByAverageRatingDesc(
+                    giftFilterRequest.getBudget(),
+                    giftFilterRequest.getGender(),
+                    giftFilterRequest.getAge(),
+                    giftFilterRequest.getCategories(),
+                    giftFilterRequest.getOccasions(),
+                    name,
+                    pageable
+            );
+            default -> giftRepository.findAllByFiltersByName(
+                    giftFilterRequest.getBudget(),
+                    giftFilterRequest.getGender(),
+                    giftFilterRequest.getAge(),
+                    giftFilterRequest.getCategories(),
+                    giftFilterRequest.getOccasions(),
+                    name,
+                    pageable
+            );
+        };
+        return giftDtoConverter.convertToGiftDtoPage(filteredGifts);
+    }
+
 }

@@ -10,6 +10,7 @@ import ru.uniyar.podarok.dtos.GiftResponseDto;
 import ru.uniyar.podarok.dtos.GiftToFavoritesDto;
 import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.GiftGroup;
+import ru.uniyar.podarok.entities.Review;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
@@ -23,6 +24,7 @@ public class CatalogService {
     private GiftService giftService;
     private GiftFilterService giftFilterService;
     private UserService userService;
+    private ReviewService reviewService;
 
     public Page<GiftDto> getGiftsCatalog(GiftFilterRequest giftFilterRequest, Pageable pageable) {
         GiftFilterRequest effectiveRequest = giftFilterService.processRequest(giftFilterRequest);
@@ -62,10 +64,17 @@ public class CatalogService {
                     .filter(g -> !g.getId().equals(giftId))
                     .toList());
         }
-        return new GiftResponseDto(groupGifts, getSimilarGifts(giftId));
+        Double averageRating = reviewService.getAverageRating(giftId);
+        Long reviewsAmount = reviewService.getReviewsAmountByGiftId(giftId);
+        List<Review> reviews = reviewService.getReviewsByGiftId(giftId);
+        return new GiftResponseDto(groupGifts, getSimilarGifts(giftId), reviewsAmount, averageRating, reviews);
     }
 
     public Page<GiftDto> searchGiftsBySortParam(String sortParam, Pageable pageable) {
         return giftService.searchGiftsBySortParam(sortParam, pageable);
+    }
+
+    public Page<GiftDto> searchGiftsByFilters(GiftFilterRequest giftFilterRequest, String name, String sort, Pageable pageable) {
+        return giftService.searchGiftsByFilters(giftFilterRequest, name, sort, pageable);
     }
 }

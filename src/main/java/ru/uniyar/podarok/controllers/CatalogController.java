@@ -28,33 +28,6 @@ public class CatalogController {
     private PagedResourcesAssembler<GiftDto> pagedResourcesAssembler;
 
     /**
-     * Показать каталог подарков с фильтрацией (по фильтрам или по опросу).
-     *
-     * @param giftFilterRequest объект с параметрами фильтрации.
-     * @param page номер страницы (по умолчанию 1).
-     * @return отфильтрованный список подарков.
-     */
-    @GetMapping("/catalog")
-    public ResponseEntity<?> showCatalog(
-            @RequestBody(required = false) GiftFilterRequest giftFilterRequest,
-            @RequestParam(defaultValue = "1") int page
-    ) {
-        if (page <= 0) {
-            return ResponseEntity.badRequest().body("Номер страницы должен быть больше 0.");
-        }
-        if (giftFilterRequest == null) {
-            giftFilterRequest = new GiftFilterRequest();
-        }
-        Pageable pageable = PageRequest.of(page - 1, 15);
-
-        Page<GiftDto> giftsPage = catalogService.getGiftsCatalog(giftFilterRequest, pageable);
-        if (giftsPage.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body("Нет элементов на странице!");
-        }
-        return ResponseEntity.ok(pagedResourcesAssembler.toModel(giftsPage));
-    }
-
-    /**
      * Получить подробную информацию о подарке по id.
      *
      * @param id идентификатор подарка.
@@ -64,30 +37,6 @@ public class CatalogController {
     @GetMapping("/gift/{id}")
     public ResponseEntity<?> getGiftById(@PathVariable Long id) throws GiftNotFoundException {
         return ResponseEntity.ok(catalogService.getGiftResponse(id));
-    }
-
-    /**
-     * Поиск подарков по имени.
-     *
-     * @param query поисковый запрос.
-     * @param page номер страницы (по умолчанию 1).
-     * @return список подарков по результатам поиска.
-     */
-    @GetMapping("/catalogSearch")
-    public ResponseEntity<?> searchGiftsByName(@RequestParam String query, @RequestParam(defaultValue = "1") int page) {
-        if (query.isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Запрос не может быть пустым!");
-        }
-        if (page <= 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Номер страницы должен быть больше 0!");
-        }
-        Pageable pageable = PageRequest.of(page - 1, 15);
-
-        Page<GiftDto> searchResults = catalogService.searchGiftsByName(query, pageable);
-        if (searchResults.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body("Нет совпадений для запроса '" + query + "'!");
-        }
-        return ResponseEntity.ok(pagedResourcesAssembler.toModel(searchResults));
     }
 
     /**
@@ -107,27 +56,31 @@ public class CatalogController {
         return ResponseEntity.status(HttpStatus.OK).body("Подарок добавлен в избранные!");
     }
 
-    /**
-     * Сортировка каталога подарков по указанному параметру.
-     *
-     * @param sort параметр сортировки.
-     * @param page номер страницы (по умолчанию 1).
-     * @return отсортированный список подарков.
-     */
-    @GetMapping("/sortCatalog")
-    public ResponseEntity<?> sortCatalog(@RequestParam String sort, @RequestParam(defaultValue = "1") int page) {
+    @GetMapping("/catalog")
+    public ResponseEntity<?> showCatalog(
+            @RequestBody(required = false) GiftFilterRequest giftFilterRequest,
+            @RequestParam String name,
+            @RequestParam String sort,
+            @RequestParam(defaultValue = "1") int page
+    ) {
+        if (page <= 0) {
+            return ResponseEntity.badRequest().body("Номер страницы должен быть больше 0.");
+        }
+        if (giftFilterRequest == null) {
+            giftFilterRequest = new GiftFilterRequest();
+        }
+        if (name.isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Запрос не может быть пустым!");
+        }
         if (sort.isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Запрос не может быть пустым!");
         }
-        if (page <= 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Номер страницы должен быть больше 0!");
-        }
         Pageable pageable = PageRequest.of(page - 1, 15);
 
-        Page<GiftDto> searchResults = catalogService.searchGiftsBySortParam(sort.toLowerCase(), pageable);
-        if (searchResults.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body("Нет совпадений для запроса '" + sort + "'!");
+        Page<GiftDto> giftsPage = catalogService.searchGiftsByFilters(giftFilterRequest, name, sort, pageable);
+        if (giftsPage.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body("Нет элементов на странице!");
         }
-        return ResponseEntity.ok(pagedResourcesAssembler.toModel(searchResults));
+        return ResponseEntity.ok(pagedResourcesAssembler.toModel(giftsPage));
     }
 }

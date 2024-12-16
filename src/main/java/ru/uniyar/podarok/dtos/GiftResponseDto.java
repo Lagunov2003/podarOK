@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.uniyar.podarok.entities.Gift;
+import ru.uniyar.podarok.entities.Review;
 
 import java.util.List;
 
@@ -13,4 +14,7 @@ import java.util.List;
 public class GiftResponseDto {
     private List<Gift> groupGifts;
     private List<GiftDto> similarGifts;
+    private Long reviewsAmount;
+    private Double averageRating;
+    private List<Review> reviews;
 }

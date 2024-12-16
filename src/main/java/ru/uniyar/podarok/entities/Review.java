@@ -1,5 +1,6 @@
 package ru.uniyar.podarok.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,6 +19,7 @@ public class Review {
     private Integer rating;
     @ManyToOne
     @JoinColumn(name = "gift_id")
+    @JsonBackReference
     private Gift gift;
     @ManyToOne
     @JoinColumn(name = "user_id")

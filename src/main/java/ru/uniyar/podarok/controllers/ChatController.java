@@ -2,6 +2,8 @@ package ru.uniyar.podarok.controllers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.uniyar.podarok.dtos.MessageDto;
@@ -20,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ChatController {
     private final ChatService chatService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * Получить отправленные сообщения.
@@ -77,11 +80,16 @@ public class ChatController {
      * @throws UserNotAuthorizedException если пользователь не авторизован.
      * @throws UserNotFoundException если текущий пользователь или получатель не найден.
      */
-    @PostMapping("/send")
+    @MessageMapping("/send")
     @PreAuthorize("hasRole('ROLE_ADMIN')||hasRole('ROLE_USER')")
-    public ResponseEntity<?> sendMessage(@RequestBody MessageDto messageDto)
+    public void sendMessage(@RequestBody MessageDto messageDto)
             throws UserNotAuthorizedException, UserNotFoundException {
         MessageDto savedMessage = chatService.sendMessage(messageDto);
-        return ResponseEntity.ok(savedMessage);
+
+        messagingTemplate.convertAndSendToUser(
+                savedMessage.getReceiverEmail(),
+                "/queue/messages",
+                savedMessage
+        );
     }
 }

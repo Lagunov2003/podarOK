@@ -142,4 +142,107 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
                     "LEFT JOIN review r ON g.id = r.gift_id",
             nativeQuery = true)
     Page<Gift> findAllOrderByAverageRatingDesc(Pageable pageable);
+
+    @Query(value = "SELECT g.*, COALESCE(AVG(r.rating), 0) AS average_rating " +
+            "FROM gift g " +
+            "LEFT JOIN gift_photo gp ON g.id = gp.gift_id " +
+            "LEFT JOIN gift_recommendations gr ON g.recommendation_id = gr.id " +
+            "LEFT JOIN gift_category gc ON g.id = gc.gift_id " +
+            "LEFT JOIN gift_occasion go ON g.id = go.gift_id " +
+            "LEFT JOIN review r ON g.id = r.gift_id " +
+            "WHERE (:budget IS NULL OR g.price <= :budget) " +
+            "AND (:gender IS NULL OR gr.gender = :gender) " +
+            "AND (:age IS NULL OR (gr.min_age <= :age AND gr.max_age >= :age)) " +
+            "AND (:categories IS NULL OR gc.category_id = ANY(:categories)) " +
+            "AND (:occasions IS NULL OR go.occasion_id = ANY(:occasions)) " +
+            "AND LOWER(g.name) LIKE LOWER(CONCAT('%', :name, '%'))" +
+            "GROUP BY g.id " +
+            "ORDER BY average_rating DESC",
+            countQuery = "SELECT COUNT(DISTINCT g.id) " +
+                    "FROM gift g " +
+                    "LEFT JOIN gift_recommendations gr ON g.recommendation_id = gr.id " +
+                    "LEFT JOIN gift_category gc ON g.id = gc.gift_id " +
+                    "LEFT JOIN gift_occasion go ON g.id = go.gift_id " +
+                    "LEFT JOIN review r ON g.id = r.gift_id " +
+                    "WHERE (:budget IS NULL OR g.price <= :budget) " +
+                    "AND (:gender IS NULL OR gr.gender = :gender) " +
+                    "AND (:age IS NULL OR (gr.min_age <= :age AND gr.max_age >= :age)) " +
+                    "AND (:categories IS NULL OR gc.category_id = ANY(:categories)) " +
+                    "AND (:occasions IS NULL OR go.occasion_id = ANY(:occasions))",
+            nativeQuery = true)
+    Page<Gift> findAllByFiltersByNameAndByAverageRatingDesc(
+            @Param("budget") BigDecimal budget,
+            @Param("gender") Boolean gender,
+            @Param("age") Integer age,
+            @Param("categories") List<Long> categories,
+            @Param("occasions") List<Long> occasions,
+            @Param("name") String name,
+            Pageable pageable
+    );
+
+    @Query("SELECT DISTINCT g FROM Gift g " +
+            "LEFT JOIN FETCH g.photos photos " +
+            "LEFT JOIN FETCH g.recommendation rec " +
+            "LEFT JOIN FETCH g.categories categories " +
+            "LEFT JOIN FETCH g.occasions occasions " +
+            "WHERE (:budget IS NULL OR g.price <= :budget) " +
+            "AND (:gender IS NULL OR rec.gender = :gender) " +
+            "AND (:age IS NULL OR (rec.minAge <= :age AND rec.maxAge >= :age)) " +
+            "AND (:categories IS NULL OR categories.id IN :categories) " +
+            "AND (:occasions IS NULL OR occasions.id IN :occasions)" +
+            "AND LOWER(g.name) LIKE LOWER(CONCAT('%', :name, '%'))" +
+            "ORDER BY g.price ASC")
+    Page<Gift> findAllByFiltersByNameAndByPriceAsc(
+            @Param("budget") BigDecimal budget,
+            @Param("gender") Boolean gender,
+            @Param("age") Integer age,
+            @Param("categories") List<Long> categories,
+            @Param("occasions") List<Long> occasions,
+            @Param("name") String name,
+            Pageable pageable
+    );
+
+    @Query("SELECT DISTINCT g FROM Gift g " +
+            "LEFT JOIN FETCH g.photos photos " +
+            "LEFT JOIN FETCH g.recommendation rec " +
+            "LEFT JOIN FETCH g.categories categories " +
+            "LEFT JOIN FETCH g.occasions occasions " +
+            "WHERE (:budget IS NULL OR g.price <= :budget) " +
+            "AND (:gender IS NULL OR rec.gender = :gender) " +
+            "AND (:age IS NULL OR (rec.minAge <= :age AND rec.maxAge >= :age)) " +
+            "AND (:categories IS NULL OR categories.id IN :categories) " +
+            "AND (:occasions IS NULL OR occasions.id IN :occasions)" +
+            "AND LOWER(g.name) LIKE LOWER(CONCAT('%', :name, '%'))" +
+            "ORDER BY g.price DESC")
+    Page<Gift> findAllByFiltersByNameAndByPriceDesc(
+            @Param("budget") BigDecimal budget,
+            @Param("gender") Boolean gender,
+            @Param("age") Integer age,
+            @Param("categories") List<Long> categories,
+            @Param("occasions") List<Long> occasions,
+            @Param("name") String name,
+            Pageable pageable
+    );
+
+    @Query("SELECT DISTINCT g FROM Gift g " +
+            "LEFT JOIN FETCH g.photos photos " +
+            "LEFT JOIN FETCH g.recommendation rec " +
+            "LEFT JOIN FETCH g.categories categories " +
+            "LEFT JOIN FETCH g.occasions occasions " +
+            "WHERE (:budget IS NULL OR g.price <= :budget) " +
+            "AND (:gender IS NULL OR rec.gender = :gender) " +
+            "AND (:age IS NULL OR (rec.minAge <= :age AND rec.maxAge >= :age)) " +
+            "AND (:categories IS NULL OR categories.id IN :categories) " +
+            "AND (:occasions IS NULL OR occasions.id IN :occasions)" +
+            "AND LOWER(g.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    Page<Gift> findAllByFiltersByName(
+            @Param("budget") BigDecimal budget,
+            @Param("gender") Boolean gender,
+            @Param("age") Integer age,
+            @Param("categories") List<Long> categories,
+            @Param("occasions") List<Long> occasions,
+            @Param("name") String name,
+            Pageable pageable
+    );
+
 }
