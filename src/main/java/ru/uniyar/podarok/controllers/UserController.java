@@ -4,12 +4,22 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.uniyar.podarok.dtos.ChangeUserPasswordDto;
 import ru.uniyar.podarok.dtos.CurrentUserDto;
 import ru.uniyar.podarok.dtos.ForgotUserPasswordDto;
 import ru.uniyar.podarok.dtos.UpdateUserDto;
-import ru.uniyar.podarok.exceptions.*;
+import ru.uniyar.podarok.exceptions.ExpiredCodeException;
+import ru.uniyar.podarok.exceptions.FakeConfirmationCodeException;
+import ru.uniyar.podarok.exceptions.NotValidCodeException;
+import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
+import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.services.UserService;
 
 /**
@@ -100,16 +110,18 @@ public class UserController {
             @RequestBody ChangeUserPasswordDto changeUserPasswordDto
     ) throws UserNotFoundException, UserNotAuthorizedException, ExpiredCodeException,
             FakeConfirmationCodeException, NotValidCodeException {
+        final int minPasswordLength = 6;
 
         if (!changeUserPasswordDto.getPassword().equals(changeUserPasswordDto.getConfirmPassword())) {
             return ResponseEntity.badRequest().body("Пароли не совпадают!");
         }
 
-        if (changeUserPasswordDto.getPassword().length() < 6) {
+        if (changeUserPasswordDto.getPassword().length() < minPasswordLength) {
             return ResponseEntity.badRequest().body("Пароль должен быть минимум 6 символов!");
         }
 
         userService.confirmChangeUserPassword(code, changeUserPasswordDto);
+
         return ResponseEntity.ok("Пароль успешно изменён!");
     }
 
@@ -140,16 +152,18 @@ public class UserController {
             @RequestParam("token") String token,
             @RequestBody ChangeUserPasswordDto changeUserPasswordDto
     ) throws UserNotFoundException {
+        final int minPasswordLength = 6;
 
         if (!changeUserPasswordDto.getPassword().equals(changeUserPasswordDto.getConfirmPassword())) {
             return ResponseEntity.badRequest().body("Пароли не совпадают!");
         }
 
-        if (changeUserPasswordDto.getPassword().length() < 6) {
+        if (changeUserPasswordDto.getPassword().length() < minPasswordLength) {
             return ResponseEntity.badRequest().body("Пароль должен быть минимум 6 символов!");
         }
 
         userService.confirmChangePassword(token, changeUserPasswordDto);
+
         return ResponseEntity.ok("Пароль успешно изменён!");
     }
 }

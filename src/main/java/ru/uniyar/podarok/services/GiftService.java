@@ -9,46 +9,49 @@ import ru.uniyar.podarok.dtos.AddGiftDto;
 import ru.uniyar.podarok.dtos.ChangeGiftDto;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.GiftFilterRequest;
-import ru.uniyar.podarok.entities.*;
+import ru.uniyar.podarok.entities.Category;
+import ru.uniyar.podarok.entities.Gift;
+import ru.uniyar.podarok.entities.Occasion;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.repositories.GiftRepository;
 import ru.uniyar.podarok.utils.Converters.GiftDtoConverter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис для управления подарками в системе.
+ */
 @Service
 @AllArgsConstructor
 public class GiftService {
     private GiftRepository giftRepository;
-    private GiftFilterService giftFilterService;
     private GiftDtoConverter giftDtoConverter;
 
-    public Page<GiftDto> getAllGifts(Pageable pageable) {
-        return giftDtoConverter.convertToGiftDtoPage(giftRepository.findAllGifts(pageable));
-    }
-
-    public Page<GiftDto> getGiftsByFilter(GiftFilterRequest filterRequest, Pageable pageable) {
-        GiftFilterRequest processedRequest = giftFilterService.processRequest(filterRequest);
-        Page<Gift> giftsPage = giftRepository.findGiftsByFilter(
-                processedRequest.getBudget(),
-                processedRequest.getGender(),
-                processedRequest.getAge(),
-                processedRequest.getCategories(),
-                processedRequest.getOccasions(),
-                pageable
-        );
-        return giftDtoConverter.convertToGiftDtoPage(giftsPage);
-    }
-
+    /**
+     * Получает подарок по идентификатору.
+     *
+     * @param id идентификатор подарка.
+     * @return подарок, найденный по id.
+     * @throws GiftNotFoundException если подарок не найден.
+     */
     public Gift getGiftById(Long id) throws GiftNotFoundException {
-        return giftRepository.findById(id).orElseThrow(() -> new GiftNotFoundException("Подарок с id " + id + " не найден!"));
+        return giftRepository.findById(id).orElseThrow(
+                () -> new GiftNotFoundException("Подарок с id " + id + " не найден!")
+        );
     }
 
-    public Page<GiftDto> searchGiftsByName(String name, Pageable pageable) {
-        return giftDtoConverter.convertToGiftDtoPage(giftRepository.findGiftsByName(name, pageable));
-    }
-
+    /**
+     * Получает подарки, похожие на заданный.
+     * Похожие подарки ищутся по категориям и поводам.
+     *
+     * @param gift подарок, для которого ищутся похожие.
+     * @return список похожих подарков.
+     */
     public List<GiftDto> getSimilarGifts(Gift gift) {
         Set<Long> categories = gift.getCategories().stream().map(Category::getId).collect(Collectors.toSet());
         Set<Long> occasions = gift.getOccasions().stream().map(Occasion::getId).collect(Collectors.toSet());
@@ -65,10 +68,22 @@ public class GiftService {
         return giftDtoConverter.convertToGiftDtoList(similarGifts);
     }
 
+    /**
+     * Получает подарки по идентификатору группы.
+     *
+     * @param groupId идентификатор группы.
+     * @return список подарков, относящихся к заданной группе.
+     */
     public List<Gift> getGiftsByGroupId(Long groupId) {
         return giftRepository.findGiftsByGroupId(groupId);
     }
 
+    /**
+     * Удаляет подарок по идентификатору.
+     *
+     * @param id идентификатор подарка.
+     * @throws GiftNotFoundException если подарок с указанным id не найден.
+     */
     @Transactional
     public void deleteGift(Long id) throws GiftNotFoundException {
         if (!giftRepository.existsById(id)) {
@@ -77,10 +92,24 @@ public class GiftService {
         giftRepository.deleteById(id);
     }
 
+    /**
+     * Обновляет информацию о подарке.
+     *
+     * @param changeGiftDto объект с обновленными данными о подарке.
+     * @throws GiftNotFoundException если подарок с указанным id не найден.
+     */
     @Transactional
     public void updateGift(ChangeGiftDto changeGiftDto) throws GiftNotFoundException {
-        Long recommendation_id = getGiftById(changeGiftDto.getId()).getRecommendation().getId();
-        giftRepository.updateGift(changeGiftDto.getId(), changeGiftDto.getPrice(), recommendation_id, changeGiftDto.getDescription(), changeGiftDto.getName(), changeGiftDto.getGroupId());
+        Long recommendationId = getGiftById(changeGiftDto.getId()).getRecommendation().getId();
+
+        giftRepository.updateGift(
+                changeGiftDto.getId(),
+                changeGiftDto.getPrice(),
+                recommendationId,
+                changeGiftDto.getDescription(),
+                changeGiftDto.getName(),
+                changeGiftDto.getGroupId()
+        );
         giftRepository.deleteGiftPhotos(changeGiftDto.getId());
         for (String photoUrl : changeGiftDto.getPhotos()) {
             giftRepository.addGiftPhoto(changeGiftDto.getId(), photoUrl);
@@ -94,46 +123,76 @@ public class GiftService {
         for (Map.Entry<String, String> feature : changeGiftDto.getFeatures().entrySet()) {
             giftRepository.addGiftFeature(changeGiftDto.getId(), feature.getKey(), feature.getValue());
         }
-        giftRepository.updateGiftRecommendation(recommendation_id, changeGiftDto.getGender(), changeGiftDto.getMinAge(), changeGiftDto.getMaxAge());
+        giftRepository.updateGiftRecommendation(
+                recommendationId,
+                changeGiftDto.getGender(),
+                changeGiftDto.getMinAge(),
+                changeGiftDto.getMaxAge()
+        );
     }
 
+    /**
+     * Добавляет новый подарок.
+     *
+     * @param addGiftDto объект с данными для добавления нового подарка.
+     */
     @Transactional
     public void addGift(AddGiftDto addGiftDto) {
-        Long recommendation_id = Long.valueOf(giftRepository.addGiftRecommendation(addGiftDto.getGender(), addGiftDto.getMinAge(), addGiftDto.getMaxAge()));
-        Long gift_id = Long.valueOf(giftRepository.addGift(addGiftDto.getPrice(), recommendation_id, addGiftDto.getDescription(), addGiftDto.getName(), addGiftDto.getGroupId()));
+        Long recommendationId = Long.valueOf(
+                giftRepository.addGiftRecommendation(
+                        addGiftDto.getGender(), addGiftDto.getMinAge(), addGiftDto.getMaxAge()
+                )
+        );
+
+        Long giftId = Long.valueOf(
+                giftRepository.addGift(
+                        addGiftDto.getPrice(),
+                        recommendationId,
+                        addGiftDto.getDescription(),
+                        addGiftDto.getName(),
+                        addGiftDto.getGroupId()
+                )
+        );
+
         for (String photoUrl : addGiftDto.getPhotos()) {
-            giftRepository.addGiftPhoto(gift_id, photoUrl);
+            giftRepository.addGiftPhoto(giftId, photoUrl);
         }
         for (Long categoryId : addGiftDto.getCategories()) {
-            giftRepository.addGiftCategory(gift_id, categoryId);
+            giftRepository.addGiftCategory(giftId, categoryId);
         }
-        giftRepository.addGiftOccasion(gift_id, addGiftDto.getOccasion());
-
+        giftRepository.addGiftOccasion(giftId, addGiftDto.getOccasion());
         for (Map.Entry<String, String> feature : addGiftDto.getFeatures().entrySet()) {
-            giftRepository.addGiftFeature(gift_id, feature.getKey(), feature.getValue());
+            giftRepository.addGiftFeature(giftId, feature.getKey(), feature.getValue());
         }
     }
-
-    public Page<GiftDto> searchGiftsBySortParam(String sortParam, Pageable pageable) {
-        Page<Gift> sortGifts = switch (sortParam) {
-            case "по возрастанию цены" -> giftRepository.findAllByOrderByPriceAsc(pageable);
-            case "по убыванию цены" -> giftRepository.findAllByOrderByPriceDesc(pageable);
-            case "по рейтингу" -> giftRepository.findAllOrderByAverageRatingDesc(pageable);
-            default -> giftRepository.findAllGifts(pageable);
-        };
-        return giftDtoConverter.convertToGiftDtoPage(sortGifts);
-    }
-
-    public Page<GiftDto> searchGiftsByFilters(GiftFilterRequest giftFilterRequest, String name, String sort, Pageable pageable) {
+    
+    /**
+     * Поиск подарков по фильтрам, имени и параметрам сортировки с постраничной навигацией.
+     *
+     * @param giftFilterRequest запрос с параметрами фильтрации.
+     * @param name имя подарка.
+     * @param sort параметр сортировки.
+     * @param pageable параметры пагинации.
+     * @return страница с отфильтрованными и отсортированными подарками.
+     */
+    public Page<GiftDto> searchGiftsByFilters(
+            GiftFilterRequest giftFilterRequest,
+            String name,
+            String sort,
+            Pageable pageable
+    ) {
         if (giftFilterRequest.getCategories() == null) {
             giftFilterRequest.setCategories(Collections.emptyList());
         }
+        
         if (giftFilterRequest.getOccasions() == null) {
             giftFilterRequest.setOccasions(Collections.emptyList());
         }
+        
         if (name == null) {
             name = "";
         }
+        
         Page<Gift> filteredGifts = switch (sort) {
             case "по возрастанию цены" -> giftRepository.findAllByFiltersByNameAndByPriceAsc(
                     giftFilterRequest.getBudget(),
@@ -172,7 +231,7 @@ public class GiftService {
                     pageable
             );
         };
+        
         return giftDtoConverter.convertToGiftDtoPage(filteredGifts);
     }
-
 }

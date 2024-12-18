@@ -10,7 +10,15 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.uniyar.podarok.exceptions.*;
+import ru.uniyar.podarok.exceptions.ExpiredCodeException;
+import ru.uniyar.podarok.exceptions.FakeConfirmationCodeException;
+import ru.uniyar.podarok.exceptions.GiftNotFoundException;
+import ru.uniyar.podarok.exceptions.NotValidCodeException;
+import ru.uniyar.podarok.exceptions.OrderNotFoundException;
+import ru.uniyar.podarok.exceptions.SiteReviewNotFoundException;
+import ru.uniyar.podarok.exceptions.UserAlreadyExistException;
+import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
+import ru.uniyar.podarok.exceptions.UserNotFoundException;
 
 import java.util.NoSuchElementException;
 
@@ -121,7 +129,8 @@ public class GlobalExceptionHandler {
     /**
      * Обработка исключений JWT токенов.
      *
-     * @param e исключение типа {@link ExpiredJwtException}, {@link SignatureException} или {@link MalformedJwtException}.
+     * @param e исключение типа {@link ExpiredJwtException},
+     * {@link SignatureException} или {@link MalformedJwtException}.
      * @return HTTP-ответ с кодом 401 (UNAUTHORIZED) и соответствующим сообщением об ошибке.
      */
     @ExceptionHandler({ExpiredJwtException.class, SignatureException.class, MalformedJwtException.class})
@@ -194,6 +203,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<String> handleGlobalException(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Внутренняя ошибка сервера: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                "Внутренняя ошибка сервера: " + e.getMessage()
+        );
     }
 }

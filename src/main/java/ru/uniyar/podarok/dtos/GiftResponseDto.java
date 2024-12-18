@@ -7,6 +7,9 @@ import ru.uniyar.podarok.entities.Gift;
 
 import java.util.List;
 
+/**
+ * Dto для вывода подарка.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

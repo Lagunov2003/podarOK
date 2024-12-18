@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+/**
+ * Dto для вывода подарка.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

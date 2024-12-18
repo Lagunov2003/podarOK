@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * Dto для изменения данных пользователя сайта.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

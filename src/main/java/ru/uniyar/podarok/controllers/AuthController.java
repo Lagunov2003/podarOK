@@ -3,10 +3,13 @@ package ru.uniyar.podarok.controllers;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import ru.uniyar.podarok.dtos.JwtRequest;
 import ru.uniyar.podarok.dtos.RegistrationUserDto;
-import ru.uniyar.podarok.exceptions.*;
+import ru.uniyar.podarok.exceptions.UserAlreadyExistException;
 import ru.uniyar.podarok.services.AuthService;
 
 /**
@@ -35,7 +38,9 @@ public class AuthController {
      * @throws UserAlreadyExistException если пользователь с таким email уже существует.
      */
     @PostMapping("/registration")
-    public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto) throws UserAlreadyExistException {
+    public ResponseEntity<?> createNewUser(
+            @RequestBody RegistrationUserDto registrationUserDto
+    ) throws UserAlreadyExistException {
         return ResponseEntity.ok(authService.createNewUser(registrationUserDto));
     }
 
@@ -47,7 +52,7 @@ public class AuthController {
      * @throws BadCredentialsException если предоставленные данные неверны.
      */
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
+    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) throws BadCredentialsException {
         return ResponseEntity.ok(authService.createAuthToken(authRequest));
     }
 }

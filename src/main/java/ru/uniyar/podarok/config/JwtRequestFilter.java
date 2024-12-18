@@ -34,11 +34,19 @@ import java.util.stream.Collectors;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
     private final JwtTokenUtils jwtTokenUtils;
+    /**
+     * Объект для проверки, какой путь совпадает с запросом с использованием паттернов.
+     */
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
+    /**
+     * Конструктор фильтра для внедрения зависимостей.
+     *
+     * @param jwtTokenUtilsParam Утилита для работы с JWT токенами.
+     */
     @Autowired
-    public JwtRequestFilter(JwtTokenUtils jwtTokenUtils) {
-        this.jwtTokenUtils = jwtTokenUtils;
+    public JwtRequestFilter(JwtTokenUtils jwtTokenUtilsParam) {
+        this.jwtTokenUtils = jwtTokenUtilsParam;
     }
 
     /**
@@ -46,8 +54,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      */
     private static final List<String> PERMITTED_URLS = Arrays.asList(
             "/registration", "/login", "/forgot", "/resetPassword",
-            "/catalog", "/gift/**", "/catalogSearch", "/getSiteReviews",
-            "/sortCatalog"
+            "/catalog", "/gift/**", "/getSiteReviews"
     );
 
     /**
@@ -60,7 +67,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      * @throws IOException если возникает ошибка ввода-вывода.
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         String requestURI = request.getRequestURI();
 
@@ -98,12 +109,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      * @return true, если токен валиден, иначе false.
      */
     private boolean isTokenValid(String authHeader, HttpServletResponse response) {
+        final int beginIndex = 7;
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             sendErrorResponse(response, "Токен не предоставлен!");
             return false;
         }
 
-        String jwt = authHeader.substring(7);
+        String jwt = authHeader.substring(beginIndex);
+
         try {
             processToken(jwt);
             return true;
@@ -114,6 +128,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         } catch (MalformedJwtException | IllegalArgumentException e) {
             sendErrorResponse(response, "Неправильный формат токена!");
         }
+
         return false;
     }
 
@@ -127,6 +142,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      */
     private void processToken(String jwt) throws ExpiredJwtException, SignatureException, MalformedJwtException {
         String email = jwtTokenUtils.getUserEmail(jwt);
+
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             List<GrantedAuthority> authorities = jwtTokenUtils.getRoles(jwt).stream()
                     .map(SimpleGrantedAuthority::new)

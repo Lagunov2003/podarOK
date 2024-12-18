@@ -13,6 +13,14 @@ import java.time.LocalDateTime;
  */
 @Component
 public class MessageDtoConverter {
+    /**
+     * Преобразует данные в объект Message.
+     *
+     * @param content текст сообщения.
+     * @param sender отправитель сообщения.
+     * @param receiver получатель сообщения.
+     * @return объект Message, представляющий новое сообщение.
+     */
     public Message convertToMessage(String content, User sender, User receiver) {
         return new MessageBuilder()
                 .setReceiver(receiver)
@@ -23,6 +31,12 @@ public class MessageDtoConverter {
                 .build();
     }
 
+    /**
+     * Преобразует объект Message в MessageDto.
+     *
+     * @param message объект Message, который необходимо преобразовать.
+     * @return объект MessageDto, представляющий данные сообщения в виде DTO.
+     */
     public MessageDto convertToMessageDto(Message message) {
         return new MessageDto(message.getContent(), message.getReceiver().getEmail());
     }

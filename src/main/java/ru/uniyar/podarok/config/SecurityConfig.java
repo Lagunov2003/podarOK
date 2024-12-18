@@ -30,6 +30,10 @@ import java.util.List;
 @EnableSpringDataWebSupport
 public class SecurityConfig {
     private JwtRequestFilter jwtRequestFilter;
+    /**
+     * Кодировщик паролей, используемый для хэширования паролей пользователей перед их сохранением в базе данных.
+     * Этот компонент используется для обеспечения безопасного хранения паролей.
+     */
     private PasswordEncoder passwordEncoder;
 
     /**
@@ -40,7 +44,9 @@ public class SecurityConfig {
      * @throws Exception если произошла ошибка при создании менеджера аутентификации.
      */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration
+    ) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -59,13 +65,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/registration", "/login", "/forgot", "/resetPassword",
-                                "/catalog",  "/gift/**", "/catalogSearch", "/getSiteReviews",
-                                "/sortCatalog"
+                                "/catalog", "/gift/**", "/getSiteReviews"
                         ).permitAll()
                         .requestMatchers(
                                 "/profile", "/cart", "/notifications", "/favorites", "/ordersHistory",
                                 "/currentOrders", "/order", "/addToFavorites", "/addSiteReview", "/sentMessages",
-                                "/messages", "/newMessages", "/send"
+                                "/messages", "/newMessages", "/send", "/addGiftReview"
                         ).authenticated()
                         .requestMatchers(
                                 "/changeOrderStatus", "/getOrders", "/deleteGift", "/changeGift", "/addGift",

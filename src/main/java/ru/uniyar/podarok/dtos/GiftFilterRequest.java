@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Dto для фильтрации каталога.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,7 +19,6 @@ public class GiftFilterRequest {
     private Boolean gender;
     private BigDecimal budget;
     private Integer age;
-
     private List<Long> surveyCategories;
     private List<Long> surveyOccasions;
     private Boolean surveyGender;

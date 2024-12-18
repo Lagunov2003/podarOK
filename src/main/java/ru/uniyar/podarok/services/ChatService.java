@@ -13,6 +13,9 @@ import ru.uniyar.podarok.utils.Converters.MessageDtoConverter;
 
 import java.util.List;
 
+/**
+ * Сервис для управления чатами между пользователями.
+ */
 @Service
 @AllArgsConstructor
 public class ChatService {
@@ -21,28 +24,62 @@ public class ChatService {
     private MessageDtoConverter messageDtoConverter;
     private final Sort sort = Sort.by("timestamp").ascending();
 
-    public List<MessageDto> getSentChatMessages(String receiverEmail) throws UserNotFoundException, UserNotAuthorizedException {
+    /**
+     * Получает список сообщений, отправленных текущим пользователем.
+     * Если указан email получателя, возвращаются только сообщения для данного получателя.
+     *
+     * @param receiverEmail email получателя (может быть {@code null}).
+     * @return список DTO сообщений.
+     * @throws UserNotFoundException если пользователь с указанным email не найден.
+     * @throws UserNotAuthorizedException если текущий пользователь не авторизован.
+     */
+    public List<MessageDto> getSentChatMessages(String receiverEmail)
+            throws UserNotFoundException, UserNotAuthorizedException {
         Long senderId = userService.getCurrentAuthenticationUser().getId();
+
         if (receiverEmail == null) {
             List<Message> foundedMessages =   messageRepository.findBySenderId(senderId, sort);
             return foundedMessages.stream().map(messageDtoConverter::convertToMessageDto).toList();
         }
+
         Long receiverId = userService.findByEmail(receiverEmail).getId();
         List<Message> foundedMessages = messageRepository.findBySenderIdAndReceiverId(senderId, receiverId, sort);
+
         return foundedMessages.stream().map(messageDtoConverter::convertToMessageDto).toList();
     }
 
-    public List<MessageDto> getChatMessages(String senderEmail) throws UserNotFoundException, UserNotAuthorizedException {
+    /**
+     * Получает список сообщений, отправленных указанным отправителем.
+     * Если email отправителя не указан, возвращаются все сообщения, адресованные текущему пользователю.
+     *
+     * @param senderEmail email отправителя (может быть {@code null}).
+     * @return список DTO сообщений.
+     * @throws UserNotFoundException      если пользователь с указанным email не найден.
+     * @throws UserNotAuthorizedException если текущий пользователь не авторизован.
+     */
+    public List<MessageDto> getChatMessages(String senderEmail)
+            throws UserNotFoundException, UserNotAuthorizedException {
         Long receiverId = userService.getCurrentAuthenticationUser().getId();
+
         if (senderEmail == null) {
             List<Message> foundedMessages = messageRepository.findByReceiverId(receiverId, sort);
             return foundedMessages.stream().map(messageDtoConverter::convertToMessageDto).toList();
         }
+
         Long senderId = userService.findByEmail(senderEmail).getId();
         List<Message> foundedMessages = messageRepository.findBySenderIdAndReceiverId(senderId, receiverId, sort);
+
         return foundedMessages.stream().map(messageDtoConverter::convertToMessageDto).toList();
     }
 
+    /**
+     * Отправляет сообщение от текущего пользователя указанному получателю.
+     *
+     * @param messageDto DTO сообщения с информацией о содержимом и получателе.
+     * @return DTO отправленного сообщения.
+     * @throws UserNotFoundException если получатель с указанным email не найден.
+     * @throws UserNotAuthorizedException если текущий пользователь не авторизован.
+     */
     public MessageDto sendMessage(MessageDto messageDto) throws UserNotFoundException, UserNotAuthorizedException {
         User sender = userService.getCurrentAuthenticationUser();
         User receiver = userService.findByEmail(messageDto.getReceiverEmail());
@@ -51,14 +88,29 @@ public class ChatService {
         return messageDtoConverter.convertToMessageDto(message);
     }
 
-    public List<MessageDto> getNotReadChatMessages(String senderEmail) throws UserNotFoundException, UserNotAuthorizedException {
+    /**
+     * Получает список непрочитанных сообщений от указанного отправителя.
+     * Если email отправителя не указан, возвращаются все непрочитанные сообщения текущего пользователя.
+     *
+     * @param senderEmail email отправителя (может быть {@code null}).
+     * @return список DTO сообщений.
+     * @throws UserNotFoundException если отправитель с указанным email не найден.
+     * @throws UserNotAuthorizedException если текущий пользователь не авторизован.
+     */
+    public List<MessageDto> getNotReadChatMessages(String senderEmail)
+            throws UserNotFoundException, UserNotAuthorizedException {
         Long receiverId = userService.getCurrentAuthenticationUser().getId();
+
         if (senderEmail == null) {
             List<Message> foundedMessages = messageRepository.findByReceiverIdAndRead(receiverId, false, sort);
             return foundedMessages.stream().map(messageDtoConverter::convertToMessageDto).toList();
         }
+
         Long senderId = userService.findByEmail(senderEmail).getId();
-        List<Message> foundedMessages = messageRepository.findBySenderIdAndReceiverIdAndRead(senderId, receiverId, false, sort);
+        List<Message> foundedMessages = messageRepository.findBySenderIdAndReceiverIdAndRead(
+                senderId, receiverId, false, sort
+        );
+
         return foundedMessages.stream().map(messageDtoConverter::convertToMessageDto).toList();
     }
 }

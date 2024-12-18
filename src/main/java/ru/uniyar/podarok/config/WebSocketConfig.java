@@ -43,6 +43,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     }
 
+    /**
+     * Настройка преобразователей сообщений для правильной обработки данных.
+     * Настраивается преобразование сообщений в формат JSON.
+     *
+     * @param messageConverters список преобразователей сообщений.
+     * @return false, так как нет необходимости изменять стандартное поведение.
+     */
     @Override
     public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
         DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();

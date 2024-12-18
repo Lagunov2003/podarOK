@@ -1,12 +1,16 @@
 package ru.uniyar.podarok.controllers;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.uniyar.podarok.dtos.CartItemDto;
 import ru.uniyar.podarok.dtos.CartDto;
 import ru.uniyar.podarok.dtos.OrderRequestDto;
@@ -37,7 +41,8 @@ public class CartController {
      */
     @GetMapping("/cart")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> showCart(@RequestParam(defaultValue = "1") int page) throws UserNotAuthorizedException, UserNotFoundException {
+    public ResponseEntity<?> showCart(@RequestParam(defaultValue = "1") int page)
+            throws UserNotAuthorizedException, UserNotFoundException {
         if (page <= 0) {
             return ResponseEntity.badRequest().body("Номер страницы должен быть больше 0!");
         }

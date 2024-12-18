@@ -12,7 +12,10 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.time.Duration;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -20,27 +23,52 @@ import java.util.stream.Collectors;
  */
 @Component
 public class JwtTokenUtils {
+    /**
+     * Секретный ключ для подписи JWT токенов.
+     * Значение считывается из конфигурации с помощью аннотации @Value.
+     */
     @Value("${jwt.secret}")
     private String secret;
 
+    /**
+     * Время жизни JWT токенов.
+     * Значение считывается из конфигурации с помощью аннотации @Value.
+     */
     @Value("${jwt.lifetime}")
     private Duration jwtLifeTime;
 
+    /**
+     * Секретный ключ, использующийся для подписи токенов.
+     */
     private SecretKey secretKey;
 
+    /**
+     * Инициализация секретного ключа на основе конфигурации.
+     * Вызывается после инъекции зависимостей через аннотацию @PostConstruct.
+     */
     @PostConstruct
     private void init() {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
     }
 
+    /**
+     * Генерация JWT токена для пользователя.
+     * Этот токен включает в себя данные о ролях пользователя и срок действия токена.
+     *
+     * @param userDetails объект, содержащий информацию о пользователе, включая его роли.
+     * @return сгенерированный JWT токен в виде строки.
+     */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+
         List<String> rolesList  = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
         claims.put("roles", rolesList);
+
         Date issuedDate = new Date();
         Date expiredDate = new Date(issuedDate.getTime() + jwtLifeTime.toMillis());
+
         return Jwts.builder()
                 .claims(claims)
                 .subject(userDetails.getUsername())
@@ -50,9 +78,18 @@ public class JwtTokenUtils {
                 .compact();
     }
 
+    /**
+     * Генерация JWT токена для сброса пароля пользователя.
+     * Этот токен имеет ограниченный срок действия и используется для подтверждения изменения пароля.
+     *
+     * @param email адрес электронной почты пользователя.
+     * @return сгенерированный токен для изменения пароля.
+     */
     public String generatePasswordResetToken(String email) {
+        final long duration = 15;
+
         Date issuedDate = new Date();
-        Date expiredDate = new Date(issuedDate.getTime() + Duration.ofMinutes(15).toMillis());
+        Date expiredDate = new Date(issuedDate.getTime() + Duration.ofMinutes(duration).toMillis());
 
         return Jwts.builder()
                 .subject(email)
@@ -62,6 +99,12 @@ public class JwtTokenUtils {
                 .compact();
     }
 
+    /**
+     * Извлечение всех данных (claims) из JWT токена.
+     *
+     * @param token JWT токен в виде строки.
+     * @return объект Claims, содержащий все данные из токена.
+     */
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
@@ -70,10 +113,22 @@ public class JwtTokenUtils {
                 .getPayload();
     }
 
+    /**
+     * Извлечение email пользователя из JWT токена.
+     *
+     * @param token JWT токен в виде строки.
+     * @return email пользователя, извлеченный из токена.
+     */
     public String getUserEmail(String token) {
         return getAllClaimsFromToken(token).getSubject();
     }
 
+    /**
+     * Извлечение ролей пользователя из JWT токена.
+     *
+     * @param token JWT токен в виде строки.
+     * @return список ролей пользователя.
+     */
     public List<String> getRoles(String token) {
         List<?> roles = getAllClaimsFromToken(token).get("roles", List.class);
         return roles.stream()

@@ -5,7 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.uniyar.podarok.dtos.MessageDto;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
@@ -21,8 +25,8 @@ import java.util.List;
 @RequestMapping("/chat")
 @AllArgsConstructor
 public class ChatController {
-    private final ChatService chatService;
-    private final SimpMessagingTemplate messagingTemplate;
+    private ChatService chatService;
+    private SimpMessagingTemplate messagingTemplate;
 
     /**
      * Получить отправленные сообщения.
@@ -76,7 +80,6 @@ public class ChatController {
      * Отправить сообщение.
      *
      * @param messageDto объект сообщения для отправки.
-     * @return HTTP-ответ с сохранённым сообщением.
      * @throws UserNotAuthorizedException если пользователь не авторизован.
      * @throws UserNotFoundException если текущий пользователь или получатель не найден.
      */

@@ -18,6 +18,13 @@ import java.util.List;
 public class OrderDtoConverter {
     private final GiftDtoConverter giftDtoConverter;
 
+    /**
+     * Преобразует объект Order в объект OrderDto.
+     * Преобразует все подарки, связанные с заказом, в DTO с использованием конвертера GiftDtoConverter.
+     *
+     * @param order объект Order, который необходимо преобразовать.
+     * @return объект OrderDto, представляющий заказ в виде DTO.
+     */
     public OrderDto convertToOrderDto(Order order) {
         List<GiftDto> giftDtos = order.getGiftOrders().stream()
                 .map(GiftOrder::getGift)
