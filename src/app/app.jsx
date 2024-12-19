@@ -26,7 +26,7 @@ export const ContextLogin = createContext();
 
 function App() {
     const [data, setData] = useState(null);
-    const [order, setOrder] = useState(null)
+    const [order, setOrder] = useState(null);
 
     const asyncLogin = async () => {
         const token = localStorage.getItem("token");
@@ -34,14 +34,13 @@ function App() {
             let d = await responseGetProfile(token);
             setData(d);
         } else {
-            setData(null)
+            setData(null);
         }
     };
 
     useEffect(() => {
-        console.log(order);     
-    }, [order])
-
+        console.log(order);
+    }, [order]);
 
     useEffect(() => {
         asyncLogin();
@@ -58,8 +57,8 @@ function App() {
                             <Route path="article/:id" element={<Card />} />
                             {data != null && (
                                 <>
-                                    <Route path="order/:id" element={<Order order={order}/>} />
-                                    <Route path="basket" element={<Basket setOrder={setOrder}/>} />
+                                    <Route path="order/:id" element={<Order order={order} />} />
+                                    <Route path="basket" element={<Basket setOrder={setOrder} />} />
                                     <Route path="password-change" element={<PasswordCange />} />
                                     <Route path="account" element={<Account />}>
                                         <Route index element={<User />} />
