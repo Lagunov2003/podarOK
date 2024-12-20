@@ -1,4 +1,4 @@
-package ru.uniyar.podarok.utils.Builders;
+package ru.uniyar.podarok.utils.builders;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * Строитель для создания объектов {@link SimpleMailMessage}.
  */
-@Component
+@Component("mailMessageBuilderMain")
 public class MailMessageBuilder {
     private String from;
     private String[] to;

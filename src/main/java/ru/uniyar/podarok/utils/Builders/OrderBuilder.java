@@ -1,9 +1,10 @@
-package ru.uniyar.podarok.utils.Builders;
+package ru.uniyar.podarok.utils.builders;
 
 import org.springframework.stereotype.Component;
 import ru.uniyar.podarok.entities.Order;
 import ru.uniyar.podarok.entities.User;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -17,6 +18,7 @@ public class OrderBuilder {
     private String information;
     private LocalDate deliveryDate;
     private LocalTime fromDeliveryTime;
+    private BigDecimal orderCost;
     private LocalTime toDeliveryTime;
     private String payMethod;
     private String recipientName;
@@ -134,6 +136,17 @@ public class OrderBuilder {
     }
 
     /**
+     * Устанавливает номер телефона получателя.
+     *
+     * @param orderCost стоимость заказа
+     * @return текущий объект {@link OrderBuilder} для дальнейшей настройки
+     */
+    public OrderBuilder orderCost(BigDecimal orderCost) {
+        this.orderCost = orderCost;
+        return this;
+    }
+
+    /**
      * Строит объект {@link Order} на основе заданных параметров.
      *
      * @return объект {@link Order}, содержащий все параметры заказа
@@ -146,6 +159,7 @@ public class OrderBuilder {
         order.setDeliveryDate(this.deliveryDate);
         order.setFromDeliveryTime(this.fromDeliveryTime);
         order.setToDeliveryTime(this.toDeliveryTime);
+        order.setOrderCost(this.orderCost);
         order.setPayMethod(this.payMethod);
         order.setRecipientName(this.recipientName);
         order.setRecipientEmail(this.recipientEmail);

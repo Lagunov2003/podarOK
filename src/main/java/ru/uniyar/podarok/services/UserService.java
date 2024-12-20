@@ -23,7 +23,7 @@ import ru.uniyar.podarok.exceptions.UserAlreadyExistException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.UserRepository;
-import ru.uniyar.podarok.utils.Builders.UserBuilder;
+import ru.uniyar.podarok.utils.builders.UserBuilder;
 import ru.uniyar.podarok.utils.JwtTokenUtils;
 
 import java.time.LocalDate;
@@ -259,7 +259,7 @@ public class UserService implements UserDetailsService {
      * @throws UserNotFoundException если пользователь с таким email не найден.
      */
     public void sendPasswordResetLink(String email) throws UserNotFoundException {
-        User user = findByEmail(email);
+        findByEmail(email);
         String token = jwtTokenUtils.generatePasswordResetToken(email);
         emailService.sendPasswordResetLetter(email, token);
     }

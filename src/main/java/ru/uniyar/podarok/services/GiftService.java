@@ -14,7 +14,7 @@ import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.Occasion;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.repositories.GiftRepository;
-import ru.uniyar.podarok.utils.Converters.GiftDtoConverter;
+import ru.uniyar.podarok.utils.converters.GiftDtoConverter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +31,16 @@ import java.util.stream.Collectors;
 public class GiftService {
     private GiftRepository giftRepository;
     private GiftDtoConverter giftDtoConverter;
+
+    /**
+     * Получает список всех подарков.
+     *
+     * @param pageable параметры пагинации.
+     * @return список всех подарков.
+     */
+    public Page<GiftDto> getAllGifts(Pageable pageable) {
+        return giftDtoConverter.convertToGiftDtoPage(giftRepository.findAllGifts(pageable));
+    }
 
     /**
      * Получает подарок по идентификатору.

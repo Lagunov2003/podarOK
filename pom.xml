@@ -200,6 +200,16 @@
 					<configLocation>src/main/resources/sun_check.xml</configLocation>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.23.0</version>
+				<configuration>
+					<rulesets>
+						<ruleset>src/main/resources/pmd_check.xml</ruleset>
+					</rulesets>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>

@@ -17,6 +17,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      *
      * @return список заказов с включенными информацией о подарках GiftOrder и Gift.
      */
+    @Override
     @Query("SELECT o FROM Order o LEFT JOIN FETCH o.giftOrders go LEFT JOIN FETCH go.gift")
     List<Order> findAll();
 

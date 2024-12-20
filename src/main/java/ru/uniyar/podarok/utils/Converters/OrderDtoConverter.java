@@ -1,4 +1,4 @@
-package ru.uniyar.podarok.utils.Converters;
+package ru.uniyar.podarok.utils.converters;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

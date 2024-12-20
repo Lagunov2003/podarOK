@@ -16,10 +16,9 @@ import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.CartRepository;
-import ru.uniyar.podarok.utils.Builders.OrderBuilder;
-import ru.uniyar.podarok.utils.Converters.GiftDtoConverter;
+import ru.uniyar.podarok.utils.builders.OrderBuilder;
+import ru.uniyar.podarok.utils.converters.GiftDtoConverter;
 
-import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -147,18 +146,12 @@ public class CartService {
         User user = userService.getCurrentAuthenticationUser();
         Order order = createOrder(orderRequestDto, user);
 
-        BigDecimal totalCost = BigDecimal.ZERO;
         Set<GiftOrder> giftOrders = new HashSet<>();
 
         for (OrderItemDto itemDto : orderRequestDto.getItems()) {
             GiftOrder giftOrder = createGiftOrder(itemDto, order, user);
             giftOrders.add(giftOrder);
-            totalCost = totalCost.add(
-                    giftOrder.getGift().getPrice().multiply(BigDecimal.valueOf(giftOrder.getItemCount()))
-            );
         }
-
-        order.setOrderCost(totalCost);
         order.setGiftOrders(giftOrders);
 
         orderService.placeOrder(order);
@@ -201,6 +194,7 @@ public class CartService {
                 .deliveryDate(orderRequestDto.getDeliveryDate())
                 .fromDeliveryTime(orderRequestDto.getFromDeliveryTime())
                 .toDeliveryTime(orderRequestDto.getToDeliveryTime())
+                .orderCost(orderRequestDto.getOrderCost())
                 .payMethod(orderRequestDto.getPayMethod())
                 .recipientName(
                         (orderRequestDto.getRecipientName() == null)

@@ -1,4 +1,4 @@
-package ru.uniyar.podarok.utils.Builders;
+package ru.uniyar.podarok.utils.builders;
 
 import org.springframework.stereotype.Component;
 import ru.uniyar.podarok.entities.Message;

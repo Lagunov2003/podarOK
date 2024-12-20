@@ -1,4 +1,4 @@
-package ru.uniyar.podarok.utils.Converters;
+package ru.uniyar.podarok.utils.converters;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

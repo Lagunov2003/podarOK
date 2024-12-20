@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import ru.uniyar.podarok.utils.Builders.MailMessageBuilder;
+import ru.uniyar.podarok.utils.builders.MailMessageBuilder;
 
 /**
  * Сервис для отправки электронных писем пользователям.

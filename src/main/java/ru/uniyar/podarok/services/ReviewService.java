@@ -11,7 +11,7 @@ import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.ReviewRepository;
-import ru.uniyar.podarok.utils.Builders.ReviewBuilder;
+import ru.uniyar.podarok.utils.builders.ReviewBuilder;
 
 import java.time.LocalDate;
 import java.util.List;

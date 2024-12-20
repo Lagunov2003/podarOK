@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -19,6 +20,7 @@ public class OrderRequestDto {
     private LocalDate deliveryDate;
     private LocalTime fromDeliveryTime;
     private LocalTime toDeliveryTime;
+    private BigDecimal orderCost;
     private String information;
     private String payMethod;
     private String recipientName;

@@ -9,8 +9,8 @@ import ru.uniyar.podarok.entities.Notification;
 import ru.uniyar.podarok.entities.Order;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
-import ru.uniyar.podarok.utils.Converters.GiftDtoConverter;
-import ru.uniyar.podarok.utils.Converters.OrderDtoConverter;
+import ru.uniyar.podarok.utils.converters.GiftDtoConverter;
+import ru.uniyar.podarok.utils.converters.OrderDtoConverter;
 
 import java.util.List;
 import java.util.stream.Collectors;

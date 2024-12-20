@@ -15,7 +15,7 @@ import ru.uniyar.podarok.entities.GiftGroup;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
-import ru.uniyar.podarok.utils.Converters.ReviewDtoConverter;
+import ru.uniyar.podarok.utils.converters.ReviewDtoConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +31,7 @@ public class CatalogService {
     private UserService userService;
     private ReviewService reviewService;
     private ReviewDtoConverter reviewDtoConverter;
+    private GiftFilterService giftFilterService;
 
     /**
      * Получает информацию о подарке по его идентификатору.
@@ -115,12 +116,14 @@ public class CatalogService {
      * @param pageable параметры пагинации
      * @return страница {@link GiftDto}, содержащая результаты поиска
      */
-    public Page<GiftDto> searchGiftsByFilters(
-            GiftFilterRequest giftFilterRequest,
-            String name,
-            String sort,
-            Pageable pageable) {
-        return giftService.searchGiftsByFilters(giftFilterRequest, name, sort, pageable);
+    public Page<GiftDto> getGiftsCatalog(GiftFilterRequest giftFilterRequest,
+                                         String name,
+                                         String sort,
+                                         Pageable pageable) {
+        GiftFilterRequest effectiveRequest = giftFilterService.processRequest(giftFilterRequest);
+        return giftFilterService.hasSurveyData(effectiveRequest) || giftFilterService.hasFilters(effectiveRequest)
+                ? giftService.searchGiftsByFilters(effectiveRequest, name, sort, pageable)
+                : giftService.getAllGifts(pageable);
     }
 
     /**

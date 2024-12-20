@@ -101,7 +101,7 @@ public class CatalogController {
 
         Pageable pageable = PageRequest.of(page - 1, pageSize);
 
-        Page<GiftDto> giftsPage = catalogService.searchGiftsByFilters(giftFilterRequest, name, sort, pageable);
+        Page<GiftDto> giftsPage = catalogService.getGiftsCatalog(giftFilterRequest, name, sort, pageable);
 
         if (giftsPage.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body("Нет элементов на странице!");

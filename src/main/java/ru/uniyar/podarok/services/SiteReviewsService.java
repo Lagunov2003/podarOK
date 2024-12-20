@@ -11,7 +11,7 @@ import ru.uniyar.podarok.exceptions.SiteReviewNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.SiteReviewsRepository;
-import ru.uniyar.podarok.utils.Converters.SiteReviewsDtoConverter;
+import ru.uniyar.podarok.utils.converters.SiteReviewsDtoConverter;
 
 import java.util.List;
 import java.util.stream.Collectors;

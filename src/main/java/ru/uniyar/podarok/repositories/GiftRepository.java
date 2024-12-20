@@ -22,6 +22,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      * @param id Идентификатор подарка.
      * @return Опциональный подарок.
      */
+    @Override
     Optional<Gift> findById(Long id);
 
     /**
@@ -215,8 +216,8 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
             + "WHERE (:budget IS NULL OR g.price <= :budget) "
             + "AND (:gender IS NULL OR gr.gender = :gender) "
             + "AND (:age IS NULL OR (gr.min_age <= :age AND gr.max_age >= :age)) "
-            + "AND (:categories IS NULL OR gc.category_id = ANY(:categories)) "
-            + "AND (:occasions IS NULL OR go.occasion_id = ANY(:occasions)) "
+            + "AND (:categories IS NULL OR gc.category_id IN (:categories)) "
+            + "AND (:occasions IS NULL OR go.occasion_id IN (:occasions)) "
             + "AND LOWER(g.name) LIKE LOWER(CONCAT('%', :name, '%'))"
             + "GROUP BY g.id "
             + "ORDER BY average_rating DESC",
@@ -229,8 +230,8 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
                     + "WHERE (:budget IS NULL OR g.price <= :budget) "
                     + "AND (:gender IS NULL OR gr.gender = :gender) "
                     + "AND (:age IS NULL OR (gr.min_age <= :age AND gr.max_age >= :age)) "
-                    + "AND (:categories IS NULL OR gc.category_id = ANY(:categories)) "
-                    + "AND (:occasions IS NULL OR go.occasion_id = ANY(:occasions))",
+                    + "AND (:categories IS NULL OR gc.category_id IN (:categories)) "
+                    + "AND (:occasions IS NULL OR go.occasion_id IN (:occasions))",
             nativeQuery = true)
     Page<Gift> findAllByFiltersByNameAndByAverageRatingDesc(
             @Param("budget") BigDecimal budget,
@@ -261,8 +262,8 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
             + "WHERE (:budget IS NULL OR g.price <= :budget) "
             + "AND (:gender IS NULL OR rec.gender = :gender) "
             + "AND (:age IS NULL OR (rec.minAge <= :age AND rec.maxAge >= :age)) "
-            + "AND (:categories IS NULL OR categories.id IN :categories) "
-            + "AND (:occasions IS NULL OR occasions.id IN :occasions)"
+            + "AND (:categories IS NULL OR categories.id IN (:categories)) "
+            + "AND (:occasions IS NULL OR occasions.id IN (:occasions))"
             + "AND LOWER(g.name) LIKE LOWER(CONCAT('%', :name, '%'))"
             + "ORDER BY g.price ASC")
     Page<Gift> findAllByFiltersByNameAndByPriceAsc(
@@ -294,8 +295,8 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
             + "WHERE (:budget IS NULL OR g.price <= :budget) "
             + "AND (:gender IS NULL OR rec.gender = :gender) "
             + "AND (:age IS NULL OR (rec.minAge <= :age AND rec.maxAge >= :age)) "
-            + "AND (:categories IS NULL OR categories.id IN :categories) "
-            + "AND (:occasions IS NULL OR occasions.id IN :occasions)"
+            + "AND (:categories IS NULL OR categories.id IN (:categories)) "
+            + "AND (:occasions IS NULL OR occasions.id IN (:occasions))"
             + "AND LOWER(g.name) LIKE LOWER(CONCAT('%', :name, '%'))"
             + "ORDER BY g.price DESC")
     Page<Gift> findAllByFiltersByNameAndByPriceDesc(
@@ -327,8 +328,8 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
             + "WHERE (:budget IS NULL OR g.price <= :budget) "
             + "AND (:gender IS NULL OR rec.gender = :gender) "
             + "AND (:age IS NULL OR (rec.minAge <= :age AND rec.maxAge >= :age)) "
-            + "AND (:categories IS NULL OR categories.id IN :categories) "
-            + "AND (:occasions IS NULL OR occasions.id IN :occasions)"
+            + "AND (:categories IS NULL OR categories.id IN (:categories)) "
+            + "AND (:occasions IS NULL OR occasions.id IN (:occasions))"
             + "AND LOWER(g.name) LIKE LOWER(CONCAT('%', :name, '%'))")
     Page<Gift> findAllByFiltersByName(
             @Param("budget") BigDecimal budget,
@@ -339,4 +340,12 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
             @Param("name") String name,
             Pageable pageable
     );
+    /**
+     * Возвращает все подарки.
+     * @param pageable  Параметры пагинации.
+     * @return Страница подарков.
+     */
+    @Query("SELECT DISTINCT g FROM Gift g "
+            + "LEFT JOIN FETCH g.photos photos")
+    Page<Gift> findAllGifts(Pageable pageable);
 }

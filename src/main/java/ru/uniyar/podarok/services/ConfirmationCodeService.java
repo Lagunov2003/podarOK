@@ -7,7 +7,7 @@ import ru.uniyar.podarok.exceptions.ExpiredCodeException;
 import ru.uniyar.podarok.exceptions.FakeConfirmationCodeException;
 import ru.uniyar.podarok.exceptions.NotValidCodeException;
 import ru.uniyar.podarok.repositories.ConfirmationCodeRepository;
-import ru.uniyar.podarok.utils.Builders.ConfirmationCodeBuilder;
+import ru.uniyar.podarok.utils.builders.ConfirmationCodeBuilder;
 
 import java.time.LocalDate;
 import java.util.Objects;

@@ -9,7 +9,7 @@ import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.MessageRepository;
-import ru.uniyar.podarok.utils.Converters.MessageDtoConverter;
+import ru.uniyar.podarok.utils.converters.MessageDtoConverter;
 
 import java.util.List;
 

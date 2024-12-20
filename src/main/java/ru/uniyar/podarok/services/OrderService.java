@@ -9,7 +9,7 @@ import ru.uniyar.podarok.entities.GiftOrder;
 import ru.uniyar.podarok.entities.Order;
 import ru.uniyar.podarok.exceptions.OrderNotFoundException;
 import ru.uniyar.podarok.repositories.OrderRepository;
-import ru.uniyar.podarok.utils.Converters.OrderDtoConverter;
+import ru.uniyar.podarok.utils.converters.OrderDtoConverter;
 
 import java.util.HashSet;
 import java.util.List;
