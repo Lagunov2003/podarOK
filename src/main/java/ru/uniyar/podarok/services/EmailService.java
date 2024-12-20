@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import ru.uniyar.podarok.utils.builders.MailMessageBuilder;
+import ru.uniyar.podarok.utils.builders.EmailMessageBuilder;
 
 /**
  * Сервис для отправки электронных писем пользователям.
@@ -22,7 +22,7 @@ public class EmailService {
      * @param firstName имя пользователя.
      */
     public void sendWelcomeLetter(String email, String firstName) {
-        SimpleMailMessage message = new MailMessageBuilder()
+        SimpleMailMessage message = new EmailMessageBuilder()
                 .from(MAILING_EMAIL)
                 .to(email)
                 .subject("Благодарим за регистрацию в сервисе podarOK!")
@@ -39,7 +39,7 @@ public class EmailService {
      * @param code код для подтверждения смены пароля.
      */
     public void sendConfirmationLetter(String email, String code) {
-        SimpleMailMessage message = new MailMessageBuilder()
+        SimpleMailMessage message = new EmailMessageBuilder()
                 .from(MAILING_EMAIL)
                 .to(email)
                 .subject("Смена пароля в сервисе podarOK!")
@@ -56,7 +56,7 @@ public class EmailService {
      * @param newEmail новый адрес электронной почты пользователя.
      */
     public void sendUpdateEmailNotifications(String email, String newEmail) {
-        SimpleMailMessage message = new MailMessageBuilder()
+        SimpleMailMessage message = new EmailMessageBuilder()
                 .from(MAILING_EMAIL)
                 .to(email, newEmail)
                 .subject("Смена электронной почты в сервисе podarOK!")
@@ -72,7 +72,7 @@ public class EmailService {
      * @param token токен для восстановления пароля.
      */
     public void sendPasswordResetLetter(String email, String token) {
-        SimpleMailMessage message = new MailMessageBuilder()
+        SimpleMailMessage message = new EmailMessageBuilder()
                 .from(MAILING_EMAIL)
                 .to(email)
                 .subject("Восстановление пароля в сервисе podarOK!")

@@ -189,7 +189,7 @@ public class CartService {
     private Order createOrder(OrderRequestDto orderRequestDto, User user) {
         return new OrderBuilder()
                 .user(user)
-                .status("Оформлен!")
+                .status("Оформлен")
                 .information(orderRequestDto.getInformation())
                 .deliveryDate(orderRequestDto.getDeliveryDate())
                 .fromDeliveryTime(orderRequestDto.getFromDeliveryTime())

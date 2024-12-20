@@ -3,12 +3,11 @@ package ru.uniyar.podarok.utils.builders;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 
-
 /**
  * Строитель для создания объектов {@link SimpleMailMessage}.
  */
-@Component("mailMessageBuilderMain")
-public class MailMessageBuilder {
+@Component
+public class EmailMessageBuilder {
     private String from;
     private String[] to;
     private String subject;
@@ -18,9 +17,9 @@ public class MailMessageBuilder {
      * Устанавливает отправителя сообщения.
      *
      * @param from адрес электронной почты отправителя
-     * @return текущий объект {@link MailMessageBuilder} для дальнейшей настройки
+     * @return текущий объект {@link EmailMessageBuilder} для дальнейшей настройки
      */
-    public MailMessageBuilder from(String from) {
+    public EmailMessageBuilder from(String from) {
         this.from = from;
         return this;
     }
@@ -29,9 +28,9 @@ public class MailMessageBuilder {
      * Устанавливает получателей сообщения.
      *
      * @param to массив адресов электронной почты получателей
-     * @return текущий объект {@link MailMessageBuilder} для дальнейшей настройки
+     * @return текущий объект {@link EmailMessageBuilder} для дальнейшей настройки
      */
-    public MailMessageBuilder to(String... to) {
+    public EmailMessageBuilder to(String... to) {
         this.to = to;
         return this;
     }
@@ -40,9 +39,9 @@ public class MailMessageBuilder {
      * Устанавливает тему сообщения.
      *
      * @param subject тема письма
-     * @return текущий объект {@link MailMessageBuilder} для дальнейшей настройки
+     * @return текущий объект {@link EmailMessageBuilder} для дальнейшей настройки
      */
-    public MailMessageBuilder subject(String subject) {
+    public EmailMessageBuilder subject(String subject) {
         this.subject = subject;
         return this;
     }
@@ -51,9 +50,9 @@ public class MailMessageBuilder {
      * Устанавливает текст сообщения.
      *
      * @param text тело письма
-     * @return текущий объект {@link MailMessageBuilder} для дальнейшей настройки
+     * @return текущий объект {@link EmailMessageBuilder} для дальнейшей настройки
      */
-    public MailMessageBuilder text(String text) {
+    public EmailMessageBuilder text(String text) {
         this.text = text;
         return this;
     }
