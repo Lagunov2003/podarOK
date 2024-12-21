@@ -70,7 +70,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/profile", "/cart", "/notifications", "/favorites", "/ordersHistory",
                                 "/currentOrders", "/order", "/addToFavorites", "/addSiteReview", "/sentMessages",
-                                "/messages", "/newMessages", "/send", "/addGiftReview"
+                                "/messages", "/newMessages", "/send", "/addGiftReview", "/deleteFromFavorites"
                         ).authenticated()
                         .requestMatchers(
                                 "/changeOrderStatus", "/getOrders", "/deleteGift", "/changeGift", "/addGift",

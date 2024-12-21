@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.GiftFilterRequest;
-import ru.uniyar.podarok.dtos.GiftToFavoritesDto;
+import ru.uniyar.podarok.dtos.GiftFavoritesDto;
 import ru.uniyar.podarok.dtos.ReviewRequestDto;
+import ru.uniyar.podarok.exceptions.FavoritesGiftAlreadyExistException;
+import ru.uniyar.podarok.exceptions.FavoritesGiftNotFoundException;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
@@ -51,18 +53,39 @@ public class CatalogController {
     /**
      * Добавить подарок в избранное.
      * Доступно только для авторизованных пользователей.
-     * @param giftToFavoritesDto объект с id подарка для добавления в избранное.
-     * @return сообщение с подтверждением добавления подарка в избраноое.
+     * @param giftFavoritesDto объект с id подарка для добавления в избранное.
+     * @return сообщение с подтверждением добавления подарка в избранное.
      * @throws UserNotAuthorizedException если пользователь не авторизован.
      * @throws UserNotFoundException если пользователь не найден.
      * @throws GiftNotFoundException если подарок с указанным id не найден.
+     * @throws FavoritesGiftAlreadyExistException если подарок с указанным id уже добавлен в избранные.
      */
     @PostMapping("/addToFavorites")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> addGiftToFavorites(@RequestBody GiftToFavoritesDto giftToFavoritesDto)
-            throws UserNotAuthorizedException, UserNotFoundException, GiftNotFoundException {
-        catalogService.addGiftToFavorites(giftToFavoritesDto);
+    public ResponseEntity<?> addGiftToFavorites(@RequestBody GiftFavoritesDto giftFavoritesDto)
+            throws UserNotAuthorizedException, UserNotFoundException,
+            GiftNotFoundException, FavoritesGiftAlreadyExistException {
+        catalogService.addGiftToFavorites(giftFavoritesDto);
         return ResponseEntity.status(HttpStatus.OK).body("Подарок добавлен в избранные!");
+    }
+
+    /**
+     * Удалить подарок из избранных.
+     * Доступно только для авторизованных пользователей.
+     * @param giftFavoritesDto объект с id подарка для добавления в избранное.
+     * @return сообщение с подтверждением удаления подарка из избранных.
+     * @throws UserNotAuthorizedException если пользователь не авторизован.
+     * @throws UserNotFoundException если пользователь не найден.
+     * @throws GiftNotFoundException если подарок с указанным id не найден.
+     * @throws FavoritesGiftNotFoundException если подарка с указанным id нет в избранных.
+     */
+    @PostMapping("/deleteFromFavorites")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> deleteFromFavorites(@RequestBody GiftFavoritesDto giftFavoritesDto)
+            throws UserNotFoundException, GiftNotFoundException,
+            UserNotAuthorizedException, FavoritesGiftNotFoundException {
+        catalogService.deleteFromFavorites(giftFavoritesDto);
+        return ResponseEntity.status(HttpStatus.OK).body("Подарок удалён из избранных!");
     }
 
     /**

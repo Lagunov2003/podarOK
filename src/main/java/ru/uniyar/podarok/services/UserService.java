@@ -18,6 +18,8 @@ import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.ExpiredCodeException;
 import ru.uniyar.podarok.exceptions.FakeConfirmationCodeException;
+import ru.uniyar.podarok.exceptions.FavoritesGiftAlreadyExistException;
+import ru.uniyar.podarok.exceptions.FavoritesGiftNotFoundException;
 import ru.uniyar.podarok.exceptions.NotValidCodeException;
 import ru.uniyar.podarok.exceptions.UserAlreadyExistException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
@@ -282,16 +284,44 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     * Добавляет подарок в избранное текущего авторизованного пользователя.
+     * Добавляет подарок в избранные текущего авторизованного пользователя.
      *
      * @param gift подарок для добавления в избранное.
      * @throws UserNotFoundException если пользователь не найден.
      * @throws UserNotAuthorizedException если пользователь не авторизован.
+     * @throws FavoritesGiftAlreadyExistException если подарок уже есть в избранных.
      */
     @Transactional
-    public void addGiftToFavorites(Gift gift) throws UserNotFoundException, UserNotAuthorizedException {
+    public void addGiftToFavorites(Gift gift)
+            throws UserNotFoundException, UserNotAuthorizedException, FavoritesGiftAlreadyExistException {
         User user = getCurrentAuthenticationUser();
-        user.getFavorites().add(gift);
+        List<Gift> favorites = user.getFavorites();
+
+        if (favorites.contains(gift)) {
+            throw new FavoritesGiftAlreadyExistException("Подарок уже добавлен в избранные!");
+        }
+
+        favorites.add(gift);
+        userRepository.save(user);
+    }
+
+    /**
+     * Удаление подарка из избранных подарков.
+     * @param gift подарок для добавления в избранное.
+     * @throws UserNotFoundException если пользователь не найден.
+     * @throws UserNotAuthorizedException если пользователь не авторизован.
+     * @throws FavoritesGiftNotFoundException если подарка нет в избранных.
+     */
+    public void deleteGiftFromFavorites(Gift gift)
+            throws UserNotFoundException, UserNotAuthorizedException, FavoritesGiftNotFoundException {
+        User user = getCurrentAuthenticationUser();
+        List<Gift> favorites = user.getFavorites();
+
+        if (!favorites.contains(gift)) {
+            throw new FavoritesGiftNotFoundException("Подарок не найден в избранных!");
+        }
+
+        favorites.remove(gift);
         userRepository.save(user);
     }
 }

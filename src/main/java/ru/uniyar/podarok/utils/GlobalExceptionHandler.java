@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.uniyar.podarok.exceptions.ExpiredCodeException;
 import ru.uniyar.podarok.exceptions.FakeConfirmationCodeException;
+import ru.uniyar.podarok.exceptions.FavoritesGiftAlreadyExistException;
+import ru.uniyar.podarok.exceptions.FavoritesGiftNotFoundException;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.NotValidCodeException;
 import ru.uniyar.podarok.exceptions.OrderNotFoundException;
@@ -191,6 +193,30 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    /**
+     * Обработка исключений, если подарок с указанным id уже есть в списке избранных пользователя.
+     *
+     * @param e исключение типа {@link FavoritesGiftAlreadyExistException}.
+     * @return HTTP-ответ с кодом 409 (CONFLICT) и сообщением об ошибке.
+     */
+    @ExceptionHandler(FavoritesGiftAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<String> handleFavoritesGiftAlreadyExistException(FavoritesGiftAlreadyExistException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    /**
+     * Обработка исключений отсутствия подарка в списке избранных.
+     *
+     * @param e исключение типа {@link FavoritesGiftNotFoundException}.
+     * @return HTTP-ответ с кодом 404 (NOT FOUND) и соответствующим сообщением об ошибке.
+     */
+    @ExceptionHandler(FavoritesGiftNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<String> handleFavoritesGiftNotFoundException(FavoritesGiftNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 

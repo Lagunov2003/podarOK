@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.GiftFilterRequest;
 import ru.uniyar.podarok.dtos.GiftResponseDto;
-import ru.uniyar.podarok.dtos.GiftToFavoritesDto;
+import ru.uniyar.podarok.dtos.GiftFavoritesDto;
 import ru.uniyar.podarok.dtos.ReviewDto;
 import ru.uniyar.podarok.dtos.ReviewRequestDto;
 import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.GiftGroup;
+import ru.uniyar.podarok.exceptions.FavoritesGiftAlreadyExistException;
+import ru.uniyar.podarok.exceptions.FavoritesGiftNotFoundException;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
@@ -45,16 +47,18 @@ public class CatalogService {
     }
 
     /**
-     * Добавляет подарок в избранное текущего авторизованного пользователя.
+     * Добавляет подарок в избранные текущего авторизованного пользователя.
      *
-     * @param giftToFavoritesDto DTO с информацией о подарке
+     * @param giftFavoritesDto DTO с информацией о подарке
      * @throws UserNotFoundException если пользователь не найден
      * @throws UserNotAuthorizedException если пользователь не авторизован
      * @throws GiftNotFoundException если подарок не найден
+     * @throws FavoritesGiftAlreadyExistException если подарок уже есть в избранных подарках
      */
-    public void addGiftToFavorites(GiftToFavoritesDto giftToFavoritesDto)
-            throws UserNotFoundException, UserNotAuthorizedException, GiftNotFoundException {
-        Gift gift = giftService.getGiftById(giftToFavoritesDto.getGiftId());
+    public void addGiftToFavorites(GiftFavoritesDto giftFavoritesDto)
+            throws UserNotFoundException, UserNotAuthorizedException,
+            GiftNotFoundException, FavoritesGiftAlreadyExistException {
+        Gift gift = giftService.getGiftById(giftFavoritesDto.getGiftId());
         userService.addGiftToFavorites(gift);
     }
 
@@ -137,5 +141,21 @@ public class CatalogService {
     public void addGiftReview(ReviewRequestDto reviewRequestDto)
             throws UserNotFoundException, GiftNotFoundException, UserNotAuthorizedException {
         reviewService.addGiftReview(reviewRequestDto);
+    }
+
+    /**
+     * Удаляет подарок из избранных.
+     *
+     * @param giftFavoritesDto объект запроса с данными отзыва
+     * @throws UserNotFoundException если пользователь не найден
+     * @throws GiftNotFoundException если подарок не найден
+     * @throws UserNotAuthorizedException если пользователь не авторизован
+     * @throws FavoritesGiftNotFoundException если подарка нет в избранных
+     */
+    public void deleteFromFavorites(GiftFavoritesDto giftFavoritesDto)
+            throws GiftNotFoundException, UserNotFoundException,
+            UserNotAuthorizedException, FavoritesGiftNotFoundException {
+        Gift gift = giftService.getGiftById(giftFavoritesDto.getGiftId());
+        userService.deleteGiftFromFavorites(gift);
     }
 }

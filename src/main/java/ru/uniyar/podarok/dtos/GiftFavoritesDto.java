@@ -5,11 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Dto для добавления подарка в избранные.
+ * Dto для добавления подарка в избранные и удаления оттуда.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GiftToFavoritesDto {
+public class GiftFavoritesDto {
     private Long giftId;
 }
