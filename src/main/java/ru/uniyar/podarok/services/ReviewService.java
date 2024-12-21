@@ -34,7 +34,8 @@ public class ReviewService {
      */
     public Double getAverageRating(Long giftId) {
         final double roundingScale = 10.0;
-        return Math.round(reviewRepository.findAverageRatingByGiftId(giftId) * roundingScale) / roundingScale;
+        Double averageRating = reviewRepository.findAverageRatingByGiftId(giftId);
+        return averageRating != null ? Math.round(averageRating * roundingScale) / roundingScale : 0.0;
     }
 
     /**
