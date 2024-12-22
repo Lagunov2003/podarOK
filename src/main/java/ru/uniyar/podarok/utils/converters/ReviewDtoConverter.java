@@ -19,6 +19,7 @@ public class ReviewDtoConverter {
      */
     public ReviewDto convertToReviewDto(Review review) {
         return new ReviewDto(
+                review.getUser().getId(),
                 review.getText(),
                 review.getRating(),
                 review.getUser().getFirstName()

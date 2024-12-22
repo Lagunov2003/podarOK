@@ -19,6 +19,7 @@ public class GroupService {
      *
      * @param addGroupDto объект с данными для создания новой группы
      */
+    @Deprecated
     @Transactional
     public void addGroup(AddGroupDto addGroupDto) {
         groupRepository.addGroup(addGroupDto.getId());

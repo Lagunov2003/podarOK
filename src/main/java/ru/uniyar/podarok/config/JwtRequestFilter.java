@@ -83,6 +83,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (!isTokenValid(authHeader, response)) {
             return;
         }
+
         filterChain.doFilter(request, response);
     }
 

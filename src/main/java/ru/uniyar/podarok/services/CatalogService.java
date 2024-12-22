@@ -12,15 +12,18 @@ import ru.uniyar.podarok.dtos.ReviewDto;
 import ru.uniyar.podarok.dtos.ReviewRequestDto;
 import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.GiftGroup;
+import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.FavoritesGiftAlreadyExistException;
 import ru.uniyar.podarok.exceptions.FavoritesGiftNotFoundException;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
+import ru.uniyar.podarok.exceptions.GiftReviewAlreadyExistException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.utils.converters.ReviewDtoConverter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -112,6 +115,19 @@ public class CatalogService {
     }
 
     /**
+     * Получение текущего авторизованного пользователя.
+     *
+     * @return объект Optional<User>, если пользователь авторизован, иначе пустой Optional.
+     */
+    private Optional<User> getCurrentUser() {
+        try {
+            return Optional.of(userService.getCurrentAuthenticationUser());
+        } catch (UserNotFoundException | UserNotAuthorizedException ignored) {
+            return Optional.empty();
+        }
+    }
+
+    /**
      * Выполняет поиск подарков по указанным фильтрам.
      *
      * @param giftFilterRequest объект фильтрации подарков
@@ -137,9 +153,11 @@ public class CatalogService {
      * @throws UserNotFoundException если пользователь не найден
      * @throws GiftNotFoundException если подарок не найден
      * @throws UserNotAuthorizedException если пользователь не авторизован
+     * @throws GiftReviewAlreadyExistException если отзыв уже добавлен
      */
     public void addGiftReview(ReviewRequestDto reviewRequestDto)
-            throws UserNotFoundException, GiftNotFoundException, UserNotAuthorizedException {
+            throws UserNotFoundException, GiftNotFoundException,
+            UserNotAuthorizedException, GiftReviewAlreadyExistException {
         reviewService.addGiftReview(reviewRequestDto);
     }
 

@@ -51,6 +51,7 @@ public class AdminService {
      * @param id идентификатор подарка.
      * @throws GiftNotFoundException если подарок с указанным идентификатором не найден.
      */
+    @Deprecated
     public void deleteGift(Long id) throws GiftNotFoundException {
         giftService.deleteGift(id);
     }
@@ -61,6 +62,7 @@ public class AdminService {
      * @param changeGiftDto объект {@link ChangeGiftDto}, содержащий новые данные о подарке.
      * @throws GiftNotFoundException если подарок с указанным идентификатором не найден.
      */
+    @Deprecated
     public void changeGift(ChangeGiftDto changeGiftDto) throws GiftNotFoundException {
         giftService.updateGift(changeGiftDto);
     }
@@ -70,6 +72,7 @@ public class AdminService {
      *
      * @param addGiftDto объект {@link AddGiftDto}, содержащий данные о новом подарке.
      */
+    @Deprecated
     public void addGift(AddGiftDto addGiftDto) {
         giftService.addGift(addGiftDto);
     }
@@ -79,6 +82,7 @@ public class AdminService {
      *
      * @param addGroupDto объект {@link AddGroupDto}, содержащий данные о новой группе подарков.
      */
+    @Deprecated
     public void addGroup(AddGroupDto addGroupDto) {
         groupService.addGroup(addGroupDto);
     }

@@ -15,8 +15,10 @@ import ru.uniyar.podarok.exceptions.FakeConfirmationCodeException;
 import ru.uniyar.podarok.exceptions.FavoritesGiftAlreadyExistException;
 import ru.uniyar.podarok.exceptions.FavoritesGiftNotFoundException;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
+import ru.uniyar.podarok.exceptions.GiftReviewAlreadyExistException;
 import ru.uniyar.podarok.exceptions.NotValidCodeException;
 import ru.uniyar.podarok.exceptions.OrderNotFoundException;
+import ru.uniyar.podarok.exceptions.SiteReviewAlreadyExistException;
 import ru.uniyar.podarok.exceptions.SiteReviewNotFoundException;
 import ru.uniyar.podarok.exceptions.UserAlreadyExistException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
@@ -218,6 +220,30 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleFavoritesGiftNotFoundException(FavoritesGiftNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    /**
+     * Обработка исключений, если отзыв о подарке уже добавлен пользователем.
+     *
+     * @param e исключение типа {@link GiftReviewAlreadyExistException}.
+     * @return HTTP-ответ с кодом 409 (CONFLICT) и сообщением об ошибке.
+     */
+    @ExceptionHandler(GiftReviewAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<String> handleGiftReviewAlreadyExistException(GiftReviewAlreadyExistException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    /**
+     * Обработка исключений, если отзыв о сайте уже добавлен пользователем.
+     *
+     * @param e исключение типа {@link SiteReviewAlreadyExistException}.
+     * @return HTTP-ответ с кодом 409 (CONFLICT) и сообщением об ошибке.
+     */
+    @ExceptionHandler(SiteReviewAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<String> handleSiteReviewAlreadyExistException(SiteReviewAlreadyExistException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
     /**

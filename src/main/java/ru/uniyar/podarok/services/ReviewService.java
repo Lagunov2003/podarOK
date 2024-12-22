@@ -8,6 +8,7 @@ import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.Review;
 import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
+import ru.uniyar.podarok.exceptions.GiftReviewAlreadyExistException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.ReviewRepository;
@@ -65,12 +66,22 @@ public class ReviewService {
      * @throws UserNotFoundException если пользователь не найден
      * @throws UserNotAuthorizedException если пользователь не авторизован
      * @throws GiftNotFoundException если подарок с указанным идентификатором не найден
+     * @throws GiftReviewAlreadyExistException если отзыв уже добавлен
      */
     @Transactional
     public void addGiftReview(ReviewRequestDto reviewRequestDto)
-            throws UserNotFoundException, UserNotAuthorizedException, GiftNotFoundException {
+            throws UserNotFoundException, UserNotAuthorizedException,
+            GiftNotFoundException, GiftReviewAlreadyExistException {
         User user = userService.getCurrentAuthenticationUser();
         Gift gift = giftService.getGiftById(reviewRequestDto.getGiftId());
+        List<Review> reviews = reviewRepository.findReviewsByGiftId(gift.getId());
+
+        boolean userHasReview = reviews.stream()
+                .anyMatch(review -> review.getUser().getId().equals(user.getId()));
+
+        if (userHasReview) {
+            throw new GiftReviewAlreadyExistException("Отзыв о подарке уже добавлен!");
+        }
 
         Review review = new ReviewBuilder()
                 .setText(reviewRequestDto.getText())

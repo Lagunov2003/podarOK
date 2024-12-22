@@ -61,6 +61,7 @@ public class AdminPanelController {
      * @param addGiftDto данные о новом подарке.
      * @return сообщение с подтверждением добавления подарка.
      */
+    @Deprecated
     @PostMapping("/addGift")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> addGift(@RequestBody AddGiftDto addGiftDto) {
@@ -75,6 +76,7 @@ public class AdminPanelController {
      * @return сообщение с подтверждением изменения.
      * @throws GiftNotFoundException если подарок с указанным id не найден.
      */
+    @Deprecated
     @PutMapping("/changeGift")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> changeGift(@RequestBody ChangeGiftDto changeGiftDto) throws GiftNotFoundException {
@@ -89,6 +91,7 @@ public class AdminPanelController {
      * @return сообщение с подтверждением удаления подарка.
      * @throws GiftNotFoundException если подарок с указанным ID не найден.
      */
+    @Deprecated
     @DeleteMapping("/deleteGift")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteGift(@RequestParam Long id) throws GiftNotFoundException {
@@ -102,6 +105,7 @@ public class AdminPanelController {
      * @param addGroupDto данные о новой группе подарков.
      * @return сообщение с подтверждением добавления.
      */
+    @Deprecated
     @PostMapping("/addGroup")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> addGroup(@RequestBody AddGroupDto addGroupDto) {
@@ -114,6 +118,7 @@ public class AdminPanelController {
      *
      * @return список подтверждённых отзывов.
      */
+    @Deprecated
     @GetMapping("/getAcceptedSiteReviews")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getAcceptedSiteReviews() {

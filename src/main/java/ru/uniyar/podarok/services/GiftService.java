@@ -94,6 +94,7 @@ public class GiftService {
      * @param id идентификатор подарка.
      * @throws GiftNotFoundException если подарок с указанным id не найден.
      */
+    @Deprecated
     @Transactional
     public void deleteGift(Long id) throws GiftNotFoundException {
         if (!giftRepository.existsById(id)) {
@@ -108,6 +109,7 @@ public class GiftService {
      * @param changeGiftDto объект с обновленными данными о подарке.
      * @throws GiftNotFoundException если подарок с указанным id не найден.
      */
+    @Deprecated
     @Transactional
     public void updateGift(ChangeGiftDto changeGiftDto) throws GiftNotFoundException {
         Long recommendationId = getGiftById(changeGiftDto.getId()).getRecommendation().getId();
@@ -146,6 +148,7 @@ public class GiftService {
      *
      * @param addGiftDto объект с данными для добавления нового подарка.
      */
+    @Deprecated
     @Transactional
     public void addGift(AddGiftDto addGiftDto) {
         Long recommendationId = Long.valueOf(

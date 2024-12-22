@@ -7,6 +7,7 @@ import ru.uniyar.podarok.dtos.AddSiteReviewDto;
 import ru.uniyar.podarok.dtos.SiteReviewsDto;
 import ru.uniyar.podarok.entities.SiteReviews;
 import ru.uniyar.podarok.entities.User;
+import ru.uniyar.podarok.exceptions.SiteReviewAlreadyExistException;
 import ru.uniyar.podarok.exceptions.SiteReviewNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
@@ -61,17 +62,20 @@ public class SiteReviewsService {
      * @param addSiteReviewDto объект DTO с данными нового отзыва.
      * @throws UserNotFoundException если пользователь не найден.
      * @throws UserNotAuthorizedException если пользователь не авторизован.
+     * @throws SiteReviewAlreadyExistException если отзыв о сайте уже добавлен.
      */
     @Transactional
     public void addSiteReview(AddSiteReviewDto addSiteReviewDto)
-            throws UserNotFoundException, UserNotAuthorizedException {
+            throws UserNotFoundException, UserNotAuthorizedException, SiteReviewAlreadyExistException {
         User user = userService.getCurrentAuthenticationUser();
 
         SiteReviews siteReview = user.getSiteReviews();
-        if (siteReview == null) {
-            siteReview = new SiteReviews();
-            siteReview.setUser(user);
+        if (siteReview != null) {
+            throw new SiteReviewAlreadyExistException("Отзыв о сайте уже добавлен!");
         }
+
+        siteReview = new SiteReviews();
+        siteReview.setUser(user);
         siteReview.setMark(addSiteReviewDto.getMark());
         siteReview.setReview(addSiteReviewDto.getReview());
         siteReview.setAccepted(false);

@@ -21,6 +21,7 @@ import ru.uniyar.podarok.dtos.ReviewRequestDto;
 import ru.uniyar.podarok.exceptions.FavoritesGiftAlreadyExistException;
 import ru.uniyar.podarok.exceptions.FavoritesGiftNotFoundException;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
+import ru.uniyar.podarok.exceptions.GiftReviewAlreadyExistException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.services.CatalogService;
@@ -141,11 +142,13 @@ public class CatalogController {
      * @throws UserNotAuthorizedException если пользователь не авторизован.
      * @throws UserNotFoundException если пользователь не найден.
      * @throws GiftNotFoundException если подарок с указанным id не найден.
+     * @throws GiftReviewAlreadyExistException если отзыв уже добавлен
      */
     @PostMapping("/addGiftReview")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> addGiftReview(@RequestBody ReviewRequestDto reviewRequestDto)
-            throws UserNotAuthorizedException, UserNotFoundException, GiftNotFoundException {
+            throws UserNotAuthorizedException, UserNotFoundException,
+            GiftNotFoundException, GiftReviewAlreadyExistException {
         catalogService.addGiftReview(reviewRequestDto);
         return ResponseEntity.ok("Отзыв успешно добавлен!");
     }

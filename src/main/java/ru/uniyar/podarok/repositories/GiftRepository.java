@@ -59,6 +59,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      * @param name Название подарка.
      * @param groupId Идентификатор группы подарков.
      */
+    @Deprecated
     @Modifying
     @Query(value = "UPDATE Gift "
             + "SET price=:price, recommendation_id=:recommendation_id, "
@@ -75,6 +76,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      * Удаляет связи подарка с категориями.
      * @param giftId Идентификатор подарка.
      */
+    @Deprecated
     @Modifying
     @Query(value = "DELETE FROM gift_category "
             + "WHERE gift_id=:gift_id", nativeQuery = true)
@@ -85,6 +87,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      * @param giftId Идентификатор подарка.
      * @param occasionId Идентификатор повода.
      */
+    @Deprecated
     @Modifying
     @Query(value = "UPDATE gift_occasion SET occasion_id=:occasion_id "
             + "WHERE gift_id=:gift_id", nativeQuery = true)
@@ -94,6 +97,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      * Удаляет фотографии, связанные с подарком.
      * @param giftId Идентификатор подарка.
      */
+    @Deprecated
     @Modifying
     @Query(value = "DELETE FROM gift_photos "
             + "WHERE gift_id=:gift_id", nativeQuery = true)
@@ -103,6 +107,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      * Удаляет особенности подарка.
      * @param giftId Идентификатор подарка.
      */
+    @Deprecated
     @Modifying
     @Query(value = "DELETE FROM gift_feature "
             + "WHERE gift_id=:gift_id", nativeQuery = true)
@@ -115,6 +120,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      * @param minAge Минимальный возраст для подарка.
      * @param maxAge Максимальный возраст для подарка.
      */
+    @Deprecated
     @Modifying
     @Query(value = "UPDATE Gift_Recommendations "
             + "SET gender=:gender, min_age=:min_age, max_age=:max_age "
@@ -133,6 +139,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      * @param groupId Идентификатор группы подарков.
      * @return Идентификатор нового подарка.
      */
+    @Deprecated
     @Query(value = "INSERT INTO Gift(price, recommendation_id, description, name, group_id) "
             + "VALUES(:price, :recommendation_id, :description, :name, :group_id) RETURNING id", nativeQuery = true)
     Integer addGift(@Param("price") BigDecimal price,
@@ -146,6 +153,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      * @param giftId Идентификатор подарка.
      * @param categoryId Идентификатор категории.
      */
+    @Deprecated
     @Modifying
     @Query(value = "INSERT INTO gift_category(gift_id, category_id) VALUES(:gift_id, :category_id) ",
             nativeQuery = true)
@@ -156,6 +164,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      * @param giftId Идентификатор подарка.
      * @param occasionId Идентификатор повода.
      */
+    @Deprecated
     @Modifying
     @Query(value = "INSERT INTO gift_occasion(gift_id, occasion_id) VALUES(:gift_id, :occasion_id)", nativeQuery = true)
     void addGiftOccasion(@Param("gift_id") Long giftId, @Param("occasion_id") Long occasionId);
@@ -165,6 +174,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      * @param giftId Идентификатор подарка.
      * @param photoUrl URL фотографии.
      */
+    @Deprecated
     @Modifying
     @Query(value = "INSERT INTO Gift_Photo(gift_id, photo_url) VALUES(:gift_id, :photo_url)", nativeQuery = true)
     void addGiftPhoto(@Param("gift_id") Long giftId, @Param("photo_url") String photoUrl);
@@ -175,6 +185,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      * @param itemName Название характеристики.
      * @param itemValue Значение характеристики.
      */
+    @Deprecated
     @Modifying
     @Query(value = "INSERT INTO Gift_Feature(gift_id, item_name, item_value) "
             + "VALUES(:gift_id, :item_name, :item_value)", nativeQuery = true)
@@ -189,6 +200,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      * @param maxAge Максимальный возраст.
      * @return Идентификатор новой рекомендации.
      */
+    @Deprecated
     @Query(value = "INSERT INTO Gift_Recommendations(gender, min_age, max_age) "
             + "VALUES(:gender, :min_age, :max_age) RETURNING id", nativeQuery = true)
     Integer addGiftRecommendation(@Param("gender") Boolean gender,
