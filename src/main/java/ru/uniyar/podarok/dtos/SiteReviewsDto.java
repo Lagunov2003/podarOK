@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SiteReviewsDto {
-    private Long id;
+    private Long userId;
     private String userName;
     private String review;
     private Integer mark;

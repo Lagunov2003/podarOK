@@ -17,7 +17,7 @@ public class SiteReviewsDtoConverter {
      */
     public SiteReviewsDto convertToSiteReviewsDto(SiteReviews siteReviews) {
         return new SiteReviewsDto(
-                siteReviews.getId(),
+                siteReviews.getUser().getId(),
                 siteReviews.getUser().getFirstName(),
                 siteReviews.getReview(),
                 siteReviews.getMark()
