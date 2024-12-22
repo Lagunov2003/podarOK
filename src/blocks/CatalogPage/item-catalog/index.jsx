@@ -3,12 +3,21 @@ import "./style.scss";
 import { Link } from "react-router-dom";
 import { convertImg, convertPrice } from "../../../tool/tool";
 
-function ItemCatalog({ item }) {
+function ItemCatalog({ item, handleDeleteFavorite = () => {}, handleAddFavorite = () => {} }) {
     const [favorite, setFavorite] = useState(false);
 
     useEffect(() => {
-
+        if (location.pathname == "/account/favorite") setFavorite(true);
     }, []);
+
+    const handleChangeFavorite = () => {
+        setFavorite((v) => !v);
+        if (location.pathname == "/account/favorite") {
+            if (favorite == true) handleDeleteFavorite(item.id);
+        } else {
+            favorite == true ? handleDeleteFavorite(item.id) : handleAddFavorite(item.id);
+        }
+    };
 
     return (
         <div className="item-catalog" key={item.id}>
@@ -17,7 +26,7 @@ function ItemCatalog({ item }) {
                     <img src={convertImg(item.photoUrl)} alt="Изображение товара" />
                 </div>
                 <span className="item-catalog__label">В наличии</span>
-                <button className="item-catalog__favorite" onClick={() => setFavorite((v) => !v)}>
+                <button className="item-catalog__favorite" onClick={() => handleChangeFavorite()}>
                     <img src={favorite == false ? "/img/catalog/favorite.svg" : "/img/catalog/favorite-purple.svg"} alt="Кнопка лайка" />
                 </button>
             </div>

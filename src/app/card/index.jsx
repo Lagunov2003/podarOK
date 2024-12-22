@@ -15,9 +15,9 @@ function Card() {
     }, [id])
 
     return <>
-        <Info item={item?.groupGifts[0] || null} />
+        <Info item={item?.groupGifts[0] || null} reviewsAmount={item?.reviewsAmount || null} averageRating={item?.averageRating || null}/>
         <SimilarProducts list={item?.similarGifts || []}/>
-        <ReviewsItem />
+        <ReviewsItem list={item?.reviews || []}/>
         <FeedbackItem />
     </>
 }

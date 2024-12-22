@@ -55,11 +55,12 @@ function App() {
                             <Route index element={<Main />} />
                             <Route path="catalog" element={<Catalog />} />
                             <Route path="article/:id" element={<Card />} />
+                            <Route path="resetPassword" element={<PasswordCange />} />
+                            <Route path="confirmChanges" element={<PasswordCange />} />
                             {data != null && (
                                 <>
                                     <Route path="order/:id" element={<Order order={order} />} />
                                     <Route path="basket" element={<Basket setOrder={setOrder} />} />
-                                    <Route path="password-change" element={<PasswordCange />} />
                                     <Route path="account" element={<Account />}>
                                         <Route index element={<User />} />
                                         <Route path="edit" element={<Edit />} />

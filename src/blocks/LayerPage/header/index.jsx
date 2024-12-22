@@ -63,7 +63,7 @@ function Header({ handleOpenModal }) {
                 </nav>
                 {data?.firstName ? (
                     <Link to={"/account"} className="header__sing-in">
-                        <span>{data?.firstName}</span>
+                        <span>Кабинет</span>
                     </Link>
                 ) : (
                     <button className="header__sing-in" onClick={() => handleOpenModal()}>

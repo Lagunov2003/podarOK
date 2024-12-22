@@ -20,7 +20,9 @@ function WrapperBasket({ list, setList, setOrder }) {
 
     const handleCreateOrder = () => {
         setOrder({gift: [...selectItem], price: priceAll})
-        navigate("/order/123")
+        const numberOrder = Math.floor(Math.random() * 1000000)
+        sessionStorage.setItem("numberOrder", numberOrder)
+        navigate("/order/" + numberOrder)
     }
 
     return (

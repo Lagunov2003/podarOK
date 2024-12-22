@@ -42,7 +42,7 @@ function LayerPage() {
                     <main className="">
                         <Outlet />
                     </main>
-                    <Footer />
+                    <Footer handleOpenModal={handleOpenModal}/>
                 </div>
                 <div className="page-layer__bg">
                     <img src={"/img/circle.jpg"} alt="" />

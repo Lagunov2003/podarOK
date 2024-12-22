@@ -5,10 +5,14 @@
     --color-yellow-1: #FFEF3A;
 }
 
+body {
+    width: 100%;
+    overflow-x: hidden;
+}
+
 #root {
     width: 100%;
     height: max-content;
-    overflow-x: hidden;
 }
 
 .padding-style {
@@ -32,7 +36,6 @@ section {
     max-width: 1440px;
     width: 100%;
     margin: 0 auto;
-
 }
 
 .infoBlockPassword {

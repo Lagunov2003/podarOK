@@ -183,6 +183,18 @@
                 color: rgb(19, 137, 233);
             }
         }
+
+        &-error {
+            align-self: self-start;
+            height: 16px;
+            margin-top: 10px;
+            color: rgb(249, 64, 86);
+            font-family: Dimica;
+            font-size: 16px;
+            font-weight: 400;
+            text-align: center;
+        }
+        
         &-button {
             align-self: center;
             width: max-content;

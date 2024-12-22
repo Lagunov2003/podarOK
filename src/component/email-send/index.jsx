@@ -1,18 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import "./style.scss";
+import { responseForgot } from "../../tool/response";
 
 function EmailSend({ setModalEmail }) {
-    
+    const [email, setEmail] = useState("")
+
+
+    const handleChangeInputEmail = (e) => {
+        let str = e.target.value;
+
+        if (str != "" && str[str.length - 1].match(/[a-zA-Z@0-9._+-]/)) {
+            const val = str.slice(0, str.length);
+            setEmail(val);
+        } else {
+            e.target.value = str.slice(0, str.length - 1)
+            if(str == "") {
+                setNewData("");
+            }
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const status = await responseForgot(email)
+        if(status == "успешно") {
+            alert("Перейдите по ссылке в письме для восстановления пароля!")
+            localStorage.setItem("email", email)
+            setModalEmail(false)
+        } else {
+            alert("Возникла ошибка!")
+        }
+    }
+
     return (
         <div className="email-send">
             <div className="email-send__content">
                 <p className="email-send__text">Укажите почту для восстановления пароля. Мы отправим на неё письмо!</p>
-                <div className="email-send__form">
-                    <input type="email" className="email-send__input" placeholder="Почта" />
-                    <button className="email-send__submit button-style" onClick={() => setModalEmail(false)}>
+                <form className="email-send__form" onSubmit={(e) => handleSubmit(e)}>
+                    <input type="email" className="email-send__input" placeholder="Почта" onChange={(e) => handleChangeInputEmail(e)}/>
+                    <button className="email-send__submit button-style">
                         Готово
                     </button>
-                </div>
+                </form>
                 <button className="email-send__cancle" onClick={() => setModalEmail(false)}>
                     <svg width="23.000000" height="23.000000" viewBox="0 0 23 23" fill="none">
                         <defs />

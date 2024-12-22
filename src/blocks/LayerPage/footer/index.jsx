@@ -1,33 +1,71 @@
 import React from "react";
 import "./style.scss";
+import { Link, useNavigate } from "react-router-dom";
 
-function Footer() {
+function Footer({ handleOpenModal }) {
+    const navigate = useNavigate();
+
+    const handleClickAccount = (e, type) => {
+        e.preventDefault();
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            if (type == "basket") {
+                navigate("/basket");
+            } else {
+                navigate("/account");
+            }
+        } else {
+            handleOpenModal();
+        }
+    };
+
     return (
         <footer className="footer">
             <div className="footer__content">
                 <div className="footer__info">
-                    <div className="footer__name">
+                    <div className="footer__name" onClick={() => { navigate("/"); window.scrollTo({ top: 0 }) }}>
                         <p>
                             podar<span>OK</span>
                         </p>
                     </div>
                     <div className="footer__bottom-row">
                         <div className="footer__nav">
-                            <a href="" className="footer__link">
+                            <Link to="/catalog" className="footer__link">
                                 Каталог
-                            </a>
-                            <a href="" className="footer__link">
+                            </Link>
+                            <Link className="footer__link" onClick={(e) => handleClickAccount(e, "basket")}>
                                 Корзина
-                            </a>
-                            <a href="" className="footer__link">
+                            </Link>
+                            <Link className="footer__link" onClick={(e) => handleClickAccount(e, "account")}>
                                 Кабинет
-                            </a>
-                            <a href="" className="footer__link">
+                            </Link>
+                            <Link
+                                to={"/"}
+                                className="header__link"
+                                onClick={() =>
+                                    location.pathname != "/"
+                                        ? sessionStorage.setItem("scroll", "delivery")
+                                        : document
+                                              .getElementsByClassName("delivery")[0]
+                                              .scrollIntoView({ behavior: "smooth", block: "center" })
+                                }
+                            >
                                 Доставка
-                            </a>
-                            <a href="" className="footer__link">
+                            </Link>
+                            <Link
+                                to={"/"}
+                                className="header__link"
+                                onClick={() =>
+                                    location.pathname != "/"
+                                        ? sessionStorage.setItem("scroll", "reviews")
+                                        : document
+                                              .getElementsByClassName("reviews")[0]
+                                              .scrollIntoView({ behavior: "smooth", block: "center" })
+                                }
+                            >
                                 Отзывы
-                            </a>
+                            </Link>
                         </div>
                         <div className="footer__contact">
                             <p className="footer__contact-title">Контакты:</p>
@@ -62,7 +100,10 @@ function Footer() {
                         <span> промокод на скидку 10%!</span>
                     </p>
                     <div className="footer__promocode-tel">
-                        <input type="tel" name="" id="" placeholder="+7" />
+                        <input type="tel" maxLength={11} autoComplete="off" />
+                        <button className="footer__promocode-button">
+                            <img src="/img/arrow-line-white.svg" alt="Кнопка отправки" />
+                        </button>
                     </div>
                 </div>
             </div>

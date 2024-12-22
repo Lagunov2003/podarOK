@@ -1,9 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import "./style.scss";
 import { Link } from "react-router-dom";
 import InfoPassword from "../info-password";
 import EmailSend from "../email-send";
 import { responseDataCatalog, responseLogin, responseRegister } from "../../tool/response";
+import { ContextLogin } from "../../app/app";
 
 const data = [
     {
@@ -24,6 +25,7 @@ function SingIn({ openModal, activeModal }) {
     const [errorRegister, setErrorRegister] = useState("");
     const [modalPassword, setModalPassword] = useState(false);
     const [modalEmail, setModalEmail] = useState(false);
+    const asyncLogin = useContext(ContextLogin)
 
     const refSingIn = useRef();
     const refFormEnter = useRef();
@@ -106,8 +108,10 @@ function SingIn({ openModal, activeModal }) {
         
         if (status == "успешно") {
             handleOpenModal();
+            refFormEnter.current.reset();
+            asyncLogin()
         } else {
-            setErrorRegister("Ошибка сервера");
+            setErrorEnter(true);
         }
     };
 
@@ -128,8 +132,8 @@ function SingIn({ openModal, activeModal }) {
                         <p className="sing-in__enter-title">С возвращением!</p>
                         <p className="sing-in__enter-text">Введите ваши данные</p>
                         <form action="" className="sing-in__enter-form" id="formEnter" onSubmit={(e) => handleLogin(e)} ref={refFormEnter}>
-                            <input type="email" className="sing-in__input" placeholder="Почта" />
-                            <input type="password" maxLength={20} className="sing-in__input" placeholder="Пароль" autoComplete="false" />
+                            <input type="email" className="sing-in__input" placeholder="Почта" onChange={() => setErrorEnter(false)}/>
+                            <input type="password" maxLength={12} className="sing-in__input" placeholder="Пароль" autoComplete="false" onChange={(e) => { handleChangeInputPassword(e); setErrorEnter(false)}}/>
                         </form>
                         <div className="sing-in__enter-row">
                             {errorEnter == true && <p className="sing-in__enter-error">Неверная почта или пароль</p>}
@@ -169,7 +173,7 @@ function SingIn({ openModal, activeModal }) {
                                     maxLength={12}
                                     onChange={(e) => handleChangeInputPassword(e)}
                                 />
-                                <div className="infoBlockPassword" onClick={() => handleOpenModalPassword()}></div>
+                                <button className="infoBlockPassword" type="button" onClick={() => handleOpenModalPassword()}></button>
                             </div>
                         </form>
                         <p className="sing-in__register-error">{errorRegister}</p>

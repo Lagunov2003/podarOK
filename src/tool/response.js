@@ -52,7 +52,7 @@ export async function responseLogin(email, password) {
     }
 }
 
-//UserController
+//Кабинет
 export async function responseGetProfile(token) {
 
     try {
@@ -76,10 +76,41 @@ export async function responseGetProfile(token) {
     }
 }
 
-export async function responsePutProfile(token) {
+export async function responsePutProfile(data) {
+
+    const token = localStorage.getItem("token")
+
 
     try {
         const response = await fetch("http://localhost:8080/profile", {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                firstName: data.firstName,
+                lastName: data.lastName || null,
+                dateOfBirth: data.dateOfBirth || null,
+                gender: data.gender,
+                email: data.email,
+                phoneNumber: data.phoneNumber || null
+            })
+        })
+
+        return response.status
+    } catch (e) {
+
+    }
+}
+
+
+export async function responseGetCurrentOrders(setData) {
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch("http://localhost:8080/currentOrders", {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -89,8 +120,190 @@ export async function responsePutProfile(token) {
 
         if (response.status == 200) {
             const data = await response.json()
-            console.log(data);
-            return data
+            setData(data)
+        } else {
+            return "ошибка"
+        }
+    } catch (e) {
+
+    }
+}
+
+
+export async function responseGetFavorites(setData) {
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch("http://localhost:8080/favorites", {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        })
+
+        if (response.status == 200) {
+            const data = await response.json()
+            setData(data)
+        } else {
+            return "ошибка"
+        }
+    } catch (e) {
+
+    }
+}
+
+
+export async function responseDeleteFavorites() {
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch("http://localhost:8080/profile", {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        })
+
+        if (response.status == 200) {
+            return "успешно"
+        } else {
+            return "ошибка"
+        }
+    } catch (e) {
+        return "ошибка"
+    }
+}
+
+
+export async function responseDeleteFromFavorites(giftId) {
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch("http://localhost:8080/deleteFromFavorites", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                giftId
+            })
+        })
+
+        if (response.status == 200) {
+            return "успешно"
+        } else {
+            return "ошибка"
+        }
+    } catch (e) {
+        return "ошибка"
+    }
+}
+
+
+export async function responseForgot(email) {
+
+    try {
+        const response = await fetch("http://localhost:8080/forgot", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email
+            })
+        })
+
+        if (response.status == 200) {
+            return "успешно"
+        } else {
+            return "ошибка"
+        }
+    } catch (e) {
+        return "ошибка"
+    }
+}
+
+export async function responseResetPassword(code, email, password, confirmPassword) {
+    let strUrl = ""
+    let hed = {
+        'Content-Type': 'application/json',
+    }
+    const token = localStorage.getItem("token")
+
+    if(token) {
+        strUrl = "http://localhost:8080/confirmChanges?code=" + code
+        hed['Authorization'] = `Bearer ${token}`
+    } else {
+        strUrl = "http://localhost:8080/resetPassword?token=" + code
+    }
+
+    try {
+        const response = await fetch(strUrl, {
+            method: "POST",
+            headers: hed,
+            body: JSON.stringify({
+                email,
+                password,
+                confirmPassword
+            })
+        })
+
+        if (response.status == 200) {
+            return "успешно"
+        } else {
+            return "ошибка"
+        }
+    } catch (e) {
+        return "ошибка"
+    }
+}
+
+export async function responseChangePassword() {
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch("http://localhost:8080/changePassword", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        })
+
+        if (response.status == 200) {
+            return "успешно"
+        } else {
+            return "ошибка"
+        }
+    } catch (e) {
+        return "ошибка"
+    }
+}
+
+
+export async function responseGetNotifications(setData) {
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch("http://localhost:8080/notifications", {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        })
+
+        if (response.status == 200) {
+            const data = await response.json()
+            setData(data)
         } else {
             return "ошибка"
         }
@@ -101,10 +314,9 @@ export async function responsePutProfile(token) {
 
 
 //Каталог 
-
 export async function responseGetCatalog(setList, setPage, page = 1) {
 
-    let strUrl = "http://localhost:8080/catalog?page=" + page
+    let strUrl = "http://localhost:8080/catalog?page=" + page + "&name=''" + "&sort=''"
 
     try {
         const response = await fetch(strUrl, {
@@ -183,8 +395,61 @@ export async function responseGetGift(setItem, id) {
     }
 }
 
-//Корзина
+export async function responsePostAddGiftReview(text, rating, giftId) {
+    let strUrl = "http://localhost:8080/addGiftReview"
 
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch(strUrl, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                text,
+                rating,
+                giftId
+            })
+        });
+
+        const data = await response;
+        console.log(data);
+
+    } catch (e) {
+
+    }
+}
+
+
+export async function responsePostAddToFavorites(giftId) {
+    let strUrl = "http://localhost:8080/addToFavorites"
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch(strUrl, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                giftId
+            })
+        });
+
+        const data = await response;
+        console.log(data);
+
+    } catch (e) {
+
+    }
+}
+
+
+//Корзина
 export async function responseGetCart(token, setList) {
     let strUrl = "http://localhost:8080/cart"
 
@@ -246,6 +511,39 @@ export async function responsePutCart(token, id, count) {
 
         const data = await response.json();
         console.log(data);
+    } catch (e) {
+
+    }
+}
+
+export async function responsePostOrder(order) {
+    let strUrl = "http://localhost:8080/order"
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch(strUrl, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                items: [
+                    ...order.order.gift.reduce((acc, v) => acc = [...acc, { itemCount: v.itemCount, giftId: v.gift.id }], [])
+                ],
+                deliveryDate: order.dataOrder.deliveryDate,
+                fromDeliveryTime: order.dataOrder.time == "Любое время" ? "08:00" : order.dataOrder.time.slice(" ")[1],
+                ToDeliveryTime: order.dataOrder.time == "Любое время" ? "23:00" : order.dataOrder.time.slice(" ")[3],
+                information: order.dataOrder.address,
+                recipientName: order.dataOrder.recipient.name,
+                recipientEmail: order.dataOrder.recipient.email,
+                recipientPhoneNumber: order.dataOrder.recipient.tel,
+                orderCost: order.dataOrder.price - order.dataOrder.discount + order.dataOrder.addressPrice
+            })
+        });
+
+        return await response.status
     } catch (e) {
 
     }

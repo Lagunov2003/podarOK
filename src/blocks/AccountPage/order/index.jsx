@@ -1,26 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.scss";
+import { responseGetCurrentOrders } from "../../../tool/response";
 
-const list = [
-    {
-        name: "Футболка с принтом",
-        price: "2100",
-        number: "3498",
-        date: "20.01.2025",
-    },
-    {
-        name: "Футболка с принтом",
-        price: "2100",
-        number: "3498",
-        date: "20.01.2025",
-    },
-    {
-        name: "Футболка с принтом",
-        price: "2100",
-        number: "3498",
-        date: "20.01.2025",
-    },
-];
 
 const textView = [
     {
@@ -39,6 +20,12 @@ function OrderAccount() {
     const [typeView, setTypeView] = useState(0);
     const [openItem, setOpenItem] = useState(false);
     const [indexItem, setIndexItem] = useState(-1);
+    const [list, setList] = useState(null)
+
+    useEffect(() => {
+        responseGetCurrentOrders(setList)
+    }, [])
+
 
     const handleChangeTypeView = () => {
         setTypeView((v) => (v == 0 ? 1 : 0));

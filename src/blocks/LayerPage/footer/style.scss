@@ -155,17 +155,19 @@
                 }
             }
 
-
-            &::after {
-                content: "";
-                width: 30px;
-                height: 10px;
-                right: 0;
-                bottom: 11px;
-                display: inline-block;
-                position: absolute;
-                background: url(../img/arrow-line-white.svg) center/ 100% no-repeat;
-                cursor: pointer;
+        }
+        &-button {
+            width: 30px;
+            height: 10px;
+            right: 0;
+            bottom: 11px;
+            z-index: 2;
+            position: absolute;
+            background-color: transparent;
+            transition: all 0.15 linear;
+            
+            &:active {
+                transform: scale(0.9);
             }
         }
     }

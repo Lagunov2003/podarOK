@@ -15,7 +15,9 @@ function SimilarProducts({ list }) {
             <div className="similar-products__content">
                 <h2 className="similar-products__title">Похожие товары</h2>
                 <div className="similar-products__swiper">
-                    <button className="similar-products__swiper-prev" ref={prevBt}></button>
+                    <button className="similar-products__swiper-prev" ref={prevBt}>
+                        <img src={"/img/white-button-arrow.svg"} alt="" />
+                    </button>
                     <Swiper
                         modules={[Navigation]}
                         spaceBetween={35}
@@ -51,7 +53,9 @@ function SimilarProducts({ list }) {
                             </SwiperSlide>
                         ))}
                     </Swiper>
-                    <button className="similar-products__swiper-next" ref={nextBt}></button>
+                    <button className="similar-products__swiper-next" ref={nextBt}>
+                        <img src={"/img/white-button-arrow.svg"} alt="" />
+                    </button>
                 </div>
             </div>
         </section>

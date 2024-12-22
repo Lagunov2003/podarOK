@@ -32,7 +32,7 @@ function InfoPrice({ dataOrder, handleOrderRegistration, setDataOrder, order }) 
     return (
         <div className="info-price">
             <div className="info-price__list">
-                {order.gift?.map((v) => (
+                {order?.gift?.map((v) => (
                     <div className="info-price__item" key={v?.gift?.id}>
                         <img src={convertImg(v?.gift?.photoUrl)} alt="Фотография товара" />
                         <span className="info-price__item-count">{v?.itemCount}</span>
@@ -45,11 +45,13 @@ function InfoPrice({ dataOrder, handleOrderRegistration, setDataOrder, order }) 
                     <p className="info-price__text">Промокод</p>
                     <div className="info-price__wrapper-input">
                         <input
+                            name="code"
                             type="text"
                             className={"info-price__code " + (activeCode != "" ? `info-price__code_${activeCode}` : "")}
                             value={code}
                             maxLength={10}
                             onChange={(e) => handleChangeCode(e.target.value)}
+                            autoComplete="off"
                         />
                         {activeCode == "" && (
                             <button className="info-price__check" onClick={() => handleCheck()}>

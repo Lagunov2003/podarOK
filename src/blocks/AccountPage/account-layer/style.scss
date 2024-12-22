@@ -130,6 +130,11 @@
         position: relative;
         cursor: pointer;
         line-height: 93px;
+
+        & * {
+            cursor: pointer;
+        }
+
         &_active {
             background-color: white;
             border-radius: 50px;

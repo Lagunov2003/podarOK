@@ -3,7 +3,7 @@ import "./style.scss";
 import Dropdown from "../../../component/dropdown";
 import { convertPrice } from "../../../tool/tool";
 
-const list = ["Любое время", "С 8:00 до 11:00", "С 11:00 до 14:00", "С 14:00 до 17:00", "С 17:00 до 20:00", "С 20:00 до 23:00"];
+const list = ["Любое время", "С 08:00 до 11:00", "С 11:00 до 14:00", "С 14:00 до 17:00", "С 17:00 до 20:00", "С 20:00 до 23:00"];
 
 function InfoOrder({ openModalRecipient, openModalAddress, acceptAddress, dataOrder, setDataOrder }) {
     const [typePay, setTypePay] = useState("card");
@@ -151,16 +151,16 @@ function InfoOrder({ openModalRecipient, openModalAddress, acceptAddress, dataOr
                                 <div className="info-order__online-fields">
                                     <label className="info-order__online-input">
                                         Номер
-                                        <input type="text" maxLength={16} />
+                                        <input type="text" maxLength={16} name="onlineNumber" autoComplete="off"/>
                                     </label>
                                     <div className="info-order__online-row">
                                         <label className="info-order__online-input">
                                             Срок
-                                            <input type="text" maxLength={5} />
+                                            <input type="text" maxLength={5} name="onlineDate" autoComplete="off"/>
                                         </label>
                                         <label className="info-order__online-input">
                                             Код
-                                            <input type="text" maxLength={3} />
+                                            <input type="text" maxLength={3} name="onlinePIN" autoComplete="off"/>
                                         </label>
                                     </div>
                                 </div>
@@ -177,7 +177,7 @@ function InfoOrder({ openModalRecipient, openModalAddress, acceptAddress, dataOr
                         <h2 className="info-order__title">Оплата наличными</h2>
                         <div className="info-order__sum-row">
                             <p className="info-order__text">Укажите с какой суммы Вам нужна сдача</p>
-                            <input type="text" maxLength={10} />
+                            <input type="text" maxLength={10} name="cash" autoComplete="off"/>
                         </div>
                     </div>
                 )}

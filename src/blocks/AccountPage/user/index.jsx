@@ -10,24 +10,21 @@ function User() {
         <div className="user">
             <div className="user__content">
                 <div className="user__top">
-                    <div className="user__top-img">
-                        <img src="" alt="" />
-                    </div>
                     <div className="user__top-block">
                         <div className="user__top-wrapper">
                             <p className="user__top-f-name">{data.firstName}</p>
                             <Link to={"/account/edit"} className="user__top-edit">
-                                <img src="/img/account/pencil.svg" alt="" />
+                                <img src="/img/account/pencil.svg" alt="Редактирование" />
                             </Link>
                         </div>
                         <p className="user__top-s-name">{data.lastName ? data.lastName : ""}</p>
-                        <p className="user__top-reg">Дата регистрации {[...data.registrationDate.split("-")].reverse().join(".")}</p>
+                        <p className="user__top-reg">Дата регистрации {[data?.registrationDate?.split("-")]?.reverse()?.join(".")}</p>
                     </div>
                 </div>
                 <div className="user__info">
                     <div className="user__info-item">
                         <p className="user__info-text">Дата Рождения:</p>
-                        <p className="user__info-text">{data.dateOfBirth ? data.dateOfBirth : "не указан"}</p>
+                        <p className="user__info-text">{data.dateOfBirth ? data?.dateOfBirth?.split("-")?.reverse()?.join(".") : "не указан"}</p>
                     </div>
                     <div className="user__info-item">
                         <p className="user__info-text">Пол:</p>
@@ -39,7 +36,7 @@ function User() {
                     </div>
                     <div className="user__info-item">
                         <p className="user__info-text">Телефон:</p>
-                        <p className="user__info-text">{data.tel ? data.tel : "не указан"}</p>
+                        <p className="user__info-text">{data.phoneNumber ? data.phoneNumber : "не указан"}</p>
                     </div>
                 </div>
             </div>

@@ -2,7 +2,7 @@
 
 
     &__content {
-        padding: 28px 100px 78px;
+        padding: 28px 100px 70px;
         display: flex;
         flex-direction: column;
     }
@@ -18,10 +18,8 @@
 
     &__top {
         margin-bottom: 59px;
-        margin-left: 42px;
         display: flex;
-        align-items: center;
-        gap: 58px;
+        gap: 42px;
         &-img {
             width: 192px;
             height: 192px;
@@ -69,6 +67,10 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+
+            input {
+                width: 253px;
+            }
         }
     }
 
@@ -119,9 +121,6 @@
         flex-direction: column;
         gap: 30px;
 
-        & .edit__text {
-            text-align: right;
-        }
         &-item {
             display: flex;
             align-items: center;
