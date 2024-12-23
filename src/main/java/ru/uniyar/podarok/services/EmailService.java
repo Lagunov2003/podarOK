@@ -43,7 +43,7 @@ public class EmailService {
                 .from(MAILING_EMAIL)
                 .to(email)
                 .subject("Смена пароля в сервисе podarOK!")
-                .text("Для изменения пароля перейдите по ссылке: localhost:8080/confirmChanges?code=" + code)
+                .text("Для изменения пароля перейдите по ссылке: http://localhost:3000/confirmChanges?code=" + code)
                 .build();
         emailSender.send(message);
     }
@@ -76,7 +76,10 @@ public class EmailService {
                 .from(MAILING_EMAIL)
                 .to(email)
                 .subject("Восстановление пароля в сервисе podarOK!")
-                .text("Для восстановления пароля перейдите по ссылке: localhost:8080/resetPassword?token=" + token)
+                .text(
+                        "Для восстановления пароля перейдите по ссылке: http://localhost:3000/resetPassword?token="
+                        + token
+                )
                 .build();
         emailSender.send(message);
     }
