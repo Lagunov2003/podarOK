@@ -1,0 +1,109 @@
+.admin-item-chat {
+    padding: 20px;
+    height: 800px;
+    display: grid;
+    grid-template-rows: 100px 1fr 75px;
+    &__top {
+        padding: 0 10px 8px 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        border-bottom: 2px solid #D9D9D9;
+
+        &-title {
+            font-family: Dela;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 28.96px;
+        }
+
+        &-id, 
+        &-email {
+            font-family: Dimica;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 20px;     
+        }
+    }
+
+    &__list {
+        padding: 15px 44px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+        overflow: auto;
+    }
+
+    &__item {
+        width: 423px;
+        padding: 19px 28px 10px;
+        background-color: #D9D9D9;
+        display: flex;
+        flex-direction: column;
+        &-helper {
+            border-radius: 24px 24px 24px 0px;
+        }
+
+        &-user {
+            border-radius: 24px 24px 0px 24px; 
+            align-self: flex-end;
+        }
+
+        &-text {
+            margin-bottom: 5px;
+            font-family: Dimica;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 20px;
+        }
+
+        &-date {
+            align-self: flex-end;
+            font-family: Dimica;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 14px;
+            color: #7D7D7D;
+        }
+    }
+
+    &__empty {
+        margin-top: 195px;
+        width: 397px;
+        font-family: Dimica;
+        font-size: 36px;
+        font-weight: 400;
+        line-height: 36px;
+        text-align: center;  
+        align-self: center;
+    }
+
+    &__bottom {
+        position: relative;
+
+        &-input {
+            border-radius: 19px;
+            padding: 27px 70px 27px 27px;
+            width: 100%;
+            font-family: Dimica;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 20px;
+            border: 1px solid #5a5a5a ;
+            color: #000000;
+            background-color: #D9D9D9;
+        }
+
+        &-send {
+            position: absolute;
+            top: 23px;
+            right: 30px;
+            background-color: transparent;
+            transition: all 0.15s linear;
+            &:active {
+                transform: scale(0.9);
+            }
+        }
+    }
+}

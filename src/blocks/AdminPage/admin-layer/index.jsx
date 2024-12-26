@@ -22,8 +22,10 @@ function AdminLayer({ children }) {
                         <span>Заказы</span>
                     </Link>
                     <Link
-                        to={"/admin"}
-                        className={"admin-layer__link" + (location.pathname == "/admin" ? " admin-layer__link_active" : "")}
+                        to={"/admin/chats"}
+                        className={
+                            "admin-layer__link" + (location.pathname.indexOf("/admin/chats") != -1 ? " admin-layer__link_active" : "")
+                        }
                     >
                         <span>Чат поддержки</span>
                     </Link>

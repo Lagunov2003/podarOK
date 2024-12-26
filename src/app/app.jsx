@@ -20,6 +20,8 @@ import AdminOrders from "../blocks/AdminPage/admin-orders";
 import LayerPage from "../blocks/LayerPage/layer-page";
 import { responseGetProfile } from "../tool/response";
 import ErrorPage from "../blocks/ErrorPage";
+import AdminChats from "../blocks/AdminPage/admin-chats";
+import AdminItemChat from "../blocks/AdminPage/admin-item-chat";
 
 export const ContextData = createContext();
 export const ContextLogin = createContext();
@@ -70,12 +72,14 @@ function App() {
                                         <Route path="help" element={<ChatHelper />} />
                                         <Route path="setting" element={<Setting />} />
                                     </Route>
-                                    <Route path="admin" element={<Admin />}>
-                                        <Route path="reviews" element={<AdminReviews />} />
-                                        <Route path="orders" element={<AdminOrders />} />
-                                    </Route>
                                 </>
                             )}
+                            <Route path="admin" element={<Admin />}>
+                                <Route path="reviews" element={<AdminReviews />} />
+                                <Route path="orders" element={<AdminOrders />} />
+                                <Route path="chats/:id" element={<AdminItemChat />} />
+                                <Route path="chats" element={<AdminChats />} /> 
+                            </Route>
                             <Route path="*" element={<ErrorPage />} />
                         </Route>
                     </Routes>
