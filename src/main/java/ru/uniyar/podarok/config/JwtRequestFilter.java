@@ -53,8 +53,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      * Список URL-адресов, которые не требуют проверки JWT токена.
      */
     private static final List<String> PERMITTED_URLS = Arrays.asList(
-            "/registration", "/login", "/forgot", "/resetPassword",
-            "/gift/**", "/getSiteReviews"
+            "/registration", "/login", "/forgot", "/resetPassword", "/getSiteReviews"
     );
 
     /**
@@ -75,7 +74,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String requestURI = request.getRequestURI();
 
-        if ("/catalog".equals(requestURI)) {
+        if ("/catalog".equals(requestURI) || requestURI.matches("/gift/\\d+")) {
             if (authHeader == null) {
                 filterChain.doFilter(request, response);
                 return;

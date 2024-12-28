@@ -19,4 +19,5 @@ public class GiftResponseDto {
     private Long reviewsAmount;
     private Double averageRating;
     private List<ReviewDto> reviews;
+    private Boolean isFavorite;
 }

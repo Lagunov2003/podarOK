@@ -15,11 +15,10 @@ import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.Occasion;
 import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
-import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
-import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.GiftRepository;
 import ru.uniyar.podarok.utils.converters.GiftDtoConverter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -201,72 +200,56 @@ public class GiftService {
         if (name == null) {
             name = "";
         }
-        
+
+        BigDecimal budget = giftFilterRequest.getBudget();
+        Boolean gender = giftFilterRequest.getGender();
+        Integer age = giftFilterRequest.getAge();
+        List<Long> categories = giftFilterRequest.getCategories();
+        List<Long> occasions = giftFilterRequest.getOccasions();
+
         Page<Gift> filteredGifts = switch (sort) {
             case "по возрастанию цены" -> giftRepository.findAllByFiltersByNameAndByPriceAsc(
-                    giftFilterRequest.getBudget(),
-                    giftFilterRequest.getGender(),
-                    giftFilterRequest.getAge(),
-                    giftFilterRequest.getCategories(),
-                    giftFilterRequest.getOccasions(),
-                    name,
-                    pageable
+                    budget, gender, age, categories, occasions, name, pageable
             );
             case "по убыванию цены" -> giftRepository.findAllByFiltersByNameAndByPriceDesc(
-                    giftFilterRequest.getBudget(),
-                    giftFilterRequest.getGender(),
-                    giftFilterRequest.getAge(),
-                    giftFilterRequest.getCategories(),
-                    giftFilterRequest.getOccasions(),
-                    name,
-                    pageable
+                    budget, gender, age, categories, occasions, name, pageable
             );
             case "по рейтингу" -> giftRepository.findAllByFiltersByNameAndByAverageRatingDesc(
-                    giftFilterRequest.getBudget(),
-                    giftFilterRequest.getGender(),
-                    giftFilterRequest.getAge(),
-                    giftFilterRequest.getCategories(),
-                    giftFilterRequest.getOccasions(),
-                    name,
-                    pageable
+                    budget, gender, age, categories, occasions, name, pageable
             );
             default -> giftRepository.findAllByFiltersByName(
-                    giftFilterRequest.getBudget(),
-                    giftFilterRequest.getGender(),
-                    giftFilterRequest.getAge(),
-                    giftFilterRequest.getCategories(),
-                    giftFilterRequest.getOccasions(),
-                    name,
-                    pageable
+                    budget, gender, age, categories, occasions, name, pageable
             );
         };
 
-        User user;
-        try {
-            user = userService.getCurrentAuthenticationUser();
-        } catch (UserNotFoundException | UserNotAuthorizedException e) {
-            user = null;
-        }
+        User user = userService.getCurrentUser();
 
         Page<GiftDto> pageGifts = giftDtoConverter.convertToGiftDtoPage(filteredGifts);
 
         if (user != null) {
-            List<Gift> favorites = user.getFavorites();
-            Set<Long> favoriteIds = favorites.stream()
-                    .map(Gift::getId)
-                    .collect(Collectors.toSet());
-
-            List<GiftDto> updatedGifts = pageGifts.getContent().stream()
-                    .peek(giftDto -> {
-                        if (favoriteIds.contains(giftDto.getId())) {
-                            giftDto.setIsFavorite(true);
-                        }
-                    })
-                    .toList();
-
-            return new PageImpl<>(updatedGifts, pageGifts.getPageable(), pageGifts.getTotalElements());
+            return updateFavorites(pageGifts, user);
         }
 
         return pageGifts;
+    }
+
+    /**
+     * Обновляет список подарков, устанавливая true в поле "isFavorite" для подарков,
+     * которые находятся в избранном у пользователя.
+     *
+     * @param pageGifts страница с подарками, которые нужно обновить.
+     * @param user пользователь, избранные подарки которого нужно учитывать.
+     * @return обновленная страница с подарками.
+     */
+    private Page<GiftDto> updateFavorites(Page<GiftDto> pageGifts, User user) {
+        List<GiftDto> updatedGifts = pageGifts.getContent().stream()
+                .peek(giftDto -> {
+                    if (userService.giftIsUserFavorite(user, giftDto.getId())) {
+                        giftDto.setIsFavorite(true);
+                    }
+                })
+                .toList();
+
+        return new PageImpl<>(updatedGifts, pageGifts.getPageable(), pageGifts.getTotalElements());
     }
 }

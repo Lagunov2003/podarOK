@@ -30,6 +30,7 @@ import ru.uniyar.podarok.utils.JwtTokenUtils;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -331,5 +332,31 @@ public class UserService implements UserDetailsService {
      */
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    /**
+     * Получение текущего авторизованного пользователя.
+     * @return текущий пользователь User, либо null, если пользователь не является авторизованным.
+     */
+    public User getCurrentUser() {
+        try {
+            return getCurrentAuthenticationUser();
+        } catch (UserNotFoundException | UserNotAuthorizedException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Проверка, что выбранный подарок находится в избранных текущего пользователя.
+     * @param user текущий авторизованный пользователь.
+     * @param giftId id выбранного подарка.
+     * @return находится выбранный подарок в избранных текущего пользователя или нет.
+     */
+    public boolean giftIsUserFavorite(User user, Long giftId) {
+        Set<Long> favoriteIds = user.getFavorites().stream()
+                .map(Gift::getId)
+                .collect(Collectors.toSet());
+
+        return favoriteIds.contains(giftId);
     }
 }

@@ -23,7 +23,6 @@ import ru.uniyar.podarok.utils.converters.ReviewDtoConverter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -98,6 +97,7 @@ public class CatalogService {
         Gift gift = getGift(giftId);
         GiftGroup giftGroup = gift.getGiftGroup();
         List<Gift> groupGifts = new ArrayList<>(List.of(gift));
+        boolean isFavorite = false;
 
         if (giftGroup != null) {
             groupGifts.addAll(getGiftsByGroupId(giftGroup.getId()).stream()
@@ -111,20 +111,20 @@ public class CatalogService {
                 .map(reviewDtoConverter::convertToReviewDto)
                 .collect(Collectors.toList());
 
-        return new GiftResponseDto(groupGifts, getSimilarGifts(giftId), reviewsAmount, averageRating, reviews);
-    }
+        User user = userService.getCurrentUser();
 
-    /**
-     * Получение текущего авторизованного пользователя.
-     *
-     * @return объект Optional<User>, если пользователь авторизован, иначе пустой Optional.
-     */
-    private Optional<User> getCurrentUser() {
-        try {
-            return Optional.of(userService.getCurrentAuthenticationUser());
-        } catch (UserNotFoundException | UserNotAuthorizedException ignored) {
-            return Optional.empty();
+        if (user != null) {
+            isFavorite = userService.giftIsUserFavorite(user, giftId);
         }
+
+        return new GiftResponseDto(
+                groupGifts,
+                getSimilarGifts(giftId),
+                reviewsAmount,
+                averageRating,
+                reviews,
+                isFavorite
+        );
     }
 
     /**
