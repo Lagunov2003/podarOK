@@ -52,7 +52,6 @@ public class UserController {
      * @return обновленный профиль пользователя.
      * @throws UserNotFoundException если пользователь не найден.
      * @throws UserNotAuthorizedException если пользователь не авторизован.
-     * @throws org.springframework.web.bind.MethodArgumentNotValidException если введены некорректные данные.
      */
     @PutMapping("/profile")
     @PreAuthorize("isAuthenticated()")

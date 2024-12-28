@@ -38,6 +38,6 @@ public class MessageDtoConverter {
      * @return объект MessageDto, представляющий данные сообщения в виде DTO.
      */
     public MessageDto convertToMessageDto(Message message) {
-        return new MessageDto(message.getContent(), message.getReceiver().getEmail());
+        return new MessageDto(message.getContent(), message.getReceiver().getEmail(), message.getTimestamp());
     }
 }

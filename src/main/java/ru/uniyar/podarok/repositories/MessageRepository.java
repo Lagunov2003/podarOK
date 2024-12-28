@@ -42,7 +42,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
      * @param sort сортировка результатов.
      * @return список сообщений между двумя пользователями.
      */
-    @Query("SELECT m FROM Message m WHERE m.sender = :senderId AND m.receiver = :receiverId")
+    @Query("SELECT m FROM Message m WHERE m.sender.id = :senderId AND m.receiver.id = :receiverId")
     List<Message> findBySenderIdAndReceiverId(
             @Param("senderId") Long senderId,
             @Param("receiverId") Long receiverId,

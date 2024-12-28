@@ -20,7 +20,6 @@ import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.services.CartService;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * Контроллер для управления корзиной пользователя и оформления заказов.
@@ -81,12 +80,12 @@ public class CartController {
      * @return обновлённая корзина.
      * @throws UserNotAuthorizedException если пользователь не авторизован.
      * @throws UserNotFoundException если пользователь не найден.
-     * @throws NoSuchElementException если подарок не найден в корзине.
+     * @throws GiftNotFoundException если подарок не найден в корзине.
      */
     @PutMapping("/cart")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateCartItem(@RequestBody CartItemDto cartItemDto)
-            throws UserNotAuthorizedException, UserNotFoundException, NoSuchElementException {
+            throws UserNotAuthorizedException, UserNotFoundException, GiftNotFoundException {
         if (cartItemDto.getItemCount() < 0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Количество подарков должно быть не меньше 0!");
         } else if (cartItemDto.getItemCount() == 0) {
@@ -126,7 +125,7 @@ public class CartController {
             throws UserNotAuthorizedException, UserNotFoundException, GiftNotFoundException {
         if (orderRequestDto.getItems().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Количество подарков должно быть не меньше 1!");
-        }  else {
+        } else {
             cartService.placeOrder(orderRequestDto);
         }
         return ResponseEntity.ok("Заказ успешно оформлен!");

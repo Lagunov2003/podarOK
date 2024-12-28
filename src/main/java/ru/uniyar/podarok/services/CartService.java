@@ -21,7 +21,6 @@ import ru.uniyar.podarok.utils.converters.GiftDtoConverter;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -94,12 +93,12 @@ public class CartService {
      *
      * @param giftId идентификатор подарка
      * @param count новое количество подарков
-     * @throws NoSuchElementException если подарок отсутствует в корзине
+     * @throws GiftNotFoundException если подарок отсутствует в корзине
      */
     @Transactional
-    public void changeGiftsAmount(Long giftId, Integer count) throws NoSuchElementException {
+    public void changeGiftsAmount(Long giftId, Integer count) throws GiftNotFoundException {
         Cart cartItem = cartRepository.findItemByGiftId(giftId)
-                .orElseThrow(() -> new NoSuchElementException("Подарок с id " + giftId + " не найден в корзине!"));
+                .orElseThrow(() -> new GiftNotFoundException("Подарок с id " + giftId + " не найден в корзине!"));
         cartItem.setItemCount(count);
         cartRepository.save(cartItem);
     }

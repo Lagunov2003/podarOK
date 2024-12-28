@@ -3,6 +3,7 @@ package ru.uniyar.podarok.services;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.uniyar.podarok.dtos.Dialog;
 import ru.uniyar.podarok.dtos.MessageDto;
 import ru.uniyar.podarok.entities.Message;
 import ru.uniyar.podarok.entities.User;
@@ -11,6 +12,7 @@ import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.MessageRepository;
 import ru.uniyar.podarok.utils.converters.MessageDtoConverter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -112,5 +114,23 @@ public class ChatService {
         );
 
         return foundedMessages.stream().map(messageDtoConverter::convertToMessageDto).toList();
+    }
+
+    /**
+     * Получает список сообщений от всех отправителей.
+     *
+     * @return список Dialog диалогов.
+     * @throws UserNotFoundException если отправитель с указанным email не найден.
+     * @throws UserNotAuthorizedException если текущий пользователь не авторизован.
+     */
+    public List<Dialog> getAllDialogs() throws UserNotFoundException, UserNotAuthorizedException {
+        List<User> users = userService.getAllUsers();
+        List<Dialog> dialogs = new ArrayList<>();
+        for (User user : users) {
+            Dialog dialog = new Dialog(getChatMessages(user.getEmail()), user.getFirstName(), user.getId());
+            dialogs.add(dialog);
+        }
+
+        return dialogs;
     }
 }

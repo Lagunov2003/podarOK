@@ -29,7 +29,8 @@ public class GiftDtoConverter {
                 gift.getId(),
                 gift.getName(),
                 gift.getPrice(),
-                photoUrl
+                photoUrl,
+                false
         );
     }
 

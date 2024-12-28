@@ -75,7 +75,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/changeOrderStatus", "/getOrders", "/deleteGift", "/changeGift", "/addGift",
                                 "/addGroup", "/getAcceptedSiteReviews", "/getNotAcceptedSiteReviews",
-                                "/changeAcceptedStatusSiteReviews", "/deleteNotAcceptedSiteReviews"
+                                "/changeAcceptedStatusSiteReviews", "/deleteNotAcceptedSiteReviews", "/allDialogs"
                         ).hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)

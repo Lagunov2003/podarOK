@@ -134,12 +134,14 @@ public class CatalogService {
      * @param name имя подарка (поиск по названию)
      * @param sort тип сортировки
      * @param pageable параметры пагинации
+     * @throws UserNotAuthorizedException если пользователь не авторизован.
+     * @throws UserNotFoundException если пользователь не найден.
      * @return страница {@link GiftDto}, содержащая результаты поиска
      */
     public Page<GiftDto> getGiftsCatalog(GiftFilterRequest giftFilterRequest,
                                          String name,
                                          String sort,
-                                         Pageable pageable) {
+                                         Pageable pageable) throws UserNotFoundException, UserNotAuthorizedException {
         GiftFilterRequest effectiveRequest = giftFilterService.processRequest(giftFilterRequest);
         return giftFilterService.hasSurveyData(effectiveRequest) || giftFilterService.hasFilters(effectiveRequest)
                 ? giftService.searchGiftsByFilters(effectiveRequest, name, sort, pageable)

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.uniyar.podarok.dtos.Dialog;
 import ru.uniyar.podarok.dtos.MessageDto;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
@@ -94,5 +95,17 @@ public class ChatController {
                 "/queue/messages",
                 savedMessage
         );
+    }
+    /**
+     * Отправить сообщение.
+     * @return HTTP-ответ с диалогами всех пользователей с администратором.
+     * @throws UserNotAuthorizedException если пользователь не авторизован.
+     * @throws UserNotFoundException если текущий пользователь не найден.
+     */
+    @GetMapping("/allDialogs")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> showAllDialogs() throws UserNotFoundException, UserNotAuthorizedException {
+        List<Dialog> dialogs = chatService.getAllDialogs();
+        return ResponseEntity.ok(dialogs);
     }
 }

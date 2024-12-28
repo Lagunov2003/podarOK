@@ -96,6 +96,8 @@ public class CatalogController {
      * @param name название подарка для поиска.
      * @param sort параметр сортировки.
      * @param page номер страницы (по умолчанию 1).
+     * @throws UserNotAuthorizedException если пользователь не авторизован.
+     * @throws UserNotFoundException если пользователь не найден.
      * @return список подарков.
      */
     @GetMapping("/catalog")
@@ -104,7 +106,7 @@ public class CatalogController {
             @RequestParam String name,
             @RequestParam String sort,
             @RequestParam(defaultValue = "1") int page
-    ) {
+    ) throws UserNotFoundException, UserNotAuthorizedException {
         final int pageSize = 15;
 
         if (page <= 0) {
@@ -113,14 +115,6 @@ public class CatalogController {
 
         if (giftFilterRequest == null) {
             giftFilterRequest = new GiftFilterRequest();
-        }
-
-        if (name.isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Запрос не может быть пустым!");
-        }
-
-        if (sort.isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Запрос не может быть пустым!");
         }
 
         Pageable pageable = PageRequest.of(page - 1, pageSize);

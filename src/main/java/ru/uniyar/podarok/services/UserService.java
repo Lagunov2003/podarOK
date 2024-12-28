@@ -278,9 +278,9 @@ public class UserService implements UserDetailsService {
             String token,
             ChangeUserPasswordDto changeUserPasswordDto
     ) throws UserNotFoundException {
-        User user = findByEmail(jwtTokenUtils.getUserEmail(token));
-        user.setPassword(passwordEncoder.encode(changeUserPasswordDto.getPassword()));
-        userRepository.save(user);
+            User user = findByEmail(jwtTokenUtils.getUserEmail(token));
+            user.setPassword(passwordEncoder.encode(changeUserPasswordDto.getPassword()));
+            userRepository.save(user);
     }
 
     /**
@@ -323,5 +323,13 @@ public class UserService implements UserDetailsService {
 
         favorites.remove(gift);
         userRepository.save(user);
+    }
+
+    /**
+     * Получение списка всех пользователей.
+     * @return список User всех пользователей.
+     */
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }

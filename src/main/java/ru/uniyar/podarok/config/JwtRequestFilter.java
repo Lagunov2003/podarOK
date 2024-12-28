@@ -54,7 +54,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      */
     private static final List<String> PERMITTED_URLS = Arrays.asList(
             "/registration", "/login", "/forgot", "/resetPassword",
-            "/catalog", "/gift/**", "/getSiteReviews"
+            "/gift/**", "/getSiteReviews"
     );
 
     /**
@@ -74,6 +74,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         String requestURI = request.getRequestURI();
+
+        if ("/catalog".equals(requestURI)) {
+            if (authHeader == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            if (!isTokenValid(authHeader, response)) {
+                return;
+            } else {
+                filterChain.doFilter(request, response);
+            }
+        }
 
         if (isPermittedUrl(requestURI)) {
             filterChain.doFilter(request, response);

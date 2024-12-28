@@ -2,6 +2,7 @@ package ru.uniyar.podarok.services;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +13,14 @@ import ru.uniyar.podarok.dtos.GiftFilterRequest;
 import ru.uniyar.podarok.entities.Category;
 import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.Occasion;
+import ru.uniyar.podarok.entities.User;
 import ru.uniyar.podarok.exceptions.GiftNotFoundException;
+import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
+import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.GiftRepository;
 import ru.uniyar.podarok.utils.converters.GiftDtoConverter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 public class GiftService {
     private GiftRepository giftRepository;
     private GiftDtoConverter giftDtoConverter;
+    private UserService userService;
 
     /**
      * Получает список всех подарков.
@@ -187,6 +191,8 @@ public class GiftService {
      * @param sort параметр сортировки.
      * @param pageable параметры пагинации.
      * @return страница с отфильтрованными и отсортированными подарками.
+     * @throws UserNotAuthorizedException если пользователь не авторизован.
+     * @throws UserNotFoundException      если пользователь не найден.
      */
     public Page<GiftDto> searchGiftsByFilters(
             GiftFilterRequest giftFilterRequest,
@@ -194,14 +200,6 @@ public class GiftService {
             String sort,
             Pageable pageable
     ) {
-        if (giftFilterRequest.getCategories() == null) {
-            giftFilterRequest.setCategories(Collections.emptyList());
-        }
-        
-        if (giftFilterRequest.getOccasions() == null) {
-            giftFilterRequest.setOccasions(Collections.emptyList());
-        }
-        
         if (name == null) {
             name = "";
         }
@@ -244,7 +242,32 @@ public class GiftService {
                     pageable
             );
         };
-        
+        User user;
+        try {
+            user = userService.getCurrentAuthenticationUser();
+        } catch (UserNotFoundException | UserNotAuthorizedException e) {
+            user = null;
+        }
+
+        Page<GiftDto> pageGifts = giftDtoConverter.convertToGiftDtoPage(filteredGifts);
+
+        if (user != null) {
+            List<Gift> favorites = user.getFavorites();
+            Set<Long> favoriteIds = favorites.stream()
+                    .map(Gift::getId)
+                    .collect(Collectors.toSet());
+
+            List<GiftDto> updatedGifts = pageGifts.getContent().stream()
+                    .peek(giftDto -> {
+                        if (favoriteIds.contains(giftDto.getId())) {
+                            giftDto.setIsFavorite(true);
+                        }
+                    })
+                    .toList();
+
+            return new PageImpl<>(updatedGifts, pageGifts.getPageable(), pageGifts.getTotalElements());
+        }
+
         return giftDtoConverter.convertToGiftDtoPage(filteredGifts);
     }
 }

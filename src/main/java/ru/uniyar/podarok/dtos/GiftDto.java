@@ -17,4 +17,5 @@ public class GiftDto {
     private String name;
     private BigDecimal price;
     private String photoUrl;
+    private Boolean isFavorite;
 }
