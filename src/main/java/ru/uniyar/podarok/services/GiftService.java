@@ -191,8 +191,6 @@ public class GiftService {
      * @param sort параметр сортировки.
      * @param pageable параметры пагинации.
      * @return страница с отфильтрованными и отсортированными подарками.
-     * @throws UserNotAuthorizedException если пользователь не авторизован.
-     * @throws UserNotFoundException      если пользователь не найден.
      */
     public Page<GiftDto> searchGiftsByFilters(
             GiftFilterRequest giftFilterRequest,
@@ -242,6 +240,7 @@ public class GiftService {
                     pageable
             );
         };
+
         User user;
         try {
             user = userService.getCurrentAuthenticationUser();
@@ -268,6 +267,6 @@ public class GiftService {
             return new PageImpl<>(updatedGifts, pageGifts.getPageable(), pageGifts.getTotalElements());
         }
 
-        return giftDtoConverter.convertToGiftDtoPage(filteredGifts);
+        return pageGifts;
     }
 }
