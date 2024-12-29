@@ -42,7 +42,8 @@ public class GiftService {
      * @return список всех подарков.
      */
     public Page<GiftDto> getAllGifts(Pageable pageable) {
-        return giftDtoConverter.convertToGiftDtoPage(giftRepository.findAllGifts(pageable));
+        System.out.println("Я здесь!");
+        return processGiftsPage(giftRepository.findAllGifts(pageable));
     }
 
     /**
@@ -208,13 +209,13 @@ public class GiftService {
         List<Long> occasions = giftFilterRequest.getOccasions();
 
         Page<Gift> filteredGifts = switch (sort) {
-            case "по возрастанию цены" -> giftRepository.findAllByFiltersByNameAndByPriceAsc(
+            case "По возрастанию цены" -> giftRepository.findAllByFiltersByNameAndByPriceAsc(
                     budget, gender, age, categories, occasions, name, pageable
             );
-            case "по убыванию цены" -> giftRepository.findAllByFiltersByNameAndByPriceDesc(
+            case "По убыванию цены" -> giftRepository.findAllByFiltersByNameAndByPriceDesc(
                     budget, gender, age, categories, occasions, name, pageable
             );
-            case "по рейтингу" -> giftRepository.findAllByFiltersByNameAndByAverageRatingDesc(
+            case "По рейтингу" -> giftRepository.findAllByFiltersByNameAndByAverageRatingDesc(
                     budget, gender, age, categories, occasions, name, pageable
             );
             default -> giftRepository.findAllByFiltersByName(
@@ -222,15 +223,7 @@ public class GiftService {
             );
         };
 
-        User user = userService.getCurrentUser();
-
-        Page<GiftDto> pageGifts = giftDtoConverter.convertToGiftDtoPage(filteredGifts);
-
-        if (user != null) {
-            return updateFavorites(pageGifts, user);
-        }
-
-        return pageGifts;
+        return processGiftsPage(filteredGifts);
     }
 
     /**
@@ -251,5 +244,21 @@ public class GiftService {
                 .toList();
 
         return new PageImpl<>(updatedGifts, pageGifts.getPageable(), pageGifts.getTotalElements());
+    }
+
+    /**
+     * Обрабатывает страницу подарков, преобразуя их в DTO и обновляя избранные, если пользователь авторизован.
+     * @param gifts страница подарков для обработки.
+     * @return страница объектов GiftDto.
+     */
+    private Page<GiftDto> processGiftsPage(Page<Gift> gifts) {
+        User user = userService.getCurrentUser();
+        Page<GiftDto> pageGifts = giftDtoConverter.convertToGiftDtoPage(gifts);
+
+        if (user != null) {
+            return updateFavorites(pageGifts, user);
+        }
+
+        return pageGifts;
     }
 }

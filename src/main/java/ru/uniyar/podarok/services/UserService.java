@@ -331,7 +331,10 @@ public class UserService implements UserDetailsService {
      * @return список User всех пользователей.
      */
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findAll().stream()
+                .filter(user -> user.getRoles().stream()
+                        .noneMatch(role -> "ROLE_ADMIN".equals(role.getName())))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -348,6 +351,7 @@ public class UserService implements UserDetailsService {
 
     /**
      * Проверка, что выбранный подарок находится в избранных текущего пользователя.
+     *
      * @param user текущий авторизованный пользователь.
      * @param giftId id выбранного подарка.
      * @return находится выбранный подарок в избранных текущего пользователя или нет.

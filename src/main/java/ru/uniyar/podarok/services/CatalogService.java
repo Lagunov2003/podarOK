@@ -141,7 +141,10 @@ public class CatalogService {
                                          String sort,
                                          Pageable pageable) {
         GiftFilterRequest effectiveRequest = giftFilterService.processRequest(giftFilterRequest);
-        return giftFilterService.hasSurveyData(effectiveRequest) || giftFilterService.hasFilters(effectiveRequest)
+        return giftFilterService.hasSurveyData(effectiveRequest)
+                || giftFilterService.hasFilters(effectiveRequest)
+                || !name.isEmpty()
+                || !sort.isEmpty()
                 ? giftService.searchGiftsByFilters(effectiveRequest, name, sort, pageable)
                 : giftService.getAllGifts(pageable);
     }
