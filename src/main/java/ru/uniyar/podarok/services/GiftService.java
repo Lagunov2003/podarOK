@@ -42,7 +42,6 @@ public class GiftService {
      * @return список всех подарков.
      */
     public Page<GiftDto> getAllGifts(Pageable pageable) {
-        System.out.println("Я здесь!");
         return processGiftsPage(giftRepository.findAllGifts(pageable));
     }
 
@@ -234,7 +233,7 @@ public class GiftService {
      * @param user пользователь, избранные подарки которого нужно учитывать.
      * @return обновленная страница с подарками.
      */
-    private Page<GiftDto> updateFavorites(Page<GiftDto> pageGifts, User user) {
+    public Page<GiftDto> updateFavorites(Page<GiftDto> pageGifts, User user) {
         List<GiftDto> updatedGifts = pageGifts.getContent().stream()
                 .peek(giftDto -> {
                     if (userService.giftIsUserFavorite(user, giftDto.getId())) {

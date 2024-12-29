@@ -45,7 +45,9 @@ public class UserOrdersService {
      */
     public List<GiftDto> getUsersFavorites() throws UserNotFoundException, UserNotAuthorizedException {
         List<Gift> favoriteGiftsList = userService.getCurrentAuthenticationUser().getFavorites();
-        return giftDtoConverter.convertToGiftDtoList(favoriteGiftsList);
+        return giftDtoConverter.convertToGiftDtoList(favoriteGiftsList).stream()
+                .peek(giftDto -> giftDto.setIsFavorite(true))
+                .toList();
     }
 
     /**
