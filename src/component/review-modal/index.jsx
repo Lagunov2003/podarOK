@@ -1,18 +1,33 @@
 import React, { useRef, useState } from "react";
 import "./style.scss";
+import { responsePostAddSiteReviews } from "../../tool/response";
 
 const arr = new Array(5).fill("");
 
 function ReviewModal({ handleOpen }) {
     const refTextarea = useRef(null);
     const [rate, setRate] = useState(0);
-    const refRate = useRef(0)
+    const refRate = useRef(0);
 
     const handleSend = () => {
-        refTextarea.current.value = "";
-        refRate.current = 0
-        handleOpen()
+        (async () => {
+            const status = await responsePostAddSiteReviews(refRate.current, refTextarea.current.value);
+
+            if(status == 200) {
+                alert("Отзыв о сайте отправлен на модерацию!")
+            }
+
+            refTextarea.current.value = "";
+            refRate.current = 0;
+            handleOpen();
+        })();
     };
+
+    const handleClose = () => {
+        refTextarea.current.value = "";
+        refRate.current = 0;
+        handleOpen();
+    }
 
     return (
         <div className="review-modal">
@@ -21,10 +36,22 @@ function ReviewModal({ handleOpen }) {
                 <p className="review-modal__label">Ваша оценка</p>
                 <div className="review-modal__stars-row" onMouseLeave={() => setRate(0)}>
                     {arr.map((v, i) =>
-                        (rate > i) || (refRate.current > i && rate == 0) ? (
-                            <img src="/img/rating-star.svg" alt="Звезда рейтинга" key={i} onMouseMove={() => setRate(i + 1)} onClick={() => refRate.current = i + 1} />
+                        rate > i || (refRate.current > i && rate == 0) ? (
+                            <img
+                                src="/img/rating-star.svg"
+                                alt="Звезда рейтинга"
+                                key={i}
+                                onMouseMove={() => setRate(i + 1)}
+                                onClick={() => (refRate.current = i + 1)}
+                            />
                         ) : (
-                            <img src="/img/rating-star-empty.svg" alt="Звезда рейтинга" key={i} onMouseMove={() => setRate(i + 1)} onClick={() => refRate.current = i + 1} />
+                            <img
+                                src="/img/rating-star-empty.svg"
+                                alt="Звезда рейтинга"
+                                key={i}
+                                onMouseMove={() => setRate(i + 1)}
+                                onClick={() => (refRate.current = i + 1)}
+                            />
                         )
                     )}
                 </div>
@@ -39,7 +66,7 @@ function ReviewModal({ handleOpen }) {
             <button className="review-modal__send" onClick={() => handleSend()}>
                 Отправить
             </button>
-            <button className="review-modal__close" onClick={() => handleSend()}>
+            <button className="review-modal__close" onClick={() => handleClose()}>
                 <svg width="23.000000" height="23.000000" viewBox="0 0 23 23" fill="none">
                     <defs />
                     <path

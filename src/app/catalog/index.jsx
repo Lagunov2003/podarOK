@@ -20,6 +20,16 @@ function Catalog() {
     const [sortValue, setSortValue] = useState("")
     const navigate = useNavigate();
 
+
+    useEffect(() => {
+        const nameSort = sessionStorage.getItem("nameSort");
+
+        if (nameSort) {
+            setSortValue(nameSort)
+            sessionStorage.removeItem("nameSort");
+        }
+    }, [])
+
     useEffect(() => {
         // const strUrl = `/catalog?search=${query.search}&page=${query.page}`
         // navigate(strUrl)
@@ -34,7 +44,7 @@ function Catalog() {
 
     return (
         <WrapperCatalog>
-            <BlockCatalog search={search} setSearch={setSearch} setSortValue={setSortValue}/>
+            <BlockCatalog search={search} setSearch={setSearch} sortValue={sortValue} setSortValue={setSortValue}/>
             <Filter />
             <List list={list} page={page} setCurrentPage={setCurrentPage} currentPage={currentPage} />
         </WrapperCatalog>

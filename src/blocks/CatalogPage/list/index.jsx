@@ -23,7 +23,7 @@ function List({ list, page, setCurrentPage, currentPage }) {
                 <>
                     <div className="list__content">
                         {list?.map((v) => (
-                            <ItemCatalog item={v} handleAddFavorite={handleAddFavorite} handleDeleteFavorite={handleDeleteFavorite}/>
+                            <ItemCatalog item={v} key={v.id} handleAddFavorite={handleAddFavorite} handleDeleteFavorite={handleDeleteFavorite}/>
                         ))}
                     </div>
                     <PageCount count={page.totalPages} setCurrentPage={setCurrentPage} currentPage={currentPage} />

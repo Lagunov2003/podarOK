@@ -7,18 +7,18 @@ import { ContextData } from "../../../app/app";
 import { ModalAuth } from "../layer-page";
 
 function Header({ handleOpenModal }) {
-    const data = useContext(ContextData)
-    const handleOpenAuth = useContext(ModalAuth)
+    const data = useContext(ContextData);
+    const handleOpenAuth = useContext(ModalAuth);
     const location = useLocation();
     const navigate = useNavigate();
 
     const handleClickBasket = () => {
-        if(data == null) {
-            handleOpenAuth()
+        if (data == null) {
+            handleOpenAuth();
         } else {
-            navigate("/basket")
+            navigate("/basket");
         }
-    }
+    };
 
     return (
         <header className="header">
@@ -28,9 +28,6 @@ function Header({ handleOpenModal }) {
                         podar<span>OK</span>
                     </Link>
                 </div>
-                <Link to={"/admin/reviews"}>
-                    <span>админ</span>
-                </Link>
                 <nav className="header__nav">
                     <Link to={"/catalog"} className="header__link">
                         Каталог
@@ -57,12 +54,14 @@ function Header({ handleOpenModal }) {
                     >
                         Отзывы
                     </Link>
-                    <button className="header__link" onClick={() => handleClickBasket()}>
-                        Корзина
-                    </button>
+                    {data?.role != true && (
+                        <button className="header__link" onClick={() => handleClickBasket()}>
+                            Корзина
+                        </button>
+                    )}
                 </nav>
                 {data?.firstName ? (
-                    <Link to={"/account"} className="header__sing-in">
+                    <Link to={data.role ? "/admin" : "/account"} className="header__sing-in">
                         <span>Кабинет</span>
                     </Link>
                 ) : (

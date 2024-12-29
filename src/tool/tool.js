@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 
 export function convertPrice(price) {
     return [...price.toString().slice("")]
@@ -9,4 +10,14 @@ export function convertPrice(price) {
 
 export function convertImg(url) {
     return "/img/photos" + url.slice(1, url.length) + ".png"
+}
+
+export function decoderToken(token) {
+    const decode = jwtDecode(token)
+
+    if(decode.roles[0] == "ROLE_ADMIN") {
+        return true
+    } 
+
+    return false
 }

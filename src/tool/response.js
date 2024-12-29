@@ -236,7 +236,7 @@ export async function responseResetPassword(code, email, password, confirmPasswo
     }
     const token = localStorage.getItem("token")
 
-    if(token) {
+    if (token) {
         strUrl = "http://localhost:8080/confirmChanges?code=" + code
         hed['Authorization'] = `Bearer ${token}`
     } else {
@@ -549,6 +549,72 @@ export async function responsePostOrder(order) {
     }
 }
 
+
+//Отзывы на главной
+export async function responseGetSiteReviews(setList) {
+    let strUrl = "http://localhost:8080/getSiteReviews"
+
+    try {
+        const response = await fetch(strUrl, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await response.json();
+        console.log(data);
+        setList(data)
+    } catch (e) {
+
+    }
+}
+
+export async function responsePostAddSiteReviews(mark, review) {
+    const token = localStorage.getItem("token")
+
+    let strUrl = "http://localhost:8080/addSiteReview"
+
+    try {
+        const response = await fetch(strUrl, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                mark,
+                review
+            })
+        });
+
+        return response.status
+    } catch (e) {
+
+    }
+}
+
+//Админ
+export async function responseGetAllDialogs(setList) {
+    let strUrl = "http://localhost:8080/chat/allDialogs"
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch(strUrl, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+        const data = await response.json();
+        setList(data)
+    } catch (e) {
+
+    }
+}
 
 // Карта от Яндекса 
 export const getAdressFromCoordinates = async (lat, lon) => {

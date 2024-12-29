@@ -40,7 +40,7 @@
 
     
     &__content {  
-        padding: 30px 0px 40px 40px;
+        padding: 30px 35px 40px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -93,7 +93,6 @@
     }
 
     &__form {
-        margin-bottom: 26px;
         display: flex;
         flex-direction: column;
     }
@@ -247,7 +246,8 @@
     }
 
     &__submit {
-        margin-right: 40px;
+        margin: 0 auto;
+        margin-top: 22px;
         padding: 0 34px;
         width: max-content;
         height: 51px;
@@ -261,6 +261,7 @@
         line-height: 51px;
         text-align: center;
         transition: all 0.2s linear;
+
         &:hover {
             background-color: rgb(255, 84, 150);
             color: white;

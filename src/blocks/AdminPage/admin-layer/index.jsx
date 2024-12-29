@@ -10,8 +10,8 @@ function AdminLayer({ children }) {
             <div className="admin-layer__content padding-style">
                 <div className="admin-layer__menu">
                     <Link
-                        to={"/admin/reviews"}
-                        className={"admin-layer__link" + (location.pathname == "/admin/reviews" ? " admin-layer__link_active" : "")}
+                        to={"/admin"}
+                        className={"admin-layer__link" + (location.pathname == "/admin" ? " admin-layer__link_active" : "")}
                     >
                         <span>Отзывы</span>
                     </Link>
@@ -28,6 +28,14 @@ function AdminLayer({ children }) {
                         }
                     >
                         <span>Чат поддержки</span>
+                    </Link>
+                    <Link
+                        to={"/admin/setting"}
+                        className={
+                            "admin-layer__link" + (location.pathname.indexOf("/admin/setting") != -1 ? " admin-layer__link_active" : "")
+                        }
+                    >
+                        <span>Настройки</span>
                     </Link>
                 </div>
                 <div className="admin-layer__block">{children}</div>

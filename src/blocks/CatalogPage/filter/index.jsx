@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "./style.scss";
 import Dropdown from "../../../component/dropdown";
+import { ContextSurvey } from "../../../app/app";
 
 const categorie = [
     "Спорт",
@@ -40,20 +41,45 @@ const age = ["Для детей", "Подросткам", "18-35 лет", "35-60
 
 const defaultFilter = {
     price: "",
-    categorie: [],
-    holidays: [],
+    categories: [],
+    occasions: [],
     gender: -1,
     age: "",
 };
 
 function Filter() {
+    const { survey } = useContext(ContextSurvey);
     const [data, setData] = useState(defaultFilter);
-    const [ageVlaue, setAgeValue] = useState()
-
+    const [ageVlaue, setAgeValue] = useState("");
 
     useEffect(() => {
-        setData(v => ({...v, age: ageVlaue }))
-    }, [ageVlaue])
+        const section = sessionStorage.getItem("section");
+
+        if (section) {
+            if (section != "Новый год") {
+                setData((v) => ({ ...v, categories: [section] }));
+            } else {
+                setData((v) => ({ ...v, occasions: [section] }));
+            }
+            sessionStorage.removeItem("section");
+        }
+    }, []);
+
+    useEffect(() => {
+        if (survey != null) {
+            setData({
+                price: survey.price,
+                categories: survey.categories,
+                occasions: survey.occasions,
+                gender: survey.gender,
+                age: survey.age,
+            });
+        }
+    }, [survey]);
+
+    useEffect(() => {
+        if (ageVlaue != "") setData((v) => ({ ...v, age: ageVlaue }));
+    }, [ageVlaue]);
 
     const handleChangePrice = (e) => {
         const { value } = e.target;
@@ -68,38 +94,45 @@ function Filter() {
     };
 
     const handleChangeCategorie = (e) => {
-        const { value } = e.target
+        const { value } = e.target;
 
-        if(data.categorie.indexOf(value) != -1) {
-            setData(v => ({...v, categorie: [...v.categorie.filter(v => v != value)]}))
+        if (data.categories.indexOf(value) != -1) {
+            setData((v) => ({ ...v, categories: [...v.categories.filter((v) => v != value)] }));
         } else {
-            setData(v => ({...v, categorie: [...v.categorie, value]}))
+            setData((v) => ({ ...v, categories: [...v.categories, value] }));
         }
-    }
+    };
 
     const handleChangeHolidays = (e) => {
-        const { value } = e.target
+        const { value } = e.target;
 
-        if(data.holidays.indexOf(value) != -1) {
-            setData(v => ({...v, holidays: [...v.holidays.filter(v => v != value)]}))
+        if (data.occasions.indexOf(value) != -1) {
+            setData((v) => ({ ...v, occasions: [...v.occasions.filter((v) => v != value)] }));
         } else {
-            setData(v => ({...v, holidays: [...v.holidays, value]}))
+            setData((v) => ({ ...v, occasions: [...v.occasions, value] }));
         }
-    }
+    };
 
     const handleChangeGender = (e) => {
-        setData(v => ({...v, gender: e.target.value}))
-    }
+        setData((v) => ({ ...v, gender: e.target.value }));
+    };
 
     return (
-        <div className="filter">
+        <form className="filter">
             <div className="filter__item">
                 <p className="filter__item-title">Категории:</p>
                 <div className="filter__item-wrapper">
                     <div className="filter__item-list">
                         {categorie.map((v, i) => (
                             <label className="filter__item-input" key={i}>
-                                <input type="checkbox" name="categorieFilter" value={v} onChange={(e) => handleChangeCategorie(e)} /> {v}
+                                <input
+                                    type="checkbox"
+                                    name="categorieFilter"
+                                    value={v}
+                                    checked={data.categories.indexOf(v) != -1}
+                                    onChange={(e) => handleChangeCategorie(e)}
+                                />{" "}
+                                {v}
                             </label>
                         ))}
                     </div>
@@ -111,7 +144,14 @@ function Filter() {
                     <div className="filter__item-list">
                         {holidays.map((v, i) => (
                             <label className="filter__item-input" key={i}>
-                                <input type="checkbox" name="holidaysFilter" value={v} onChange={(e) => handleChangeHolidays(e)}/> {v}
+                                <input
+                                    type="checkbox"
+                                    name="holidaysFilter"
+                                    value={v}
+                                    checked={data.occasions.indexOf(v) != -1}
+                                    onChange={(e) => handleChangeHolidays(e)}
+                                />{" "}
+                                {v}
                             </label>
                         ))}
                     </div>
@@ -121,10 +161,24 @@ function Filter() {
                 <p className="filter__item-title">Пол:</p>
                 <div className="filter__item-gender">
                     <label className="filter__item-input">
-                        <input type="radio" name="genderFilter" value={1} onChange={(e) => handleChangeGender(e)}/> Мужской
+                        <input
+                            type="radio"
+                            name="genderFilter"
+                            value={1}
+                            checked={data.gender == 1}
+                            onChange={(e) => handleChangeGender(e)}
+                        />{" "}
+                        Мужской
                     </label>
                     <label className="filter__item-input">
-                        <input type="radio" name="genderFilter" value={2} onChange={(e) => handleChangeGender(e)}/> Женский
+                        <input
+                            type="radio"
+                            name="genderFilter"
+                            value={0}
+                            checked={data.gender == 0}
+                            onChange={(e) => handleChangeGender(e)}
+                        />{" "}
+                        Женский
                     </label>
                 </div>
             </div>
@@ -148,11 +202,16 @@ function Filter() {
             <div className="filter__item">
                 <p className="filter__item-title">Возраст:</p>
                 <div className="filter__item-wrapper-dropdown">
-                    <Dropdown list={age} setData={setAgeValue} classBlock="filter__dropdown" defaultValue="Выбрать" />
+                    <Dropdown
+                        list={age}
+                        setData={setAgeValue}
+                        classBlock="filter__dropdown"
+                        defaultValue={data.age != "" ? data.age : "Выбрать"}
+                    />
                 </div>
             </div>
             <button className="button-style filter__button">Подобрать</button>
-        </div>
+        </form>
     );
 }
 

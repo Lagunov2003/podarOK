@@ -6,8 +6,14 @@ import { useNavigate } from "react-router";
 function GiftsInCity() {
     const navigate = useNavigate()
 
-    const handleClickItem = (type, section) => {
-        navigate(`/catalog?${type}=${section}`)
+    const handleClickItem = (section) => {
+        sessionStorage.setItem("section", section)
+        navigate("/catalog")
+    }
+
+    const handleClickItemSort = (nameSort) => {
+        sessionStorage.setItem("nameSort", nameSort)
+        navigate("/catalog")
     }
 
 
@@ -17,19 +23,19 @@ function GiftsInCity() {
                 <h2 className="gifts-in-city__title title-style">Вам может понравиться</h2>
                 <div className="gifts-in-city__grid">
                     <div className="gifts-in-city__row">
-                        <div className="gifts-in-city__item" onClick={() => handleClickItem("categorie", "th")}>
+                        <div className="gifts-in-city__item" onClick={() => handleClickItem("Электроника")}>
                             <h3 className="gifts-in-city__item-title">Техника</h3>
                             <div className="gifts-in-city__item-img">
                                 <img src="/img/item-1.png" alt="Декоративный элемент" />
                             </div>
                         </div>
-                        <div className="gifts-in-city__item" onClick={() => handleClickItem("categorie", "th")}>
+                        <div className="gifts-in-city__item" onClick={() => handleClickItem("Аксессуары")}>
                             <h3 className="gifts-in-city__item-title">Аксессуары</h3>
                             <div className="gifts-in-city__item-img">
                                 <img src="/img/item-2.png" alt="Декоративный элемент" />
                             </div>
                         </div>
-                        <div className="gifts-in-city__item flex-x2" onClick={() => handleClickItem("sort", "th")}>
+                        <div className="gifts-in-city__item flex-x2" onClick={() => handleClickItemSort("По рейтингу")}>
                             <h3 className="gifts-in-city__item-title">Популярное</h3>
                             <div className="gifts-in-city__item-img">
                                 <img src="/img/item-3.png" alt="Декоративный элемент" />
@@ -37,19 +43,19 @@ function GiftsInCity() {
                         </div>
                     </div>
                     <div className="gifts-in-city__row">
-                        <div className="gifts-in-city__item flex-x2" onClick={() => handleClickItem("sort", "th")}>
+                        <div className="gifts-in-city__item flex-x2" onClick={() => handleClickItemSort("По возрастанию цены")}>
                             <h3 className="gifts-in-city__item-title">Скидки</h3>
                             <div className="gifts-in-city__item-img">
                                 <img src="/img/item-4.png" alt="Декоративный элемент" />
                             </div>
                         </div>
-                        <div className="gifts-in-city__item" onClick={() => handleClickItem("reason", "th")}>
+                        <div className="gifts-in-city__item" onClick={() => handleClickItem("Новый год")}>
                             <h3 className="gifts-in-city__item-title">Новый год</h3>
                             <div className="gifts-in-city__item-img">
                                 <img src="/img/item-5.png" alt="Декоративный элемент" />
                             </div>
                         </div>
-                        <div className="gifts-in-city__item" onClick={() => handleClickItem("categorie", "th")}>
+                        <div className="gifts-in-city__item" onClick={() => handleClickItem("Товары для дома")}>
                             <h3 className="gifts-in-city__item-title">Товары для дома</h3>
                             <div className="gifts-in-city__item-img">
                                 <img src="/img/item-6.png" alt="Декоративный элемент" />

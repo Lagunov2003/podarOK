@@ -79,7 +79,7 @@ module.exports = (env) => {
             })
         ],
         resolve: {
-            extensions: [".jsx", ".js"]
+            extensions: [".jsx", ".js"],
         }
     }
 }

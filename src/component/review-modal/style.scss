@@ -51,7 +51,8 @@
         line-height: 20px;
         border-radius: 19px;
         background-color: #DCDCDC;
-
+        resize: none;
+        
         &::placeholder {
             font-family: Dimica;
             font-size: 20px;

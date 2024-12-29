@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "./style.scss";
 import Dropdown from "../dropdown";
 import { Link, useNavigate } from "react-router-dom";
 import WrapperModal from "../wrapper-modal";
+import { ContextSurvey } from "../../app/app";
 
 const categorie = [
     "Спорт",
@@ -43,23 +44,35 @@ const holidays = [
 const age = ["Для детей", "Подросткам", "18-35 лет", "35-60 лет", "60 и старше"];
 
 function SurveyModal() {
-    const [open, setOpen] = useState(false);
-    const [data, setData] = useState({
-        price: "0",
-    });
     const navigate = useNavigate();
+    const { survey, setSurvey } = useContext(ContextSurvey);
+    const [open, setOpen] = useState(false);
+    const [gender, setGender] = useState(-1);
+    const [ageData, setAgeData] = useState("");
+    const [categories, setCategories] = useState([]);
+    const [price, setPrice] = useState(0);
+    const [occasions, setOccasions] = useState([]);
 
     const handleOpen = () => {
         document.body.classList.toggle("local-page");
-        setData({
-            price: "0",
-        });
         setOpen((t) => !t);
+        setGender(-1);
+        setAgeData("");
+        setCategories([]);
+        setPrice(0);
+        setOccasions([]);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setOpen(false);
+        setSurvey({
+            gender: gender,
+            age: ageData,
+            categories: categories,
+            price: price,
+            occasions: occasions,
+        });
         document.body.classList.remove("local-page");
         setTimeout(() => {
             navigate("/catalog");
@@ -70,12 +83,32 @@ function SurveyModal() {
         const value = e.target.value;
 
         if (/^[0-9]*$/.test(value)) {
-            setData((v) => ({ ...v, price: value }));
+            setPrice(value);
         }
     };
 
     const handleBlurPrice = () => {
-        setData((v) => ({ ...v, price: Number(v.price).toString() }));
+        setPrice((v) => Number(v).toString());
+    };
+
+    const handleSelectCategorie = (e) => {
+        const arr = [...categories];
+
+        if (arr.indexOf(e.target.value) != -1) {
+            setCategories((v) => v.filter((value) => value != e.target.value));
+        } else {
+            setCategories([...arr, e.target.value]);
+        }
+    };
+
+    const handleSelectOccasions = (e) => {
+        const arr = [...occasions];
+
+        if (arr.indexOf(e.target.value) != -1) {
+            setOccasions((v) => v.filter((value) => value != e.target.value));
+        } else {
+            setOccasions([...arr, e.target.value]);
+        }
     };
 
     return (
@@ -103,10 +136,24 @@ function SurveyModal() {
                                     <h3 className="survey-modal__text survey-modal__item-title">Пол:</h3>
                                     <div className="survey-modal__item-wrapper">
                                         <label className="survey-modal__text survey-modal__circle">
-                                            <input type="radio" name="gender" className="survey-modal__item-input" /> Мужской
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                className="survey-modal__item-input"
+                                                checked={gender == 1}
+                                                onChange={() => setGender(1)}
+                                            />{" "}
+                                            Мужской
                                         </label>
                                         <label className="survey-modal__text survey-modal__circle">
-                                            <input type="radio" name="gender" className="survey-modal__item-input" /> Женский
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                className="survey-modal__item-input"
+                                                checked={gender == 0}
+                                                onChange={() => setGender(0)}
+                                            />{" "}
+                                            Женский
                                         </label>
                                     </div>
                                 </div>
@@ -116,7 +163,12 @@ function SurveyModal() {
                                 <div className="survey-modal__item-content">
                                     <h3 className="survey-modal__text survey-modal__item-title">Возраст:</h3>
                                     <div className="survey-modal__item-wrapper">
-                                        <Dropdown list={age} classBlock="survey-modal__dropdown" />
+                                        <Dropdown
+                                            list={age}
+                                            classBlock="survey-modal__dropdown"
+                                            setData={setAgeData}
+                                            defaultValue="Нужно выбрать"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -128,7 +180,15 @@ function SurveyModal() {
                                 <div className="survey-modal__item-wrapper">
                                     {categorie.map((v, i) => (
                                         <label className="survey-modal__text survey-modal__cube" key={i}>
-                                            <input type="checkbox" name="categorie" className="survey-modal__item-input" /> {v}
+                                            <input
+                                                type="checkbox"
+                                                name="categorie"
+                                                className="survey-modal__item-input"
+                                                value={v}
+                                                checked={categories.indexOf(v) != -1}
+                                                onChange={(e) => handleSelectCategorie(e)}
+                                            />{" "}
+                                            {v}
                                         </label>
                                     ))}
                                 </div>
@@ -143,8 +203,8 @@ function SurveyModal() {
                                         <input
                                             maxLength={7}
                                             type="text"
-                                            name="gender"
-                                            value={data.price}
+                                            name="price"
+                                            value={price}
                                             onChange={(e) => handleChangePrice(e)}
                                             onBlur={() => handleBlurPrice()}
                                         />{" "}
@@ -160,16 +220,24 @@ function SurveyModal() {
                                 <div className="survey-modal__item-wrapper">
                                     {holidays.map((v, i) => (
                                         <label className="survey-modal__text survey-modal__cube" key={i}>
-                                            <input type="radio" name="holidays" className="survey-modal__item-input" /> {v}
+                                            <input
+                                                type="checkbox"
+                                                name="holidays"
+                                                className="survey-modal__item-input"
+                                                value={v}
+                                                checked={occasions.indexOf(v) != -1}
+                                                onChange={(e) => handleSelectOccasions(e)}
+                                            />{" "}
+                                            {v}
                                         </label>
                                     ))}
                                 </div>
                             </div>
                         </div>
+                        <button type="submit" className="survey-modal__submit">
+                            Результат
+                        </button>
                     </form>
-                    <button type="submit" form="surveyForm" className="survey-modal__submit">
-                        Результат
-                    </button>
                 </div>
             </WrapperModal>
         </div>

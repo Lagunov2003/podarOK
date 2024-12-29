@@ -5,7 +5,7 @@ import SurveyModal from "../../../component/survey-modal";
 
 const drop = ["Выбрать всё", "По рейтингу", "По возрастанию цены", "По убыванию цены"];
 
-function BlockCatalog({ search, setSearch, setSortValue }) {
+function BlockCatalog({ search, setSearch, sortValue, setSortValue }) {
     return (
         <div className="block-catalog">
             <div className="block-catalog__banner">
@@ -13,7 +13,7 @@ function BlockCatalog({ search, setSearch, setSortValue }) {
             </div>
             <div className="block-catalog__row">
                 <div className="block-catalog__wrapper">
-                    <Dropdown list={drop} setData={setSortValue} defaultValue="Сортировка по" />
+                    <Dropdown list={drop} setData={setSortValue} defaultValue={sortValue != "" ? sortValue : "Сортировка по"} />
                 </div>
                 <label className="block-catalog__find">
                     <input type="text" placeholder="Найти подарок" value={search} onChange={(e) => setSearch(e.target.value)} />

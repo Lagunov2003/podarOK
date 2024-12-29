@@ -31,6 +31,7 @@ function PageCount({ count, setCurrentPage, currentPage }) {
                     <span
                         className={"page-count__number " + (currentPage == i + 1 ? "page-count__number_active" : "")}
                         onClick={() => setCurrentPage(i + 1)}
+                        key={i + 1}
                     >
                         {i + 1}
                     </span>

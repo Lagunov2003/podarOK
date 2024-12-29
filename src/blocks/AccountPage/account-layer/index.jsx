@@ -13,9 +13,7 @@ function AccountLayer({ children }) {
                         to={"/account"}
                         className={
                             "account-layer__link" +
-                            (location.pathname == "/account" || location.pathname == "/account/edit"
-                                ? " account-layer__link_active"
-                                : "")
+                            (location.pathname == "/account" || location.pathname == "/account/edit" ? " account-layer__link_active" : "")
                         }
                     >
                         <span>Личные данные</span>

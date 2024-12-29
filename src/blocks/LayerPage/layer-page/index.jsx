@@ -44,8 +44,7 @@ function LayerPage() {
                     </main>
                     <Footer handleOpenModal={handleOpenModal}/>
                 </div>
-                <div className="page-layer__bg">
-                    <img src={"/img/circle.jpg"} alt="" />
+                <div className={"page-layer__bg" + (location.pathname.indexOf("admin") != -1 ? " page-layer__bg_admin" : "")}>
                 </div>
                 <ChatHelper />
             </div>
