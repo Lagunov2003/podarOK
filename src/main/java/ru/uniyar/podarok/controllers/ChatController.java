@@ -96,6 +96,7 @@ public class ChatController {
                 savedMessage
         );
     }
+
     /**
      * Отправить сообщение.
      * @return HTTP-ответ с диалогами всех пользователей с администратором.

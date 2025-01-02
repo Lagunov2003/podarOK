@@ -98,7 +98,7 @@ public class CatalogController {
      * @param page номер страницы (по умолчанию 1).
      * @return список подарков.
      */
-    @GetMapping("/catalog")
+    @PostMapping("/catalog")
     public ResponseEntity<?> showCatalog(
             @RequestBody(required = false) GiftFilterRequest giftFilterRequest,
             @RequestParam String name,
