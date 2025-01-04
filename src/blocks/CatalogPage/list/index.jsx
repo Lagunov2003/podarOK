@@ -6,15 +6,13 @@ import ItemCatalog from "../item-catalog";
 import { responseDeleteFromFavorites, responsePostAddToFavorites } from "../../../tool/response";
 
 function List({ list, page, setCurrentPage, currentPage }) {
-
+    
     const handleAddFavorite = async (id) => {
         await responsePostAddToFavorites(id);
     };
 
     const handleDeleteFavorite = async (id) => {
-        if (location.pathname == "/account/favorite") {
-            await responseDeleteFromFavorites(id);
-        }
+        await responseDeleteFromFavorites(id);
     };
 
     return (
@@ -23,7 +21,12 @@ function List({ list, page, setCurrentPage, currentPage }) {
                 <>
                     <div className="list__content">
                         {list?.map((v) => (
-                            <ItemCatalog item={v} key={v.id} handleAddFavorite={handleAddFavorite} handleDeleteFavorite={handleDeleteFavorite}/>
+                            <ItemCatalog
+                                item={v}
+                                key={v.id}
+                                handleAddFavorite={handleAddFavorite}
+                                handleDeleteFavorite={handleDeleteFavorite}
+                            />
                         ))}
                     </div>
                     <PageCount count={page.totalPages} setCurrentPage={setCurrentPage} currentPage={currentPage} />

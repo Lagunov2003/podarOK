@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
-import { responseGetCurrentOrders } from "../../../tool/response";
-
+import { responseGetCurrentOrders, responseGetOrdersHistory } from "../../../tool/response";
+import { convertDate, convertPrice } from "../../../tool/tool";
+import OrderItemUser from "../order-item-user";
 
 const textView = [
     {
@@ -19,20 +20,27 @@ const textView = [
 function OrderAccount() {
     const [typeView, setTypeView] = useState(0);
     const [openItem, setOpenItem] = useState(false);
-    const [indexItem, setIndexItem] = useState(-1);
-    const [list, setList] = useState(null)
+    const [orderData, setOrderData] = useState(null);
+    const [list, setList] = useState(null);
 
     useEffect(() => {
-        responseGetCurrentOrders(setList)
-    }, [])
+        console.log(list);
+    }, [list]);
 
+    useEffect(() => {
+        if (typeView == 0) {
+            (async () => await responseGetCurrentOrders(setList))();
+        } else {
+            (async () => await responseGetOrdersHistory(setList))();
+        }
+    }, [typeView]);
 
     const handleChangeTypeView = () => {
         setTypeView((v) => (v == 0 ? 1 : 0));
     };
 
-    const handleClickItem = (i) => {
-        setIndexItem(i);
+    const handleClickItem = (indexOrder) => {
+        setOrderData(list.filter((v) => v.id == indexOrder)[0]);
         setOpenItem(true);
     };
 
@@ -44,35 +52,29 @@ function OrderAccount() {
                     <button className="basket__button" onClick={() => handleChangeTypeView()}>
                         {textView[typeView].button}
                     </button>
-                    {list.length != 0 ? (
+                    {list?.length != 0 ? (
                         <div className="basket__list">
-                            {list.map((v, i) =>
+                            {list?.map((v) =>
                                 typeView == 0 ? (
-                                    <div className="basket__item" onClick={() => handleClickItem(i)}>
-                                        <div className="basket__item-img">
-                                            <img src="" alt="" />
-                                        </div>
+                                    <div className="basket__item" key={v.id} onClick={() => handleClickItem(v.id)}>
                                         <div className="basket__item-info">
-                                            <p className="basket__item-number">Заказ № {v.number}</p>
+                                            <p className="basket__item-number">Заказ № {v.id}</p>
                                             <p className="basket__item-name-price">
-                                                {v.name}
-                                                <span>{v.price} руб.</span>
+                                                Статус: {v.status}
+                                                <span>{convertPrice(v.orderCost)} руб</span>
                                             </p>
-                                            <p className="basket__item-date">Ожидается получение: {v.date}</p>
+                                            <p className="basket__item-date">Ожидается получение: {convertDate(v.deliveryDate)}</p>
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="basket__item" onClick={() => handleClickItem(i)}>
-                                        <div className="basket__item-img">
-                                            <img src="" alt="" />
-                                        </div>
+                                    <div className="basket__item" key={v.id} onClick={() => handleClickItem(v.id)}>
                                         <div className="basket__item-info">
-                                            <p className="basket__item-number">Заказ № {v.number}</p>
+                                            <p className="basket__item-number">Заказ № {v.id}</p>
                                             <p className="basket__item-name-price">
-                                                {v.name}
-                                                <span>{v.price} руб.</span>
+                                                Статус: {v.status}
+                                                <span>{convertPrice(v.orderCost)} руб</span>
                                             </p>
-                                            <p className="basket__item-date">Получен: {v.date}</p>
+                                            <p className="basket__item-date">Ожидается получение: {convertDate(v.deliveryDate)}</p>
                                         </div>
                                     </div>
                                 )
@@ -83,115 +85,7 @@ function OrderAccount() {
                     )}
                 </>
             ) : (
-                <>
-                    {typeView == 0 ? (
-                        <div className="basket__article">
-                            <div className="basket__article-top">
-                                <div className="basket__article-img">
-                                    <img src="" alt="" />
-                                </div>
-                                <div className="basket__article-property">
-                                    <h3 className="basket__article-property-name">Комплект постельного белья</h3>
-                                    <p className="basket__article-property-title">Характеристики:</p>
-                                    <div className="basket__article-property-list">
-                                        <p className="basket__article-property-item">Размер: 2-спальный комплект</p>
-                                        <p className="basket__article-property-item">Цвет: Черный</p>
-                                    </div>
-                                    <div className="basket__article-price">
-                                        <span>Цена:</span>
-                                        1750 рублей
-                                    </div>
-                                </div>
-                            </div>
-                            <button className="basket__article-button-catalog button-style">Информация о товаре</button>
-                            <div className="basket__article-info">
-                                <div className="basket__article-info-item">
-                                    <h3 className="basket__article-info-item-title">Состояние доставки</h3>
-                                    <p className="basket__article-info-item-text">Мы пришлем уведомление об изменении состояния товара</p>
-                                    <div className="basket__article-info-list">
-                                        <p className="basket__article-info-state basket__article-info-state_active">
-                                            <span>1</span> Оформлен
-                                        </p>
-                                        <p className="basket__article-info-state basket__article-info-state_active">
-                                            <span>2</span> Собран
-                                        </p>
-                                        <p className="basket__article-info-state basket__article-info-state_active">
-                                            <span>3</span> В пути
-                                        </p>
-                                        <p className="basket__article-info-state">
-                                            <span>4</span> Доставлен
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="basket__article-info-item">
-                                    <h3 className="basket__article-info-item-title">Дата получения</h3>
-                                    <p className="basket__article-info-item-text">Получение товара ожидается 20.01.2025</p>
-                                </div>
-                                <div className="basket__article-info-item">
-                                    <h3 className="basket__article-info-item-title">Сведения о доставке</h3>
-                                    <p className="basket__article-info-item-text">
-                                        Доставка по адресу г. Ярославль, ул. Сахарова д. 2, кв. 3
-                                    </p>
-                                </div>
-                                <div className="basket__article-info-item">
-                                    <h3 className="basket__article-info-item-title">Оставить отзыв</h3>
-                                    <p className="basket__article-info-item-text">
-                                        Написать отзыв о товаре и доставке можно будет после получения заказа
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="basket__article">
-                            <div className="basket__article-top">
-                                <div className="basket__article-img">
-                                    <img src="" alt="" />
-                                </div>
-                                <div className="basket__article-property">
-                                    <h3 className="basket__article-property-name">Комплект постельного белья</h3>
-                                    <p className="basket__article-property-title">Характеристики:</p>
-                                    <div className="basket__article-property-list">
-                                        <p className="basket__article-property-item">Размер: 2-спальный комплект</p>
-                                        <p className="basket__article-property-item">Цвет: Черный</p>
-                                    </div>
-                                    <div className="basket__article-price">
-                                        <span>Цена:</span>
-                                        1750 рублей
-                                    </div>
-                                </div>
-                            </div>
-                            <button className="basket__article-button-catalog button-style">Информация о товаре</button>
-                            <div className="basket__article-info">
-                                <div className="basket__article-info-item">
-                                    <h3 className="basket__article-info-item-title">Дата получения</h3>
-                                    <p className="basket__article-info-item-text">Получение товара ожидается 20.01.2025</p>
-                                </div>
-                                <div className="basket__article-info-item">
-                                    <h3 className="basket__article-info-item-title">Сведения о доставке</h3>
-                                    <p className="basket__article-info-item-text">
-                                        Доставка по адресу г. Ярославль, ул. Сахарова д. 2, кв. 3
-                                    </p>
-                                </div>
-                                <div className="basket__article-info-item">
-                                    <div className="basket__article-info-item-row">
-                                        <h3 className="basket__article-info-item-title">Оставить отзыв</h3>
-                                        <div className="basket__article-info-item-row-star">
-                                            <div className="basket__article-info-item-star"></div>
-                                            <div className="basket__article-info-item-star"></div>
-                                            <div className="basket__article-info-item-star"></div>
-                                            <div className="basket__article-info-item-star"></div>
-                                            <div className="basket__article-info-item-star"></div>
-                                        </div>
-                                    </div>
-                                    <form action="" className="basket__article-info-form">
-                                        <textarea name="" id="" placeholder="Напишите ваше мнение о товаре и доставке"></textarea>
-                                        <button className="basket__article-info-send button-style">Отправить</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </>
+                <>{typeView == 0 ? <OrderItemUser data={orderData} /> : <OrderItemUser data={orderData} typeOrder="history" />}</>
             )}
         </div>
     );

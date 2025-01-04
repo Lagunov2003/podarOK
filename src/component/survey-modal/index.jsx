@@ -167,7 +167,7 @@ function SurveyModal() {
                                             list={age}
                                             classBlock="survey-modal__dropdown"
                                             setData={setAgeData}
-                                            defaultValue="Нужно выбрать"
+                                            defaultValue={ageData == "" ? "Нужно выбрать" : ageData}
                                         />
                                     </div>
                                 </div>

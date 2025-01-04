@@ -22,7 +22,7 @@ function Favorite() {
     }
 
     const handleDeleteFavorite = async (id) => {
-        if (location.pathname == "/account/favorite") {
+        if (window.location.pathname == "/account/favorite") {
             await responseDeleteFromFavorites(id);
             await responseGetFavorites(setList);
         }

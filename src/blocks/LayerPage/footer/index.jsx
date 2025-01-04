@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import "./style.scss";
 import { Link, useNavigate } from "react-router-dom";
+import { responsePutProfile } from "../../../tool/response";
+import { ContextData, ContextLogin } from "../../../app/app";
 
 function Footer({ handleOpenModal }) {
     const navigate = useNavigate();
+    const data = useContext(ContextData);
+    const asyncLogin = useContext(ContextLogin)
+    const [tel, setTel] = useState("");
 
     const handleClickAccount = (e, type) => {
         e.preventDefault();
@@ -20,11 +25,36 @@ function Footer({ handleOpenModal }) {
         }
     };
 
+    const handleChangeInputTel = (e) => {
+        let str = e.target.value;
+
+        if (str == "" || str[str.length - 1].match(/[0-9]/)) {
+            const val = str.slice(0, str.length);
+            setTel(val);
+        }
+    };
+
+    const handleAddTel = async () => {
+        const token = localStorage.getItem("token")
+
+        if (token && tel.length == 11) {
+            await responsePutProfile({...data, phoneNumber: tel});
+            asyncLogin()
+            setTel("")
+        }
+    };
+
     return (
         <footer className="footer">
             <div className="footer__content">
                 <div className="footer__info">
-                    <div className="footer__name" onClick={() => { navigate("/"); window.scrollTo({ top: 0 }) }}>
+                    <div
+                        className="footer__name"
+                        onClick={() => {
+                            navigate("/");
+                            window.scrollTo({ top: 0 });
+                        }}
+                    >
                         <p>
                             podar<span>OK</span>
                         </p>
@@ -100,8 +130,8 @@ function Footer({ handleOpenModal }) {
                         <span> промокод на скидку 10%!</span>
                     </p>
                     <div className="footer__promocode-tel">
-                        <input type="tel" maxLength={11} autoComplete="off" />
-                        <button className="footer__promocode-button">
+                        <input type="tel" maxLength={11} autoComplete="off" value={tel} onChange={(e) => handleChangeInputTel(e)} />
+                        <button className="footer__promocode-button" onClick={() => handleAddTel()}>
                             <img src="/img/arrow-line-white.svg" alt="Кнопка отправки" />
                         </button>
                     </div>

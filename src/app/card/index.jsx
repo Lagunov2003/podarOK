@@ -11,11 +11,11 @@ function Card() {
     const [item, setItem] = useState()
 
     useEffect(() => {
-        responseGetGift(setItem, id)
+        ;(async () => await responseGetGift(setItem, id))();
     }, [id])
 
     return <>
-        <Info item={item?.groupGifts[0] || null} reviewsAmount={item?.reviewsAmount || null} averageRating={item?.averageRating || null}/>
+        <Info item={item?.groupGifts[0] || null} reviewsAmount={item?.reviewsAmount || null} averageRating={item?.averageRating || null} isFavorite={item?.isFavorite || false}/>
         <SimilarProducts list={item?.similarGifts || []}/>
         <ReviewsItem list={item?.reviews || []}/>
         <FeedbackItem />

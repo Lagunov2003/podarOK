@@ -23,7 +23,7 @@ function FeedbackItem() {
     const handleSendReview = async () => {
         if (text != "" && refRate.current != 0) {
             await responsePostAddGiftReview(text, refRate.current, id);
-            location.reload();
+            window.location.reload();
         }
     };
 

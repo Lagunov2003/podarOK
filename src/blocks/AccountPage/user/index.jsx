@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import "./style.scss";
 import { Link } from "react-router-dom";
 import { ContextData } from "../../../app/app";
+import { convertDate } from "../../../tool/tool";
 
 function User() {
     const data = useContext(ContextData);
@@ -18,7 +19,7 @@ function User() {
                             </Link>
                         </div>
                         <p className="user__top-s-name">{data.lastName ? data.lastName : ""}</p>
-                        <p className="user__top-reg">Дата регистрации {[data?.registrationDate?.split("-")]?.reverse()?.join(".")}</p>
+                        <p className="user__top-reg">Дата регистрации {convertDate(data?.registrationDate)}</p>
                     </div>
                 </div>
                 <div className="user__info">

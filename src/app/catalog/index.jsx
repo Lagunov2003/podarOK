@@ -11,6 +11,14 @@ const defaultQuery = {
     page: 0,
 };
 
+const defaultFilter = {
+    price: "",
+    categories: [],
+    occasions: [],
+    gender: -1,
+    age: -1,
+};
+
 function Catalog() {
     const [query, setQuery] = useState(defaultQuery);
     const [list, setList] = useState([]);
@@ -18,6 +26,7 @@ function Catalog() {
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState("");
     const [sortValue, setSortValue] = useState("")
+    const [filter, setFilter] = useState(defaultFilter)
     const navigate = useNavigate();
 
 
@@ -30,22 +39,30 @@ function Catalog() {
         }
     }, [])
 
+
     useEffect(() => {
-        // const strUrl = `/catalog?search=${query.search}&page=${query.page}`
-        // navigate(strUrl)
-        if(search != "") {
-            responseGetCatalogSearch(setList, setPage, currentPage, search)
-        } else if(sortValue != "" && sortValue != "Выбрать всё") {
-            responseGetSortCatalog(setList, setPage, sortValue)
-        } else {
-            responseGetCatalog(setList, setPage, currentPage);
-        }
-    }, [currentPage, search, sortValue]);
+        ;(async () => {
+            let sort = ""
+            let filt = {}
+
+            if(sortValue == "По рейтингу") sort = "Выбрать всё"
+            else if(sortValue == "Выбрать всё") sort = ""
+            else sort = sortValue
+
+            if(filter.age != -1) filt["age"] = filter.age
+            if(filter.gender != -1) filt["gender"] = filter.gender
+            if(filter.price != "") filt["budget"] = filter.price
+            if(filter.categories?.length != 0) filt["categories"] = filter.categories
+            if(filter.occasions?.length != 0) filt["occasions"] = filter.occasions
+            
+            await responseGetCatalog(setList, setPage, currentPage, search, sort, Object.keys(filt)?.length == 0 ? null : filt);
+        })();
+    }, [currentPage, search, sortValue, filter]);
 
     return (
         <WrapperCatalog>
             <BlockCatalog search={search} setSearch={setSearch} sortValue={sortValue} setSortValue={setSortValue}/>
-            <Filter />
+            <Filter setFilter={setFilter}/>
             <List list={list} page={page} setCurrentPage={setCurrentPage} currentPage={currentPage} />
         </WrapperCatalog>
     );

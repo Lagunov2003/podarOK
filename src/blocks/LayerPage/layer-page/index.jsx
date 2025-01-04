@@ -16,8 +16,15 @@ function LayerPage() {
     const data = useContext(ContextData);
 
     useEffect(() => {
-        document.title = "podarOK | Главная";
-    }, []);
+        if (location.pathname == "/") document.title = "podarOK | Главная";
+        else if (location.pathname == "/catalog") document.title = "podarOK | Каталог";
+        else if (location.pathname.indexOf("/article") != -1) document.title = "podarOK | Товар";
+        else if (location.pathname == "/basket") document.title = "podarOK | Корзина";
+        else if (location.pathname.indexOf("/account") != -1) document.title = "podarOK | Кабинет";
+        else if (location.pathname.indexOf("/admin") != -1) document.title = "podarOK | Админ";
+        else if (location.pathname.indexOf("/order") != -1) document.title = "podarOK | Оформление";
+        else document.title = "podarOK | Ошибка";
+    }, [location]);
 
     const handleOpenModal = () => {
         document.body.classList.toggle("local-page");
@@ -42,10 +49,9 @@ function LayerPage() {
                     <main className="">
                         <Outlet />
                     </main>
-                    <Footer handleOpenModal={handleOpenModal}/>
+                    <Footer handleOpenModal={handleOpenModal} />
                 </div>
-                <div className={"page-layer__bg" + (location.pathname.indexOf("admin") != -1 ? " page-layer__bg_admin" : "")}>
-                </div>
+                <div className={"page-layer__bg" + (location.pathname.indexOf("admin") != -1 ? " page-layer__bg_admin" : "")}></div>
                 <ChatHelper />
             </div>
         </ModalAuth.Provider>

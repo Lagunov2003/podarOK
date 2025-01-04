@@ -12,6 +12,10 @@ export function convertImg(url) {
     return "/img/photos" + url.slice(1, url.length) + ".png"
 }
 
+export function convertDate(date) {
+    return date.split("-").reverse().join(".")
+}
+
 export function decoderToken(token) {
     const decode = jwtDecode(token)
 

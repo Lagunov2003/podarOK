@@ -30,6 +30,13 @@
             position: absolute;
             right: 30px;
             top: 14px;
+            z-index: 2;
+            transition: all 0.15s linear;
+            cursor: pointer;
+
+            &:active {
+                transform: scale(0.9);
+            }
         }
     }
 

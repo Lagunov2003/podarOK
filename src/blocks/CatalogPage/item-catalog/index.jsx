@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./style.scss";
 import { Link } from "react-router-dom";
 import { convertImg, convertPrice } from "../../../tool/tool";
+import { ModalAuth } from "../../LayerPage/layer-page";
 
 function ItemCatalog({ item, handleDeleteFavorite = () => {}, handleAddFavorite = () => {} }) {
-    const [favorite, setFavorite] = useState(false);
-
-    useEffect(() => {
-        if (location.pathname == "/account/favorite") setFavorite(true);
-    }, []);
+    const [favorite, setFavorite] = useState(item.isFavorite);
+    const handleOpenModal = useContext(ModalAuth);
 
     const handleChangeFavorite = () => {
-        setFavorite((v) => !v);
-        if (location.pathname == "/account/favorite") {
-            if (favorite == true) handleDeleteFavorite(item.id);
-        } else {
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            setFavorite((v) => !v);
             favorite == true ? handleDeleteFavorite(item.id) : handleAddFavorite(item.id);
+        } else {
+            handleOpenModal()
         }
     };
 

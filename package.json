@@ -24,7 +24,8 @@
     "swiper": "^11.1.15",
     "vm-browserify": "^1.1.2",
     "web-vitals": "^2.1.4",
-    "webpack-dev-server": "^5.1.0"
+    "webpack-dev-server": "^5.1.0",
+    "websocket": "^1.0.35"
   },
   "scripts": {
     "server": "webpack serve --env mode=development",

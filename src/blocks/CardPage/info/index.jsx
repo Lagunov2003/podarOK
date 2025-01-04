@@ -3,42 +3,47 @@ import "./style.scss";
 import { convertImg, convertPrice } from "../../../tool/tool";
 import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import { responseGetCart, responsePostAddToFavorites, responsePostCart } from "../../../tool/response";
+import { responseDeleteFromFavorites, responseGetCart, responsePostAddToFavorites, responsePostCart } from "../../../tool/response";
 import { useNavigate, useParams } from "react-router";
 import { ModalAuth } from "../../LayerPage/layer-page";
 
 const items = ["Набор 3 шт", "Карамель-попкорн", "Синнабон", "Апельсин-корица"];
 
 const convertWord = (number) => {
-    switch(number){
-        case 1: 
-            return "отзыв"
+    switch (number) {
+        case 1:
+            return "отзыв";
         case 2:
         case 3:
         case 4:
-            return "отзыва"
+            return "отзыва";
         default:
-            return "отзывов"
+            return "отзывов";
     }
-}
+};
 
-function Info({ item, reviewsAmount, averageRating }) {
-    const { id } = useParams()
+function Info({ item, reviewsAmount, averageRating, isFavorite }) {
+    const { id } = useParams();
     const navigate = useNavigate();
     const handleOpenModal = useContext(ModalAuth);
     const [typeItem, setTypeItem] = useState(0);
     const [urlMainImg, setUrlMainImg] = useState();
     const [checkBasket, setCheckBasket] = useState(false);
     const [numberSlide, setNumberSlide] = useState(0);
+    const [favorite, setFavorite] = useState(isFavorite);
     const prevBt = useRef(null);
     const nextBt = useRef(null);
     const refSwiper = useRef(null);
 
     useEffect(() => {
+        setFavorite(isFavorite);
+    }, [isFavorite]);
+
+    useEffect(() => {
         if (item) {
             const token = localStorage.getItem("token");
 
-            setNumberSlide(0)
+            setNumberSlide(0);
             setUrlMainImg(convertImg(item?.photos[0]?.photoUrl));
 
             let func = (list) => {
@@ -59,7 +64,7 @@ function Info({ item, reviewsAmount, averageRating }) {
             setNumberSlide((v) => v + 1);
         } else if (type == "sub" && numberSlide >= 1) {
             setNumberSlide((v) => v - 1);
-        } 
+        }
     };
 
     const handleAddBasket = () => {
@@ -89,14 +94,14 @@ function Info({ item, reviewsAmount, averageRating }) {
 
     const handleFavorite = async () => {
         const token = localStorage.getItem("token");
-
+        
         if (token) {
-            await responsePostAddToFavorites(id)
+            setFavorite((v) => !v);
+            favorite == true ? await responseDeleteFromFavorites(id) : await responsePostAddToFavorites(id);
         } else {
             handleOpenModal();
         }
-    }
-
+    };
 
     return (
         <section className="info">
@@ -112,7 +117,10 @@ function Info({ item, reviewsAmount, averageRating }) {
                     <div className="info__top-right">
                         <span className="info__top-avail info__top-avail_active">Есть в наличии</span>
                         <div className="info__top-favorite" onClick={() => handleFavorite()}>
-                            <img src={"/img/favorite.svg"} alt="Добавить в избранное" />
+                            <img
+                                src={favorite == true ? "/img/favorite-purple-fill.svg" : "/img/favorite.svg"}
+                                alt="Добавить в избранное"
+                            />
                         </div>
                     </div>
                 </div>
@@ -168,11 +176,17 @@ function Info({ item, reviewsAmount, averageRating }) {
                             <div className="info__block-left">
                                 <h2 className="info__block-name">{item?.name}</h2>
                                 <div className="info__block-rating">
-                                    <div className="info__block-rating-img">
-                                        <img src="/img/yellow-star.png" alt="Элемент оформления" />
-                                        <span className="info__block-text">{averageRating?.toString()?.indexOf(".") != -1 ? averageRating : averageRating + ",0"}</span>
-                                    </div>
-                                    <span className="info__block-comment">{reviewsAmount} {convertWord(reviewsAmount)}</span>
+                                    {averageRating && (
+                                        <div className="info__block-rating-img">
+                                            <img src="/img/yellow-star.png" alt="Элемент оформления" />
+                                            <span className="info__block-text">
+                                                {averageRating?.toString()?.indexOf(".") != -1 ? averageRating : averageRating + ",0"}
+                                            </span>
+                                        </div>
+                                    )}
+                                    <span className="info__block-comment">
+                                        {reviewsAmount || 0} {convertWord(reviewsAmount || 0)}
+                                    </span>
                                 </div>
                                 <div className="info__block-list">
                                     {item?.giftGroup != null && (
@@ -210,7 +224,7 @@ function Info({ item, reviewsAmount, averageRating }) {
                         </div>
                         <div className="info__block-row">
                             <div className="info__block-left">
-                                <h3 className="info__block-title">Коротко о товаре</h3>
+                                <h3 className="info__block-title">Характеристики</h3>
                                 <div className="info__block-descr">
                                     {item?.features?.map((v, i) => (
                                         <p className="info__block-text" key={i}>

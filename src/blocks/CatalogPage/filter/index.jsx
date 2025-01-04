@@ -9,16 +9,16 @@ const categorie = [
     "Искусство",
     "Электроника",
     "Охота и рыбалка",
-    "Мода",
-    "Игрушки",
-    "Товары для дома",
-    "Красота",
-    "Книги",
     "Аксессуары",
     "Путешествия",
     "Музыка",
     "Кулинария",
     "Машины",
+    "Мода",
+    "Игрушки",
+    "Товары для дома",
+    "Красота",
+    "Книги",
 ];
 const holidays = [
     "День Рождения",
@@ -47,8 +47,8 @@ const defaultFilter = {
     age: "",
 };
 
-function Filter() {
-    const { survey } = useContext(ContextSurvey);
+function Filter({ setFilter }) {
+    const { survey, setSurvey } = useContext(ContextSurvey);
     const [data, setData] = useState(defaultFilter);
     const [ageVlaue, setAgeValue] = useState("");
 
@@ -58,11 +58,15 @@ function Filter() {
         if (section) {
             if (section != "Новый год") {
                 setData((v) => ({ ...v, categories: [section] }));
+                setFilter((v) => ({...v, categories: [categorie.indexOf(section)]}))
             } else {
                 setData((v) => ({ ...v, occasions: [section] }));
+                setFilter((v) => ({...v, occasions: [holidays.indexOf(section)]}))
             }
             sessionStorage.removeItem("section");
         }
+
+        return () => setSurvey(null)
     }, []);
 
     useEffect(() => {
@@ -73,6 +77,13 @@ function Filter() {
                 occasions: survey.occasions,
                 gender: survey.gender,
                 age: survey.age,
+            });
+            setFilter({
+                categories: [...survey.categories.map((v) => categorie.indexOf(v) + 1)],
+                occasions: [...survey.occasions.map(v => holidays.indexOf(v) + 1)],
+                gender: Number(survey.gender),
+                price: survey.price,
+                age: age.indexOf(survey.age)
             });
         }
     }, [survey]);
@@ -116,6 +127,21 @@ function Filter() {
     const handleChangeGender = (e) => {
         setData((v) => ({ ...v, gender: e.target.value }));
     };
+
+    const handleClearFilter = () => {
+        setData(defaultFilter);
+        setFilter({ price: "", categories: [], occasions: [], gender: -1, age: -1 });
+    };
+
+    const handleSearch = () => {
+        setFilter({
+            categories: [...data.categories.map(v => categorie.indexOf(v) + 1)],
+            occasions: [...data.occasions.map(v => holidays.indexOf(v) + 1)],
+            gender: Number(data.gender),
+            price: data.price,
+            age: age.indexOf(data.age)
+        });
+    }
 
     return (
         <form className="filter">
@@ -210,7 +236,10 @@ function Filter() {
                     />
                 </div>
             </div>
-            <button className="button-style filter__button">Подобрать</button>
+            <button className="button-style filter__button" type="button" onClick={() => handleSearch()}>Подобрать</button>
+            <button className="button-style filter__reset" type="reset" onClick={() => handleClearFilter()}>
+                Сбросить фильтр
+            </button>
         </form>
     );
 }

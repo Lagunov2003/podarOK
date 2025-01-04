@@ -23,7 +23,7 @@ function Notice() {
                                 {v.creationDateTime.split("T")[1].split(":")[0] + ":" + v.creationDateTime.split("T")[1].split(":")[1]}
                             </p>
                         </div>
-                    ))}
+                    ))?.reverse()}
                 </div>
             ) : (
                 <p className="notice__empty">Тут пока пусто</p>

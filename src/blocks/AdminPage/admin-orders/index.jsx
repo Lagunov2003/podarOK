@@ -1,53 +1,88 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./style.scss";
+import { responseGetOrdersAdmin, responsePutChangeOrderStatus } from "../../../tool/response";
+import OrderItemUser from "../../AccountPage/order-item-user";
+import { useLocation } from "react-router";
 
 function AdminOrders() {
+    const location = useLocation();
+    const [list, setList] = useState([]);
+    const [data, setData] = useState([]);
+    const [search, setSearch] = useState("");
+    const [idVisit, setIdVisit] = useState(-1);
+
+    useEffect(() => {
+        (async () => {
+            await responseGetOrdersAdmin(setData);
+        })();
+    }, []);
+
+    useEffect(() => {
+        const d = [...data];
+        if (search != "") {
+            setList(d.filter((v) => v.id.toString().indexOf(search) != -1));
+        } else {
+            setList(d);
+        }
+    }, [data, search]);
+
+    const handleChangeSearch = (value) => {
+        if (value == "" || value[value.length - 1].match(/[0-9]/)) setSearch(value);
+    };
+
+    const handleChangeStatus = (newStatus) => {
+        if (location.pathname.indexOf("admin") != -1) {
+            (async () => {
+                await responsePutChangeOrderStatus(idVisit, newStatus);
+                await responseGetOrdersAdmin(setData);
+                alert(`Статус заказа №${idVisit} изменён на "${newStatus}"`)
+            })();
+        }
+    };
+
     return (
         <div className="admin-orders">
-            <div className="admin-orders__search">
-                <input type="text" placeholder="Найти заказ по номеру" />
-                <div className="admin-orders__search-img">
-                    <img src="/img/find.svg" alt="" />
-                </div>
-            </div>
-            <div className="admin-orders__list">
-                <div className="admin-orders__item">
-                    <div className="admin-orders__item-img"></div>
-                    <div className="admin-orders__item-info">
-                        <span className="admin-orders__item-name">Комплект постельного белья </span>
-                        <span className="admin-orders__item-price">1750 руб.</span>
-                        <span className="admin-orders__item-status">Статус: В пути</span>
+            {idVisit == -1 ? (
+                <>
+                    <div className="admin-orders__search">
+                        <input
+                            type="text"
+                            placeholder="Найти заказ по номеру"
+                            value={search}
+                            onChange={(e) => handleChangeSearch(e.target.value)}
+                        />
+                        <div className="admin-orders__search-img">
+                            <img src="/img/find.svg" alt="" />
+                        </div>
                     </div>
-                    <p className="admin-orders__item-number">
-                        <span>Заказ</span>
-                        <span>№ 36</span>
-                    </p>
-                </div>
-                <div className="admin-orders__item">
-                    <div className="admin-orders__item-img"></div>
-                    <div className="admin-orders__item-info">
-                        <span className="admin-orders__item-name">Комплект постельного белья </span>
-                        <span className="admin-orders__item-price">1750 руб.</span>
-                        <span className="admin-orders__item-status">Статус: В пути</span>
-                    </div>
-                    <p className="admin-orders__item-number">
-                        <span>Заказ</span>
-                        <span>№ 36</span>
-                    </p>
-                </div>
-                <div className="admin-orders__item">
-                    <div className="admin-orders__item-img"></div>
-                    <div className="admin-orders__item-info">
-                        <span className="admin-orders__item-name">Комплект постельного белья </span>
-                        <span className="admin-orders__item-price">1750 руб.</span>
-                        <span className="admin-orders__item-status">Статус: В пути</span>
-                    </div>
-                    <p className="admin-orders__item-number">
-                        <span>Заказ</span>
-                        <span>№ 36</span>
-                    </p>
-                </div>
-            </div>
+                    {list?.length != 0 ? (
+                        <div className="admin-orders__list">
+                            {list?.map((v) => (
+                                <div className="admin-orders__item" key={v.id} onClick={() => setIdVisit(v.id)}>
+                                    <div className="admin-orders__item-info">
+                                        <span className="admin-orders__item-text">
+                                            Получатель: <span>{v.recipientName}</span>
+                                        </span>
+                                        <span className="admin-orders__item-text">
+                                            Почта: <span>{v.recipientEmail}</span>
+                                        </span>
+                                        <span className="admin-orders__item-text">Стоимость: {v.orderCost} руб</span>
+                                        <span className="admin-orders__item-text">Статус: {v.status}</span>
+                                    </div>
+                                    <p className="admin-orders__item-number">
+                                        <span>Заказ</span>
+                                        <span>№ {v.id}</span>
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="admin-orders__empty">Список заказов пуст!</p>
+                    )}
+                </>
+            ) : (
+                <OrderItemUser data={data.filter((v) => v.id == idVisit)[0]} handleChangeStatus={handleChangeStatus} />
+            )}
         </div>
     );
 }

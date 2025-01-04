@@ -10,33 +10,34 @@ import { ContextData } from "../../../app/app";
 import { ModalAuth } from "../../LayerPage/layer-page";
 import { responseGetSiteReviews } from "../../../tool/response";
 
+const stars = new Array(5).fill(0);
+
 function Reviews({ refReviews }) {
     const data = useContext(ContextData);
-    const handleOpenModal = useContext(ModalAuth)
+    const handleOpenModal = useContext(ModalAuth);
     const [open, setOpen] = useState(false);
-    const [list, setList] = useState([])
+    const [list, setList] = useState([]);
     const prevBt = useRef(null);
     const nextBt = useRef(null);
 
     useEffect(() => {
-        ;(async () => {
-            await responseGetSiteReviews(setList)
-        })()
-    }, [])
+        (async () => {
+            await responseGetSiteReviews(setList);
+        })();
+    }, []);
 
     useEffect(() => {
-        console.log(list);     
-    }, [list])
-
+        console.log(list);
+    }, [list]);
 
     const handleOpen = () => {
-        if(data == null) {
-            handleOpenModal()
+        if (data == null) {
+            handleOpenModal();
         } else {
             document.body.classList.toggle("local-page");
-            setOpen(v => !v)
+            setOpen((v) => !v);
         }
-    }
+    };
 
     return (
         <section className="reviews" ref={refReviews}>
@@ -47,7 +48,7 @@ function Reviews({ refReviews }) {
                     <Swiper
                         modules={[Navigation]}
                         spaceBetween={21}
-                        slidesPerView={3}
+                        slidesPerView={"auto"}
                         onInit={(swiper) => {
                             swiper.params.navigation.prevEl = prevBt.current;
                             swiper.params.navigation.nextEl = nextBt.current;
@@ -55,77 +56,36 @@ function Reviews({ refReviews }) {
                             swiper.navigation.update();
                         }}
                     >
-                        <SwiperSlide>
-                            <div className="reviews__item">
-                                <p className="reviews__item-author">
-                                    Игнат <span>☆☆☆☆☆</span>
-                                </p>
-                                <p className="reviews__item-text">
-                                    Замечательный подбор подарков, подошло все идеально, друг очень был рад, доставка вовремя!
-                                </p>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="reviews__item">
-                                <p className="reviews__item-author">
-                                    Алёна <span>☆☆☆☆</span>☆
-                                </p>
-                                <p className="reviews__item-text">
-                                    Прекрасный сервис подбора подарков. Нужно было привезти день в день, было доставлено все в срок.
-                                    Аккуратно упаковали, бережно довезли до квартиры
-                                </p>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="reviews__item">
-                                <p className="reviews__item-author">
-                                    Марат <span>☆☆☆☆☆</span>
-                                </p>
-                                <p className="reviews__item-text">
-                                    Все супер-пупер, были нюансы по доставке, обращался в чат поддержки, спасибо терпеливому администратору,
-                                    помог решить все вопросы.
-                                </p>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="reviews__item">
-                                <p className="reviews__item-author">
-                                    Игнат <span>☆☆☆☆☆</span>
-                                </p>
-                                <p className="reviews__item-text">
-                                    Замечательный подбор подарков, подошло все идеально, друг очень был рад, доставка вовремя!
-                                </p>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="reviews__item">
-                                <p className="reviews__item-author">
-                                    Алёна <span>☆☆☆☆</span>☆
-                                </p>
-                                <p className="reviews__item-text">
-                                    Прекрасный сервис подбора подарков. Нужно было привезти день в день, было доставлено все в срок.
-                                    Аккуратно упаковали, бережно довезли до квартиры
-                                </p>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="reviews__item">
-                                <p className="reviews__item-author">
-                                    Марат <span>☆☆☆☆☆</span>
-                                </p>
-                                <p className="reviews__item-text">
-                                    Все супер-пупер, были нюансы по доставке, обращался в чат поддержки, спасибо терпеливому администратору,
-                                    помог решить все вопросы.
-                                </p>
-                            </div>
-                        </SwiperSlide>
+                        {list?.map((v, i) => (
+                            <SwiperSlide key={i}>
+                                <div className="reviews__item">
+                                    <p className="reviews__item-author">
+                                        {v.userName}{" "}
+                                        <span>
+                                            {stars.map((_, i) => (
+                                                <img
+                                                    key={i}
+                                                    src={v.mark >= i + 1 ? "/img/rating-star.svg" : "/img/rating-star-empty.svg"}
+                                                    alt="Элемент оформления"
+                                                />
+                                            ))}
+                                        </span>
+                                    </p>
+                                    <p className="reviews__item-text">
+                                        Замечательный подбор подарков, подошло все идеально, друг очень был рад, доставка вовремя!
+                                    </p>
+                                </div>
+                            </SwiperSlide>
+                        ))}
                     </Swiper>
                     <button className="reviews__swiper-next" ref={nextBt}></button>
                 </div>
                 <p className="reviews__label">Последние отзывы о нашем сервисе</p>
-                <button className="reviews__button button-style" onClick={() => handleOpen()}>
-                    Оставить отзыв
-                </button>
+                {list.filter((v) => v?.userId == data?.id)?.length != 1 && (
+                    <button className="reviews__button button-style" onClick={() => handleOpen()}>
+                        Оставить отзыв
+                    </button>
+                )}
                 <WrapperModal activeModal={open}>
                     <ReviewModal handleOpen={handleOpen} />
                 </WrapperModal>

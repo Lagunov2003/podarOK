@@ -27,6 +27,13 @@
         &-next {
             margin-left: 6px;
         }
+
+        .swiper {
+            margin-left: 0;
+            &-slide {
+                width: 360px;
+            }
+        }
     }
     &__item {
         margin-bottom: 26px;
@@ -37,14 +44,21 @@
         width: 360px;
         height: 205px;
         &-author {
+            height: 20px;
             margin-bottom: 21px;
             color: #000000;
             font-family: Dimica;
             font-size: 20px;
             font-weight: 400;
+            display: flex;
+            gap: 5px;
 
-            span {
-                color: #F5D34B;
+            span {  
+                display: flex;
+
+                img {
+                    height: 18px;
+                }
             }
         }
         &-text {

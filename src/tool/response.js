@@ -130,6 +130,31 @@ export async function responseGetCurrentOrders(setData) {
 }
 
 
+export async function responseGetOrdersHistory(setData) {
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch("http://localhost:8080/ordersHistory", {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        })
+
+        if (response.status == 200) {
+            const data = await response.json()
+            setData(data)
+        } else {
+            return "ошибка"
+        }
+    } catch (e) {
+
+    }
+}
+
+
 export async function responseGetFavorites(setData) {
 
     const token = localStorage.getItem("token")
@@ -314,77 +339,61 @@ export async function responseGetNotifications(setData) {
 
 
 //Каталог 
-export async function responseGetCatalog(setList, setPage, page = 1) {
+export async function responseGetCatalog(setList, setPage, page = 1, name, sort, dataResp = null) {
+    let strUrl = "http://localhost:8080/catalog?page=" + page + "&name=" + name + "&sort=" + sort
+    const token = localStorage.getItem("token")
 
-    let strUrl = "http://localhost:8080/catalog?page=" + page + "&name=''" + "&sort=''"
+    let hed = {
+        'Content-Type': 'application/json',
+    }
+
+    if (token) {
+        hed["Authorization"] = `Bearer ${token}`
+    }
 
     try {
-        const response = await fetch(strUrl, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+        const response = dataResp == null
+            ? await fetch(strUrl, {
+                method: "POST",
+                headers: hed,
+            })
+            : await fetch(strUrl, {
+                method: "POST",
+                headers: hed,
+                body: JSON.stringify({
+                    ...dataResp
+                })
+            })
 
         const data = await response.json();
         console.log(data);
         setList(data["_embedded"].giftDtoList)
         setPage(data["page"])
     } catch (e) {
+        console.log(e);
+        setList([])
+        setPage(1)
 
     }
 }
 
-export async function responseGetCatalogSearch(setList, setPage, page = 1, search) {
-
-    let strUrl = "http://localhost:8080/catalogSearch?page=" + page + "&query=" + search
-
-    try {
-        const response = await fetch(strUrl, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        const data = await response.json();
-        console.log(data);
-        setList(data["_embedded"].giftDtoList)
-        setPage(data["page"])
-    } catch (e) {
-
-    }
-}
-
-export async function responseGetSortCatalog(setList, setPage, sort) {
-    let strUrl = "http://localhost:8080/sortCatalog?sort=" + sort
-
-    try {
-        const response = await fetch(strUrl, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        const data = await response.json();
-        console.log(data);
-        setList(data["_embedded"].giftDtoList)
-        setPage(data["page"])
-    } catch (e) {
-
-    }
-}
 
 export async function responseGetGift(setItem, id) {
     let strUrl = "http://localhost:8080/gift/" + id
 
+    const token = localStorage.getItem("token")
+    let hed = {
+        'Content-Type': 'application/json',
+    }
+
+    if (token) {
+        hed["Authorization"] = `Bearer ${token}`
+    }
+
     try {
         const response = await fetch(strUrl, {
             method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: hed,
         });
 
         const data = await response.json();
@@ -611,6 +620,110 @@ export async function responseGetAllDialogs(setList) {
 
         const data = await response.json();
         setList(data)
+    } catch (e) {
+
+    }
+}
+
+export async function responseGetNotAcceptedSiteReviews(setList) {
+    let strUrl = "http://localhost:8080/getNotAcceptedSiteReviews"
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch(strUrl, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+        const data = await response.json();
+        setList(data)
+    } catch (e) {
+
+    }
+}
+
+
+export async function responsePutchangeAcceptedStatusSiteReviews(id) {
+    let strUrl = "http://localhost:8080/changeAcceptedStatusSiteReviews?id=" + id
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch(strUrl, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+    } catch (e) {
+
+    }
+}
+
+export async function responseDeleteNotAcceptedSiteReviews(id) {
+    let strUrl = "http://localhost:8080/deleteNotAcceptedSiteReviews?id=" + id
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch(strUrl, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+    } catch (e) {
+
+    }
+}
+
+export async function responseGetOrdersAdmin(setList) {
+    let strUrl = "http://localhost:8080/getOrders?status="
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch(strUrl, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+        const data = await response.json();
+        setList(data)
+    } catch (e) {
+
+    }
+}
+
+
+export async function responsePutChangeOrderStatus(orderId, newOrderStatus) {
+    let strUrl = "http://localhost:8080/changeOrderStatus"
+
+    const token = localStorage.getItem("token")
+
+    try {
+        await fetch(strUrl, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                orderId: orderId,
+                newOrderStatus: newOrderStatus
+            })
+        });
     } catch (e) {
 
     }

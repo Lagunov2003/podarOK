@@ -13,7 +13,7 @@
     }
 
     &__button {
-        margin-bottom: 65px;
+        margin-bottom: 30px;
         padding: 5px 58px 11px;
         border-radius: 20px;
         font-family: Dela;
@@ -34,7 +34,7 @@
         width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 50px;
+        gap: 30px;
     }
 
     &__item {
@@ -50,7 +50,7 @@
         }
 
         &:hover {
-            box-shadow: 4px 4px 29px 0px #00000073;
+            box-shadow: 4px 4px 20px 0px #00000073;
         }
 
         &-img {
@@ -68,13 +68,13 @@
 
         &-number {
             font-family: Dimica;
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 300;
-            line-height: 16px;
             color: #636363;           
         }
 
         &-name-price {
+            margin-bottom: 40px;
             width: 100%;
             height: 34px;
             font-family: Dela;
@@ -93,9 +93,8 @@
         &-date {
             margin-top: auto;
             font-family: Dimica;
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 300;
-            line-height: 16px;
             text-align: left;
 
         }
@@ -108,198 +107,4 @@
         font-weight: 400;
         line-height: 32px;
     }
-
-    &__article {
-        display: flex;
-        flex-direction: column;
-        &-top {
-            margin-bottom: 30px;
-            display: flex;
-            gap: 68px;
-        }
-
-        &-img {
-            min-width: 293px;
-            height: 337px;
-            border-radius: 28px;
-            background-color: #acacac;           
-        }
-
-        &-property {
-            display: flex;
-            flex-direction: column;
-
-            &-name {
-                margin-bottom: 20px;
-                font-family: Dimica;
-                font-size: 24px;
-                font-weight: 400;
-                line-height: 24px;
-            }
-
-            &-title {
-                margin-bottom: 16px;
-                width: max-content;
-                font-family: Dimica;
-                font-size: 20px;
-                font-weight: 400;
-                line-height: 20px;
-                border-bottom: 1px solid black;
-            }
-
-            &-list {
-                display: flex;
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            &-item {
-                font-family: Dimica;
-                font-size: 20px;
-                font-weight: 400;
-                line-height: 20px;
-            }
-        }
-
-        &-price {
-            margin-top: auto;
-            display: flex;
-            flex-direction: column;
-            font-family: Dela;
-            font-size: 24px;
-            font-weight: 400;
-            line-height: 32px;          
-        }
-
-        &-button-catalog {
-            margin-bottom: 72px;
-            width: 293px;
-        }
-
-        &-info {
-            display: flex;
-            flex-direction: column;
-            gap: 38px;
-            &-item {
-                display: flex;
-                flex-direction: column;
-                &-title {
-                    margin-bottom: 15px;
-                    font-family: Dimica;
-                    font-size: 32px;
-                    font-weight: 400;
-                    line-height: 32px;
-                }
-
-                &-text {
-                    font-family: Dimica;
-                    font-size: 20px;
-                    font-weight: 400;
-                    line-height: 20px;
-                }
-
-                &-row {
-                    display: flex;
-                    justify-content: space-between;
-                }
-
-                &-row-star {
-                    display: flex;
-                }
-
-                &-star {
-                    height: 31px;
-                    min-width: 31px;
-                    cursor: pointer;
-                    background: url("../img/star.svg") center/ 100% no-repeat;
-
-                    &:hover {
-                        background: url("../img/star-hover.svg") center/ 100% no-repeat;
-                    }
-                }
-            }
-
-            &-list {
-                margin-top: 13px;
-                display: flex;
-                gap: 8px;
-
-                & .basket__article-info-state:first-child {
-                    &::before {
-                        display: none;
-                    }
-                }
-            }
-
-            &-state {
-                font-family: Dimica;
-                font-size: 24px;
-                font-weight: 400;
-                line-height: 28px;
-                text-align: left;
-                display: flex;
-                align-items: center;
-                gap: 7px;
-                opacity: 0.5;
-
-                &::before {
-                    content: "";
-                    display: inline-block;
-                    width: 25px;
-                    height: 15px;
-                    background: url("../img/arrow-black.svg") center/ 100% no-repeat;
-                }
-
-                & span {
-                    display: inline-block;
-                    height: 35px;
-                    width: 35px;
-                    background-color: #FF5496;
-                    border-radius: 50%;
-                    font-family: Dela;
-                    font-size: 20px;
-                    font-weight: 400;
-                    line-height: 32px;
-                    text-align: center;
-                    color: white;
-                }
-
-                
-                &_active {
-                    opacity: 1;
-
-                    & span {
-                        background-color: #39BB12;
-                    }
-                }
-            }
-
-            &-form {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-
-                & textarea {
-                    margin-bottom: 34px;
-                    resize: none;
-                    padding: 20px;
-                    width: 100%;
-                    height: 138px;
-                    border-radius: 20px;
-                    font-family: Dimica;
-                    font-size: 20px;
-                    font-weight: 400;
-                    line-height: 20px;
-                    background-color: #ECECEC;
-                }
-            }
-
-            &-send {
-                height: 55px;
-                width: 224px;
-            }
-        }
-
-    }
-
 }
