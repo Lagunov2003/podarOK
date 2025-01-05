@@ -6,7 +6,7 @@ function EditRecipient({ closeModalRecipient, recipient, setDataOrder }) {
 
     useEffect(() => {
         setDataRecipient({...recipient})
-    }, [])
+    }, [recipient])
 
 
     const handleSave = () => {
@@ -18,14 +18,14 @@ function EditRecipient({ closeModalRecipient, recipient, setDataOrder }) {
     const handleChangeInputName = (e) => {
         let str = e.target.value;
         
-        if (str == "" || str[str.length - 1].match(/[а-яА-Я]/)) {    
+        if (str === "" || str[str.length - 1].match(/[а-яА-Я]/)) {    
             const val = str.slice(0, str.length)
             setDataRecipient(v => ({...v, name: val}))
         }
     };
 
     const handleBlurInputName = (e) => {
-        if (e.target.value != "") {
+        if (e.target.value !== "") {
             setDataRecipient(v => ({...v, name: v.name[0].toUpperCase() + v.name.slice(1, e.target.value.length)}));
         }
     };
@@ -33,7 +33,7 @@ function EditRecipient({ closeModalRecipient, recipient, setDataOrder }) {
     const handleChangeInputEmail = (e) => {
         let str = e.target.value;
         
-        if (str == "" || str[str.length - 1].match(/[a-zA-Z@0-9._+-]/)) {    
+        if (str === "" || str[str.length - 1].match(/[a-zA-Z@0-9._+-]/)) {    
             const val = str.slice(0, str.length)
             setDataRecipient(v => ({...v, email: val}))
         }
@@ -42,7 +42,7 @@ function EditRecipient({ closeModalRecipient, recipient, setDataOrder }) {
     const handleChangeInputTel = (e) => {
         let str = e.target.value;
         
-        if (str == "" || str[str.length - 1].match(/[0-9]/)) {    
+        if (str === "" || str[str.length - 1].match(/[0-9]/)) {    
             const val = str.slice(0, str.length)
             setDataRecipient(v => ({...v, tel: val}))
         }

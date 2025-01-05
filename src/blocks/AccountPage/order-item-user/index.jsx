@@ -1,7 +1,7 @@
 import React from "react";
 import "./style.scss";
 import { convertDate, convertImg, convertPrice } from "../../../tool/tool";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const listStatus = ["Оформлен", "Собран", "В пути", "Доставлен"];
 
@@ -27,7 +27,7 @@ function OrderItemUser({ data, handleChangeStatus = () => {}, typeOrder = "curre
                     <p className="order-item-user__text">Получение товара ожидается {convertDate(data.deliveryDate)}</p>
                     <p className="order-item-user__text">Доставка по адресу {data?.information}</p>
                 </div>
-                {typeOrder == "current" && (
+                {typeOrder === "current" && (
                     <div className="order-item-user__row">
                         <h3 className="order-item-user__title">Состояние доставки</h3>
                         <p className="order-item-user__text">Мы пришлем уведомление об изменении состояния товара</p>

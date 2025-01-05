@@ -1,65 +1,59 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "./style.scss";
-
-const list = [
-    {
-        text: "Здравствуйте, ничего не работает что делать?((",
-        date: "12:13",
-        type: "user",
-    },
-    {
-        text: " Добрый день, меня зовут Анастасия, я - Ваш помощник из службы поддержки. Для решения вашей проблемы попробуйте перезагрузить страницу. Если не поможет - обращайтесь!",
-        date: "12:16",
-        type: "helper",
-    },
-    {
-        text: "Здравствуйте, ничего не работает что делать?((",
-        date: "12:13",
-        type: "user",
-    },
-    {
-        text: " Добрый день, меня зовут Анастасия, я - Ваш помощник из службы поддержки. Для решения вашей проблемы попробуйте перезагрузить страницу. Если не поможет - обращайтесь!",
-        date: "12:16",
-        type: "helper",
-    },
-];
+import { responseGetChatMessages, responsePostChatSend } from "../../../tool/response";
+import { ContextData } from "../../../app/app";
+import { convertDate } from "../../../tool/tool";
+import LoadingCircle from "../../../component/loading-circle";
+import { useLocation } from "react-router";
 
 function ChatHelper() {
+    const data = useContext(ContextData);
     const [messages, setMessages] = useState([]);
-    const [newMessage, setNewMessage] = useState("");
-    const ws = useRef(null); // useRef для WebSocket, чтобы его не пересоздавать при ререндере
+    const [loading, setLoading] = useState(false);
+    const refList = useRef();
+    const refInterval = useRef();
+    const location = useLocation();
 
     useEffect(() => {
-        // Создаем соединение при монтировании компонента
-        ws.current = new WebSocket("ws://localhost:8080/ws"); // Замените на ваш WebSocket URL
+        setLoading(false);
+        (async () => {
+            await responseGetChatMessages(setMessages, "petrov.nikita702@mail.ru");
+            setLoading(true);
+            setTimeout(() => {
+                refList.current.scrollTop = refList.current.scrollHeight;
+            }, 0);
 
-        ws.current.onopen = () => {
-            console.log("WebSocket connection opened");
-        };
+            clearInterval(refInterval.current);
+            if (location.pathname === "/account/help") {
+                refInterval.current = setInterval(() => {
+                    (async () => {
+                        await responseGetChatMessages(setMessages, "petrov.nikita702@mail.ru");
+                        setTimeout(() => {
+                            if (refList.current !== null) refList.current.scrollTop = refList.current.scrollHeight;
+                        }, 0);
+                    })();
+                }, 5000);
+            } 
+        })();
 
-        ws.current.onmessage = (event) => {
-            const message = JSON.parse(event.data); // Предполагаем JSON-формат сообщений
-            setMessages((prevMessages) => [...prevMessages, message]);
-        };
-
-        ws.current.onclose = () => {
-            console.log("WebSocket connection closed");
-        };
-
-        ws.current.onerror = (error) => {
-            console.error("WebSocket error:", error);
-        };
-
-        // Закрываем соединение при размонтировании компонента
         return () => {
-            if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-                ws.current.close();
-            }
+            clearInterval(refInterval.current);
         };
-    }, []);
+    }, [location]);
 
     const handleSend = (e) => {
         e.preventDefault();
+
+        if (e.target[0].value !== "") {
+            (async () => {
+                await responsePostChatSend(e.target[0].value, "petrov.nikita702@mail.ru");
+                await responseGetChatMessages(setMessages, "petrov.nikita702@mail.ru");
+                setTimeout(() => {
+                    refList.current.scrollTop = refList.current.scrollHeight;
+                }, 0);
+                e.target[0].value = "";
+            })();
+        }
     };
 
     return (
@@ -67,19 +61,29 @@ function ChatHelper() {
             <div className="chat__top">
                 <p className="chat__top-title">Оператор поддержки</p>
             </div>
-            <div className="chat__list">
-                {list.length != 0 ? (
-                    <>
-                        {list.map((v, i) => (
-                            <div className={"chat__item chat__item-" + v.type} key={i}>
-                                <p className="chat__item-text">{v.text}</p>
-                                <p className="chat__item-date">{v.date}</p>
-                            </div>
-                        ))}
-                    </>
-                ) : (
-                    <p className="chat__empty">Здесь вы можете задать свои вопросы</p>
-                )}
+            <div className="chat__list" ref={refList}>
+                <LoadingCircle loading={loading}>
+                    {messages.length !== 0 ? (
+                        <>
+                            {messages.map((v, i) => (
+                                <div
+                                    className={"chat__item " + (data.email === v.receiverEmail ? "chat__item-helper" : "chat__item-user")}
+                                    key={i}
+                                >
+                                    <p className="chat__item-text">{v.content}</p>
+                                    <p className="chat__item-date">
+                                        {convertDate(v.timestamp.split("T")[0])}{" "}
+                                        {v.timestamp.split("T")[1].split(".")[0].split(":")[0] +
+                                            ":" +
+                                            v.timestamp.split("T")[1].split(".")[0].split(":")[1]}
+                                    </p>
+                                </div>
+                            ))}
+                        </>
+                    ) : (
+                        <p className="chat__empty">Здесь вы можете задать свои вопросы</p>
+                    )}
+                </LoadingCircle>
             </div>
 
             <div className="chat__bottom">

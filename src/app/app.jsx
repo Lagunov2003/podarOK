@@ -1,6 +1,6 @@
-import React, { createContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import Main from "./main";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PasswordCange from "./password";
 import Account from "./account";
 import User from "../blocks/AccountPage/user";
@@ -32,9 +32,12 @@ function App() {
     const [data, setData] = useState(null);
     const [order, setOrder] = useState(null);
     const [survey, setSurvey] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [chatAdmin, setChatAdmin] = useState(null);
 
     const asyncLogin = async () => {
         const token = localStorage.getItem("token");
+        setLoading(false);
         if (token) {
             let d = await responseGetProfile(token);
             let role = await decoderToken(token);
@@ -42,6 +45,7 @@ function App() {
         } else {
             setData(null);
         }
+        setLoading(true);
     };
 
     useEffect(() => {
@@ -54,15 +58,15 @@ function App() {
                 <ContextSurvey.Provider value={{ survey: survey, setSurvey: setSurvey }}>
                     <BrowserRouter>
                         <Routes>
-                            <Route path="/" element={<LayerPage />}>
+                            <Route path="/" element={<LayerPage loading={loading} chatAdmin={chatAdmin}/>}>
                                 <Route index element={<Main />} />
                                 <Route path="catalog" element={<Catalog />} />
                                 <Route path="article/:id" element={<Card />} />
                                 <Route path="resetPassword" element={<PasswordCange />} />
                                 <Route path="confirmChanges" element={<PasswordCange />} />
-                                {data != null && (
+                                {data !== null && (
                                     <>
-                                        {data.role == false && (
+                                        {data.role === false && (
                                             <>
                                                 <Route path="order/:id" element={<Order order={order} />} />
                                                 <Route path="basket" element={<Basket setOrder={setOrder} />} />
@@ -77,12 +81,12 @@ function App() {
                                                 </Route>
                                             </>
                                         )}
-                                        {data.role == true && (
+                                        {data.role === true && (
                                             <Route path="admin" element={<Admin />}>
                                                 <Route index element={<AdminReviews />} />
                                                 <Route path="orders" element={<AdminOrders />} />
-                                                <Route path="chats/:id" element={<AdminItemChat />} />
-                                                <Route path="chats" element={<AdminChats />} />
+                                                <Route path="chats/:id" element={<AdminItemChat chatAdmin={chatAdmin} />} />
+                                                <Route path="chats" element={<AdminChats setChatAdmin={setChatAdmin} />} />
                                                 <Route path="setting" element={<Setting />} />
                                             </Route>
                                         )}

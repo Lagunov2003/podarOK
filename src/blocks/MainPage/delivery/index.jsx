@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.scss";
 import Dropdown from "../../../component/dropdown";
 
@@ -7,7 +7,7 @@ const list = ["Любое время", "С 8:00 до 11:00", "С 11:00 до 14:0
 function Delivery({ refDelivery }) {
     const [price, setPrice] = useState(100);
     const [distance, setDistance] = useState(1);
-    const [time, setTime] = useState();
+    const [, setTime] = useState();
     const [fast, setFast] = useState(false);
 
     useEffect(() => {

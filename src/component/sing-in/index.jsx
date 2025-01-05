@@ -1,9 +1,8 @@
 import React, { useContext, useRef, useState } from "react";
 import "./style.scss";
-import { Link } from "react-router-dom";
 import InfoPassword from "../info-password";
 import EmailSend from "../email-send";
-import { responseDataCatalog, responseLogin, responseRegister } from "../../tool/response";
+import { responseLogin, responseRegister } from "../../tool/response";
 import { ContextLogin } from "../../app/app";
 
 const data = [
@@ -19,7 +18,7 @@ const data = [
     },
 ];
 
-function SingIn({ openModal, activeModal }) {
+function SingIn({ openModal }) {
     const [activeBlock, setActiveBlock] = useState(0);
     const [errorEnter, setErrorEnter] = useState(false);
     const [errorRegister, setErrorRegister] = useState("");
@@ -33,7 +32,7 @@ function SingIn({ openModal, activeModal }) {
 
     const handleClickBB = () => {
         refSingIn.current.classList.toggle("sing-in_active");
-        if (activeBlock == 0) {
+        if (activeBlock === 0) {
             setErrorRegister("");
         } else {
             setModalPassword(false);
@@ -42,7 +41,7 @@ function SingIn({ openModal, activeModal }) {
             refFormRegister.current.reset();
         }
         setTimeout(() => {
-            if (activeBlock == 0) {
+            if (activeBlock === 0) {
                 setActiveBlock(1);
             } else {
                 setActiveBlock(0);
@@ -60,20 +59,20 @@ function SingIn({ openModal, activeModal }) {
 
     const handleChangeInputPassword = (e) => {
         let str = e.target.value;
-        if (str != "" && !str[str.length - 1].match(/[a-zA-Z]/)) {
+        if (str !== "" && !str[str.length - 1].match(/[a-zA-Z]/)) {
             e.target.value = str.slice(0, str.length - 1);
         }
     };
 
     const handleChangeInputName = (e) => {
         let str = e.target.value;
-        if (str != "" && !str[str.length - 1].match(/[а-яА-Я]/)) {
+        if (str !== "" && !str[str.length - 1].match(/[а-яА-Я]/)) {
             e.target.value = str.slice(0, str.length - 1);
         }
     };
 
     const handleBlurInputName = (e) => {
-        if (e.target.value != "") {
+        if (e.target.value !== "") {
             e.target.value = e.target.value[0].toUpperCase() + e.target.value.slice(1, e.target.value.length);
         }
     };
@@ -89,11 +88,11 @@ function SingIn({ openModal, activeModal }) {
 
         const status = await responseRegister(e.target[0].value, e.target[1].value, e.target[2].value);
 
-        if (status == "успешно") {
+        if (status === "успешно") {
             refFormEnter.current.reset();
             alert("Регистрация выполнена!");
             handleClickBB();
-        } else if (status == "повтор") {
+        } else if (status === "повтор") {
             setErrorRegister("Такой пользователь уже существует");
         } else {
             setErrorRegister("Ошибка сервера");
@@ -106,7 +105,7 @@ function SingIn({ openModal, activeModal }) {
 
         const status = await responseLogin(e.target[0].value, e.target[1].value);
         
-        if (status == "успешно") {
+        if (status === "успешно") {
             handleOpenModal();
             refFormEnter.current.reset();
             asyncLogin()
@@ -136,7 +135,7 @@ function SingIn({ openModal, activeModal }) {
                             <input type="password" maxLength={12} className="sing-in__input" placeholder="Пароль" autoComplete="false" onChange={(e) => { handleChangeInputPassword(e); setErrorEnter(false)}}/>
                         </form>
                         <div className="sing-in__enter-row">
-                            {errorEnter == true && <p className="sing-in__enter-error">Неверная почта или пароль</p>}
+                            {errorEnter === true && <p className="sing-in__enter-error">Неверная почта или пароль</p>}
                             <p className="sing-in__enter-forget" onClick={() => setModalEmail(true)}>
                                 Забыли пароль?
                             </p>
@@ -194,8 +193,8 @@ function SingIn({ openModal, activeModal }) {
                         </svg>
                     </button>
                 </div>
-                {modalPassword == true && <InfoPassword handleOpen={handleOpenModalPassword} />}
-                {modalEmail == true && <EmailSend setModalEmail={setModalEmail} />}
+                {modalPassword === true && <InfoPassword handleOpen={handleOpenModalPassword} />}
+                {modalEmail === true && <EmailSend setModalEmail={setModalEmail} />}
             </div>
         </div>
     );

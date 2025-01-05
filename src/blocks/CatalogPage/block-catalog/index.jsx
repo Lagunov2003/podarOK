@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./style.scss";
 import Dropdown from "../../../component/dropdown";
 import SurveyModal from "../../../component/survey-modal";
@@ -13,7 +13,7 @@ function BlockCatalog({ search, setSearch, sortValue, setSortValue }) {
             </div>
             <div className="block-catalog__row">
                 <div className="block-catalog__wrapper">
-                    <Dropdown list={drop} setData={setSortValue} defaultValue={sortValue != "" ? sortValue : "Сортировка по"} />
+                    <Dropdown list={drop} setData={setSortValue} defaultValue={sortValue !== "" ? sortValue : "Сортировка по"} />
                 </div>
                 <label className="block-catalog__find">
                     <input type="text" placeholder="Найти подарок" value={search} onChange={(e) => setSearch(e.target.value)} />

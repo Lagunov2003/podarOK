@@ -9,13 +9,13 @@ function EmailSend({ setModalEmail }) {
     const handleChangeInputEmail = (e) => {
         let str = e.target.value;
 
-        if (str != "" && str[str.length - 1].match(/[a-zA-Z@0-9._+-]/)) {
+        if (str !== "" && str[str.length - 1].match(/[a-zA-Z@0-9._+-]/)) {
             const val = str.slice(0, str.length);
             setEmail(val);
         } else {
             e.target.value = str.slice(0, str.length - 1)
-            if(str == "") {
-                setNewData("");
+            if(str === "") {
+                setEmail("");
             }
         }
     };
@@ -23,7 +23,7 @@ function EmailSend({ setModalEmail }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const status = await responseForgot(email)
-        if(status == "успешно") {
+        if(status === "успешно") {
             alert("Перейдите по ссылке в письме для восстановления пароля!")
             localStorage.setItem("email", email)
             setModalEmail(false)

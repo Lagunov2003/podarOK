@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./style.scss";
 import { ContextLogin } from "../../../app/app";
 import { responseChangePassword, responseDeleteFavorites } from "../../../tool/response";
@@ -12,7 +12,7 @@ function Setting() {
     const handleDeleteAccount = () => {
         ;(async () => {
             const status = await responseDeleteFavorites()
-            if(status == "успешно") {
+            if(status === "успешно") {
                 setActiveModal((v) => !v);
                 localStorage.removeItem("token")
                 asyncLogin()
@@ -30,7 +30,7 @@ function Setting() {
     const handlePasswordChange = async () => {
         const status = await responseChangePassword()
 
-        if(status == "успешно") {
+        if(status === "успешно") {
             alert("Перейдите по ссылке в письме для подтверждения смены пароля!")
         } else {
             alert("Ошибка сервера!")
@@ -49,7 +49,7 @@ function Setting() {
                 Выйти из аккаунта
             </button>
 
-            {activeModal == true && (
+            {activeModal === true && (
                 <div className="account-setting__modal">
                     <div className="account-setting__modal-content">
                         <p className="account-setting__modal-title">Вы уверены, что хотите удалить аккаунт?</p>

@@ -10,13 +10,13 @@ function PageCount({ count, setCurrentPage, currentPage }) {
 
 
     const handleClickPrev = () => {
-        if(currentPage != 1) {
+        if(currentPage !== 1) {
             setCurrentPage(v => --v)
         }
     }
 
     const handleClickNext = () => {
-        if(currentPage != count) {
+        if(currentPage !== count) {
             setCurrentPage(v => ++v)
         }
     }
@@ -29,7 +29,7 @@ function PageCount({ count, setCurrentPage, currentPage }) {
             <div className="page-count__row">
                 {arr.map((_, i) => (
                     <span
-                        className={"page-count__number " + (currentPage == i + 1 ? "page-count__number_active" : "")}
+                        className={"page-count__number " + (currentPage === i + 1 ? "page-count__number_active" : "")}
                         onClick={() => setCurrentPage(i + 1)}
                         key={i + 1}
                     >

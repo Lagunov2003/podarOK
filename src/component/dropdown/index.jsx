@@ -3,11 +3,11 @@ import "./style.scss";
 
 function Dropdown({ list, setData, classBlock = "", defaultValue = "", inactive = false }) {
     const refTime = useRef(null);
-    const [textTime, setTextTime] = useState(defaultValue != "" ? defaultValue : list[0]);
+    const [textTime, setTextTime] = useState(defaultValue !== "" ? defaultValue : list[0]);
 
     useEffect(() => {
-        setTextTime(defaultValue != "" ? defaultValue : list[0])
-    }, [defaultValue])
+        setTextTime(defaultValue !== "" ? defaultValue : list[0])
+    }, [defaultValue, list])
 
     const handleClick = () => {
         refTime.current.classList.toggle("dropdown_active");
@@ -22,7 +22,7 @@ function Dropdown({ list, setData, classBlock = "", defaultValue = "", inactive 
     return (
         <div className={"dropdown " + classBlock} ref={refTime}>
             <div className={"dropdown__content"}>
-                {inactive == false ? (
+                {inactive === false ? (
                     <>
                         <p className="dropdown__text" onClick={handleClick}>
                             {textTime}

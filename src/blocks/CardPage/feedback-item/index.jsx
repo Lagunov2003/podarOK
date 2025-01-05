@@ -21,7 +21,7 @@ function FeedbackItem() {
     }, []);
 
     const handleSendReview = async () => {
-        if (text != "" && refRate.current != 0) {
+        if (text !== "" && refRate.current !== 0) {
             await responsePostAddGiftReview(text, refRate.current, id);
             window.location.reload();
         }
@@ -35,7 +35,7 @@ function FeedbackItem() {
                     <div className="feedback-item__wrapper">
                         <div className="feedback-item__row" onMouseLeave={() => setRate(0)}>
                             {arr.map((_, i) =>
-                                rate > i || (refRate.current > i && rate == 0) ? (
+                                rate > i || (refRate.current > i && rate === 0) ? (
                                     <img
                                         src="/img/rating-star.svg"
                                         alt="Звезда рейтинга"

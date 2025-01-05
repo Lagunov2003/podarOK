@@ -20,25 +20,20 @@ function Edit() {
 
     useEffect(() => {
         setNewData({...data})
-    }, [])
-
-    useEffect(() => {
-        console.log(newData);
-        
-    }, [newData])
+    }, [data])
 
     const handleChangeInputName = (e, type) => {
         let str = e.target.value;
-        if (str != "" && str[str.length - 1].match(/[а-яА-Я]/)) {
-            if (type == "f") {
+        if (str !== "" && str[str.length - 1].match(/[а-яА-Я]/)) {
+            if (type === "f") {
                 setNewData((v) => ({ ...v, firstName: str }));
             } else {
                 setNewData((v) => ({ ...v, lastName: str }));
             }
         } else {
             e.target.value = str.slice(0, str.length - 1)
-            if(str == "") {
-                if (type == "f") {
+            if(str === "") {
+                if (type === "f") {
                     setNewData((v) => ({ ...v, firstName: "" }));
                 } else {
                     setNewData((v) => ({ ...v, lastName: "" }));
@@ -48,9 +43,9 @@ function Edit() {
     };
 
     const handleBlurInputName = (e, type) => {
-        if (e.target.value != "") {
+        if (e.target.value !== "") {
             const value = e.target.value[0].toUpperCase() + e.target.value.slice(1, e.target.value.length);
-            if (type == "f") {
+            if (type === "f") {
                 setNewData((v) => ({ ...v, firstName: value }));
             } else {
                 setNewData((v) => ({ ...v, lastName: value }));
@@ -65,12 +60,12 @@ function Edit() {
     const handleChangeInputEmail = (e) => {
         let str = e.target.value;
 
-        if (str != "" && str[str.length - 1].match(/[a-zA-Z@0-9._+-]/)) {
+        if (str !== "" && str[str.length - 1].match(/[a-zA-Z@0-9._+-]/)) {
             const val = str.slice(0, str.length);
             setNewData((v) => ({ ...v, email: val }));
         } else {
             e.target.value = str.slice(0, str.length - 1)
-            if(str == "") {
+            if(str === "") {
                 setNewData((v) => ({ ...v, email: "" }));
             }
         }
@@ -79,12 +74,12 @@ function Edit() {
     const handleChangeInputTel = (e) => {
         let str = e.target.value;
 
-        if (str != "" && str[str.length - 1].match(/[0-9]/)) {
+        if (str !== "" && str[str.length - 1].match(/[0-9]/)) {
             const val = str.slice(0, str.length);
             setNewData((v) => ({ ...v, phoneNumber: val }));
         } else {
             e.target.value = str.slice(0, str.length - 1)
-            if (str == "") {
+            if (str === "") {
                 setNewData((v) => ({ ...v, phoneNumber: "" }));
             }
         }
@@ -98,7 +93,7 @@ function Edit() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if(newData.firstName != "" && newData.email != "") {
+        if(newData.firstName !== "" && newData.email !== "") {
             const status = await responsePutProfile(newData);
             if(status === 200) {
                 await asyncLogin()

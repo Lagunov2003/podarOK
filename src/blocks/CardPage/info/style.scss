@@ -1,5 +1,5 @@
 .info { 
-    
+
     &__content {
         margin: 0 120px;
     }
@@ -74,6 +74,8 @@
     }
 
     &__block {
+        min-height: 500px;
+        height: 100%;
         margin-bottom: 58px;
         display: flex;
         gap: 19px;

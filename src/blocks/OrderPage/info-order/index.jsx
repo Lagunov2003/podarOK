@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
 import Dropdown from "../../../component/dropdown";
-import { convertPrice } from "../../../tool/tool";
 
 const list = ["Любое время", "С 08:00 до 11:00", "С 11:00 до 14:00", "С 14:00 до 17:00", "С 17:00 до 20:00", "С 20:00 до 23:00"];
 
@@ -21,13 +20,13 @@ function InfoOrder({ openModalRecipient, openModalAddress, acceptAddress, dataOr
 
     useEffect(() => {
         setDataOrder((v) => ({ ...v, time: time }));
-    }, [time]);
+    }, [time, setDataOrder]);
 
     useEffect(() => {
         if (fast) {
             setDataOrder((v) => {
                 let pr = v.addressPrice;
-                if (v.fastDelivery == false) {
+                if (v.fastDelivery === false) {
                     pr += 250;
                 }
                 return { ...v, fastDelivery: fast, addressPrice: pr };
@@ -35,13 +34,13 @@ function InfoOrder({ openModalRecipient, openModalAddress, acceptAddress, dataOr
         } else {
             setDataOrder((v) => {
                 let pr = v.addressPrice;
-                if (v.fastDelivery == true) {
+                if (v.fastDelivery === true) {
                     pr -= 250;
                 }
                 return { ...v, fastDelivery: fast, addressPrice: pr };
             });
         }
-    }, [fast]);
+    }, [fast, setDataOrder]);
 
     return (
         <div className="info-order">
@@ -56,17 +55,17 @@ function InfoOrder({ openModalRecipient, openModalAddress, acceptAddress, dataOr
                     <ul className="info-order__recipient-list">
                         <li className="info-order__recipient-item">
                             <p className="info-order__text info-order__recipient-label">Имя получателя:</p>
-                            <p className="info-order__text">{dataOrder.recipient.name == "" ? "*Не указано*" : dataOrder.recipient.name}</p>
+                            <p className="info-order__text">{dataOrder.recipient.name === "" ? "*Не указано*" : dataOrder.recipient.name}</p>
                         </li>
                         <li className="info-order__recipient-item">
                             <p className="info-order__text info-order__recipient-label">Почта:</p>
                             <p className="info-order__text">
-                                {dataOrder.recipient.email == "" ? "*Не указано*" : dataOrder.recipient.email}
+                                {dataOrder.recipient.email === "" ? "*Не указано*" : dataOrder.recipient.email}
                             </p>
                         </li>
                         <li className="info-order__recipient-item">
                             <p className="info-order__text info-order__recipient-label">Телефон:</p>
-                            <p className="info-order__text">{dataOrder.recipient.tel == "" ? "*Не указано*" : dataOrder.recipient.tel}</p>
+                            <p className="info-order__text">{dataOrder.recipient.tel === "" ? "*Не указано*" : dataOrder.recipient.tel}</p>
                         </li>
                     </ul>
                 </div>
@@ -87,7 +86,7 @@ function InfoOrder({ openModalRecipient, openModalAddress, acceptAddress, dataOr
                         <button className="info-order__delivery-button" onClick={() => openModalAddress(true)}>
                             Выбрать на карте
                         </button>
-                        {acceptAddress == true && (
+                        {acceptAddress === true && (
                             <span className="info-order__delivery-accept">
                                 <img src="/img/accept-green.svg" alt="Знак указанного адреса" />
                             </span>
@@ -113,7 +112,7 @@ function InfoOrder({ openModalRecipient, openModalAddress, acceptAddress, dataOr
                     <h2 className="info-order__title">Способ оплаты</h2>
                     <div className="info-order__pay-row">
                         <div
-                            className={"info-order__pay-item " + (typePay == "online" ? "info-order__pay-item_select" : "")}
+                            className={"info-order__pay-item " + (typePay === "online" ? "info-order__pay-item_select" : "")}
                             onClick={() => handleClickPay("online")}
                         >
                             <p className="info-order__pay-text">Оплата онлайн</p>
@@ -122,7 +121,7 @@ function InfoOrder({ openModalRecipient, openModalAddress, acceptAddress, dataOr
                             </div>
                         </div>
                         <div
-                            className={"info-order__pay-item " + (typePay == "card" ? "info-order__pay-item_select" : "")}
+                            className={"info-order__pay-item " + (typePay === "card" ? "info-order__pay-item_select" : "")}
                             onClick={() => handleClickPay("card")}
                         >
                             <p className="info-order__pay-text">Картой курьеру</p>
@@ -131,7 +130,7 @@ function InfoOrder({ openModalRecipient, openModalAddress, acceptAddress, dataOr
                             </div>
                         </div>
                         <div
-                            className={"info-order__pay-item " + (typePay == "cash" ? "info-order__pay-item_select" : "")}
+                            className={"info-order__pay-item " + (typePay === "cash" ? "info-order__pay-item_select" : "")}
                             onClick={() => handleClickPay("cash")}
                         >
                             <p className="info-order__pay-text">Наличными</p>
@@ -141,7 +140,7 @@ function InfoOrder({ openModalRecipient, openModalAddress, acceptAddress, dataOr
                         </div>
                     </div>
                 </div>
-                {typePay == "online" && (
+                {typePay === "online" && (
                     <div className="info-order__online info-order__block">
                         <div className="info-order__online-top">
                             <h2 className="info-order__title">Оплата онлайн</h2>
@@ -172,7 +171,7 @@ function InfoOrder({ openModalRecipient, openModalAddress, acceptAddress, dataOr
                         </div>
                     </div>
                 )}
-                {typePay == "cash" && (
+                {typePay === "cash" && (
                     <div className="info-order__sum info-order__block">
                         <h2 className="info-order__title">Оплата наличными</h2>
                         <div className="info-order__sum-row">

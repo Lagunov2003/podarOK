@@ -5,7 +5,6 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import WrapperModal from "../../../component/wrapper-modal";
 import ReviewModal from "../../../component/review-modal";
-import SingIn from "../../../component/sing-in";
 import { ContextData } from "../../../app/app";
 import { ModalAuth } from "../../LayerPage/layer-page";
 import { responseGetSiteReviews } from "../../../tool/response";
@@ -31,7 +30,7 @@ function Reviews({ refReviews }) {
     }, [list]);
 
     const handleOpen = () => {
-        if (data == null) {
+        if (data === null) {
             handleOpenModal();
         } else {
             document.body.classList.toggle("local-page");
@@ -81,7 +80,7 @@ function Reviews({ refReviews }) {
                     <button className="reviews__swiper-next" ref={nextBt}></button>
                 </div>
                 <p className="reviews__label">Последние отзывы о нашем сервисе</p>
-                {list.filter((v) => v?.userId == data?.id)?.length != 1 && (
+                {list.filter((v) => v?.userId === data?.id)?.length !== 1 && (
                     <button className="reviews__button button-style" onClick={() => handleOpen()}>
                         Оставить отзыв
                     </button>

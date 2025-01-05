@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Button from "../../../component/button";
 import "./style.scss";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import InfoPassword from "../../../component/info-password";
 import { useSearchParams } from "react-router-dom";
 import { responseResetPassword } from "../../../tool/response";
@@ -9,33 +9,31 @@ import { responseResetPassword } from "../../../tool/response";
 const errors = ["Пароли не совпадают!", "Пароль меньше 6 символов!"];
 
 function Password() {
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const [error, setError] = useState(-1);
     const [modalPassword, setModalPassword] = useState(false);
     const [tokenChange, setTokenChange] = useState("");
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const token = searchParams.get("token");
         const code = searchParams.get("code")
 
-        console.log(token, code, location.pathname);
-        
-
-        if (location.pathname == "/resetPassword") {
+        if (location.pathname === "/resetPassword") {
             if (token) {
                 setTokenChange(token);
             } else {
                 navigate("/error");
             }
-        } else if (location.pathname == "/confirmChanges") {
+        } else if (location.pathname === "/confirmChanges") {
             if (code) {
                 setTokenChange(code);
             } else {
                 navigate("/error");
             }
         } 
-    }, []);
+    }, [location, navigate, searchParams]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -44,13 +42,13 @@ function Password() {
 
         if (e.target[0].value.length < 6 || e.target[2].value.length < 6) {
             setError(1);
-        } else if (e.target[0].value != e.target[2].value && e.target[0].value != "") {
+        } else if (e.target[0].value !== e.target[2].value && e.target[0].value !== "") {
             setError(0);
         } else {
             const email = localStorage.getItem("email");
             const status = await responseResetPassword(tokenChange, email, e.target[0].value, e.target[2].value);
             setError(-1);
-            if (status == "успешно") {
+            if (status === "успешно") {
                 alert("Пароль успешно изменён!");
             } else {
                 alert("Ошибка сервера!");
@@ -61,7 +59,7 @@ function Password() {
 
     const handleChangeInput = (e) => {
         let str = e.target.value;
-        if (str != "" && !str[str.length - 1].match(/[a-zA-Z]/)) {
+        if (str !== "" && !str[str.length - 1].match(/[a-zA-Z]/)) {
             e.target.value = str.slice(0, str.length - 1);
         }
     };
@@ -75,7 +73,7 @@ function Password() {
             <div className="password__content">
                 <h1 className="password__title">Изменение пароля</h1>
                 <div className="password__block">
-                    {error != -1 && <p className="password__error">{errors[error]}</p>}
+                    {error !== -1 && <p className="password__error">{errors[error]}</p>}
                     <form
                         action=""
                         className="password__form"
@@ -114,7 +112,7 @@ function Password() {
                             idForm="passwordReset"
                         />
                     </form>
-                    {modalPassword == true && <InfoPassword handleOpen={handleOpenModalPassword} />}
+                    {modalPassword === true && <InfoPassword handleOpen={handleOpenModalPassword} />}
                 </div>
             </div>
         </section>

@@ -50,7 +50,7 @@ function ChatHelper() {
             <button className="chat-helper__button" onClick={() => setShow(true)}>
                 <img src="/img/chat-helper.svg" alt="" />
             </button>
-            {show == true && (
+            {show === true && (
                 <div className="chat-helper__content">
                     <div className="chat-helper__list">
                         {list?.map((v, i) => (

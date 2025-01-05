@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import "./style.scss";
 import { Link } from "react-router-dom";
 import { convertImg, convertPrice } from "../../../tool/tool";
@@ -13,7 +13,7 @@ function ItemCatalog({ item, handleDeleteFavorite = () => {}, handleAddFavorite 
 
         if (token) {
             setFavorite((v) => !v);
-            favorite == true ? handleDeleteFavorite(item.id) : handleAddFavorite(item.id);
+            favorite === true ? handleDeleteFavorite(item.id) : handleAddFavorite(item.id);
         } else {
             handleOpenModal()
         }
@@ -27,7 +27,7 @@ function ItemCatalog({ item, handleDeleteFavorite = () => {}, handleAddFavorite 
                 </div>
                 <span className="item-catalog__label">В наличии</span>
                 <button className="item-catalog__favorite" onClick={() => handleChangeFavorite()}>
-                    <img src={favorite == false ? "/img/catalog/favorite.svg" : "/img/catalog/favorite-purple.svg"} alt="Кнопка лайка" />
+                    <img src={favorite === false ? "/img/catalog/favorite.svg" : "/img/catalog/favorite-purple.svg"} alt="Кнопка лайка" />
                 </button>
             </div>
             <p className="item-catalog__price">{convertPrice(item.price)} ₽</p>

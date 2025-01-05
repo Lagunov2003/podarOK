@@ -31,7 +31,7 @@ function WrapperBasket({ list, setList, setOrder }) {
                 <div className="basket-page__top">
                     <h1 className="basket-page__title">Корзина</h1>
                 </div>
-                {list.length != 0 ? (
+                {list.length !== 0 ? (
                     <div className="basket-page__main">
                         <div className="basket-page__wrapper-left">
                             <div className="basket-page__list">
@@ -50,7 +50,7 @@ function WrapperBasket({ list, setList, setOrder }) {
                             </p>
                         </div>
                         <div className="basket-page__info">
-                            {selectItem.length == 0 ? (
+                            {selectItem.length === 0 ? (
                                 <>
                                     <p className="basket-page__info-text">Выберите товары, чтобы продолжить</p>
                                     <button className="basket-page__info-button" onClick={() => handleSelectAll()}>

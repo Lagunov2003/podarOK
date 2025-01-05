@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./style.scss";
 import Dropdown from "../../../component/dropdown";
 import { ContextSurvey } from "../../../app/app";
@@ -56,7 +56,7 @@ function Filter({ setFilter }) {
         const section = sessionStorage.getItem("section");
 
         if (section) {
-            if (section != "Новый год") {
+            if (section !== "Новый год") {
                 setData((v) => ({ ...v, categories: [section] }));
                 setFilter((v) => ({...v, categories: [categorie.indexOf(section)]}))
             } else {
@@ -67,10 +67,10 @@ function Filter({ setFilter }) {
         }
 
         return () => setSurvey(null)
-    }, []);
+    }, [setData, setFilter, setSurvey]);
 
     useEffect(() => {
-        if (survey != null) {
+        if (survey !== null) {
             setData({
                 price: survey.price,
                 categories: survey.categories,
@@ -86,11 +86,11 @@ function Filter({ setFilter }) {
                 age: age.indexOf(survey.age)
             });
         }
-    }, [survey]);
+    }, [survey, setFilter, setData]);
 
     useEffect(() => {
-        if (ageVlaue != "") setData((v) => ({ ...v, age: ageVlaue }));
-    }, [ageVlaue]);
+        if (ageVlaue !== "") setData((v) => ({ ...v, age: ageVlaue }));
+    }, [ageVlaue, setData]);
 
     const handleChangePrice = (e) => {
         const { value } = e.target;
@@ -107,8 +107,8 @@ function Filter({ setFilter }) {
     const handleChangeCategorie = (e) => {
         const { value } = e.target;
 
-        if (data.categories.indexOf(value) != -1) {
-            setData((v) => ({ ...v, categories: [...v.categories.filter((v) => v != value)] }));
+        if (data.categories.indexOf(value) !== -1) {
+            setData((v) => ({ ...v, categories: [...v.categories.filter((v) => v !== value)] }));
         } else {
             setData((v) => ({ ...v, categories: [...v.categories, value] }));
         }
@@ -117,8 +117,8 @@ function Filter({ setFilter }) {
     const handleChangeHolidays = (e) => {
         const { value } = e.target;
 
-        if (data.occasions.indexOf(value) != -1) {
-            setData((v) => ({ ...v, occasions: [...v.occasions.filter((v) => v != value)] }));
+        if (data.occasions.indexOf(value) !== -1) {
+            setData((v) => ({ ...v, occasions: [...v.occasions.filter((v) => v !== value)] }));
         } else {
             setData((v) => ({ ...v, occasions: [...v.occasions, value] }));
         }
@@ -155,7 +155,7 @@ function Filter({ setFilter }) {
                                     type="checkbox"
                                     name="categorieFilter"
                                     value={v}
-                                    checked={data.categories.indexOf(v) != -1}
+                                    checked={data.categories.indexOf(v) !== -1}
                                     onChange={(e) => handleChangeCategorie(e)}
                                 />{" "}
                                 {v}
@@ -174,7 +174,7 @@ function Filter({ setFilter }) {
                                     type="checkbox"
                                     name="holidaysFilter"
                                     value={v}
-                                    checked={data.occasions.indexOf(v) != -1}
+                                    checked={data.occasions.indexOf(v) !== -1}
                                     onChange={(e) => handleChangeHolidays(e)}
                                 />{" "}
                                 {v}
@@ -191,7 +191,7 @@ function Filter({ setFilter }) {
                             type="radio"
                             name="genderFilter"
                             value={1}
-                            checked={data.gender == 1}
+                            checked={data.gender === 1}
                             onChange={(e) => handleChangeGender(e)}
                         />{" "}
                         Мужской
@@ -201,7 +201,7 @@ function Filter({ setFilter }) {
                             type="radio"
                             name="genderFilter"
                             value={0}
-                            checked={data.gender == 0}
+                            checked={data.gender === 0}
                             onChange={(e) => handleChangeGender(e)}
                         />{" "}
                         Женский
@@ -232,7 +232,7 @@ function Filter({ setFilter }) {
                         list={age}
                         setData={setAgeValue}
                         classBlock="filter__dropdown"
-                        defaultValue={data.age != "" ? data.age : "Выбрать"}
+                        defaultValue={data.age !== "" ? data.age : "Выбрать"}
                     />
                 </div>
             </div>

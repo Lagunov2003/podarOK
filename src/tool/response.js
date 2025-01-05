@@ -13,9 +13,9 @@ export async function responseRegister(name, email, password) {
             })
         })
 
-        if (response.status == 200) {
+        if (response.status === 200) {
             return "успешно"
-        } else if (response.status == 409) {
+        } else if (response.status === 409) {
             return "повтор"
         } else {
             return "ошибка"
@@ -39,10 +39,9 @@ export async function responseLogin(email, password) {
             })
         })
 
-        if (response.status == 200) {
+        if (response.status === 200) {
             const data = await response.json()
             localStorage.setItem("token", data.token)
-            console.log(data.token);
             return "успешно"
         } else {
             return "ошибка"
@@ -64,9 +63,8 @@ export async function responseGetProfile(token) {
             },
         })
 
-        if (response.status == 200) {
+        if (response.status === 200) {
             const data = await response.json()
-            console.log(data);
             return data
         } else {
             return "ошибка"
@@ -77,9 +75,7 @@ export async function responseGetProfile(token) {
 }
 
 export async function responsePutProfile(data) {
-
     const token = localStorage.getItem("token")
-
 
     try {
         const response = await fetch("http://localhost:8080/profile", {
@@ -118,7 +114,7 @@ export async function responseGetCurrentOrders(setData) {
             },
         })
 
-        if (response.status == 200) {
+        if (response.status === 200) {
             const data = await response.json()
             setData(data)
         } else {
@@ -143,7 +139,7 @@ export async function responseGetOrdersHistory(setData) {
             },
         })
 
-        if (response.status == 200) {
+        if (response.status === 200) {
             const data = await response.json()
             setData(data)
         } else {
@@ -168,7 +164,7 @@ export async function responseGetFavorites(setData) {
             },
         })
 
-        if (response.status == 200) {
+        if (response.status === 200) {
             const data = await response.json()
             setData(data)
         } else {
@@ -193,7 +189,7 @@ export async function responseDeleteFavorites() {
             },
         })
 
-        if (response.status == 200) {
+        if (response.status === 200) {
             return "успешно"
         } else {
             return "ошибка"
@@ -220,7 +216,7 @@ export async function responseDeleteFromFavorites(giftId) {
             })
         })
 
-        if (response.status == 200) {
+        if (response.status === 200) {
             return "успешно"
         } else {
             return "ошибка"
@@ -244,7 +240,7 @@ export async function responseForgot(email) {
             })
         })
 
-        if (response.status == 200) {
+        if (response.status === 200) {
             return "успешно"
         } else {
             return "ошибка"
@@ -279,7 +275,7 @@ export async function responseResetPassword(code, email, password, confirmPasswo
             })
         })
 
-        if (response.status == 200) {
+        if (response.status === 200) {
             return "успешно"
         } else {
             return "ошибка"
@@ -302,7 +298,7 @@ export async function responseChangePassword() {
             },
         })
 
-        if (response.status == 200) {
+        if (response.status === 200) {
             return "успешно"
         } else {
             return "ошибка"
@@ -326,7 +322,7 @@ export async function responseGetNotifications(setData) {
             },
         })
 
-        if (response.status == 200) {
+        if (response.status === 200) {
             const data = await response.json()
             setData(data)
         } else {
@@ -352,7 +348,7 @@ export async function responseGetCatalog(setList, setPage, page = 1, name, sort,
     }
 
     try {
-        const response = dataResp == null
+        const response = dataResp === null
             ? await fetch(strUrl, {
                 method: "POST",
                 headers: hed,
@@ -366,14 +362,11 @@ export async function responseGetCatalog(setList, setPage, page = 1, name, sort,
             })
 
         const data = await response.json();
-        console.log(data);
         setList(data["_embedded"].giftDtoList)
         setPage(data["page"])
     } catch (e) {
-        console.log(e);
         setList([])
         setPage(1)
-
     }
 }
 
@@ -397,7 +390,6 @@ export async function responseGetGift(setItem, id) {
         });
 
         const data = await response.json();
-        console.log(data);
         setItem(data)
     } catch (e) {
 
@@ -410,7 +402,7 @@ export async function responsePostAddGiftReview(text, rating, giftId) {
     const token = localStorage.getItem("token")
 
     try {
-        const response = await fetch(strUrl, {
+        await fetch(strUrl, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -422,10 +414,6 @@ export async function responsePostAddGiftReview(text, rating, giftId) {
                 giftId
             })
         });
-
-        const data = await response;
-        console.log(data);
-
     } catch (e) {
 
     }
@@ -438,7 +426,7 @@ export async function responsePostAddToFavorites(giftId) {
     const token = localStorage.getItem("token")
 
     try {
-        const response = await fetch(strUrl, {
+        await fetch(strUrl, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -448,10 +436,6 @@ export async function responsePostAddToFavorites(giftId) {
                 giftId
             })
         });
-
-        const data = await response;
-        console.log(data);
-
     } catch (e) {
 
     }
@@ -472,7 +456,6 @@ export async function responseGetCart(token, setList) {
         });
 
         const data = await response.json();
-        console.log(data);
         setList(data)
     } catch (e) {
 
@@ -483,7 +466,7 @@ export async function responsePostCart(token, id, count = 1) {
     let strUrl = "http://localhost:8080/cart"
 
     try {
-        const response = await fetch(strUrl, {
+        await fetch(strUrl, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -495,8 +478,6 @@ export async function responsePostCart(token, id, count = 1) {
             })
         });
 
-        const data = await response.json();
-        console.log(data);
     } catch (e) {
 
     }
@@ -506,7 +487,7 @@ export async function responsePutCart(token, id, count) {
     let strUrl = "http://localhost:8080/cart"
 
     try {
-        const response = await fetch(strUrl, {
+        await fetch(strUrl, {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
@@ -518,8 +499,6 @@ export async function responsePutCart(token, id, count) {
             })
         });
 
-        const data = await response.json();
-        console.log(data);
     } catch (e) {
 
     }
@@ -542,8 +521,8 @@ export async function responsePostOrder(order) {
                     ...order.order.gift.reduce((acc, v) => acc = [...acc, { itemCount: v.itemCount, giftId: v.gift.id }], [])
                 ],
                 deliveryDate: order.dataOrder.deliveryDate,
-                fromDeliveryTime: order.dataOrder.time == "Любое время" ? "08:00" : order.dataOrder.time.slice(" ")[1],
-                ToDeliveryTime: order.dataOrder.time == "Любое время" ? "23:00" : order.dataOrder.time.slice(" ")[3],
+                fromDeliveryTime: order.dataOrder.time === "Любое время" ? "08:00" : order.dataOrder.time.slice(" ")[1],
+                ToDeliveryTime: order.dataOrder.time === "Любое время" ? "23:00" : order.dataOrder.time.slice(" ")[3],
                 information: order.dataOrder.address,
                 recipientName: order.dataOrder.recipient.name,
                 recipientEmail: order.dataOrder.recipient.email,
@@ -572,7 +551,6 @@ export async function responseGetSiteReviews(setList) {
         });
 
         const data = await response.json();
-        console.log(data);
         setList(data)
     } catch (e) {
 
@@ -604,27 +582,6 @@ export async function responsePostAddSiteReviews(mark, review) {
 }
 
 //Админ
-export async function responseGetAllDialogs(setList) {
-    let strUrl = "http://localhost:8080/chat/allDialogs"
-
-    const token = localStorage.getItem("token")
-
-    try {
-        const response = await fetch(strUrl, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-        });
-
-        const data = await response.json();
-        setList(data)
-    } catch (e) {
-
-    }
-}
-
 export async function responseGetNotAcceptedSiteReviews(setList) {
     let strUrl = "http://localhost:8080/getNotAcceptedSiteReviews"
 
@@ -653,7 +610,7 @@ export async function responsePutchangeAcceptedStatusSiteReviews(id) {
     const token = localStorage.getItem("token")
 
     try {
-        const response = await fetch(strUrl, {
+        await fetch(strUrl, {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
@@ -672,7 +629,7 @@ export async function responseDeleteNotAcceptedSiteReviews(id) {
     const token = localStorage.getItem("token")
 
     try {
-        const response = await fetch(strUrl, {
+        await fetch(strUrl, {
             method: "DELETE",
             headers: {
                 'Content-Type': 'application/json',
@@ -722,6 +679,72 @@ export async function responsePutChangeOrderStatus(orderId, newOrderStatus) {
             body: JSON.stringify({
                 orderId: orderId,
                 newOrderStatus: newOrderStatus
+            })
+        });
+    } catch (e) {
+
+    }
+}
+
+//Чат
+export async function responseGetAllDialogs(setList) {
+    let strUrl = "http://localhost:8080/chat/allDialogs"
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const response = await fetch(strUrl, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+        const data = await response.json();
+        setList(data)
+    } catch (e) {
+
+    }
+}
+
+
+export async function responseGetChatMessages(setData, email) {
+    let strUrl = "http://localhost:8080/chat/messages?userEmail=" + email
+
+    const token = localStorage.getItem("token")
+
+    try {
+        const resp = await fetch(strUrl, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+        const data = await resp.json()
+        setData(data)
+    } catch (e) {
+
+    }
+}
+
+export async function responsePostChatSend(content, email) {
+    let strUrl = "http://localhost:8080/chat/send"
+
+    const token = localStorage.getItem("token")
+
+    try {
+        await fetch(strUrl, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                content: content,
+                receiverEmail: email
             })
         });
     } catch (e) {

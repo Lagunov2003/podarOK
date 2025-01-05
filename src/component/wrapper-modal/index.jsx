@@ -16,7 +16,7 @@ function WrapperModal({ activeModal, children }) {
     }, [activeModal])
 
     return (
-        <div className={"wrapper-modal " + (active != "" ? `wrapper-modal_${active}` : "")}>
+        <div className={"wrapper-modal " + (active !== "" ? `wrapper-modal_${active}` : "")}>
             <div className={"wrapper-modal__content"}>{children}</div>
         </div>
     );

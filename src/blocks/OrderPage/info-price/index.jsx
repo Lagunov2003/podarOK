@@ -8,7 +8,7 @@ function InfoPrice({ dataOrder, handleOrderRegistration, setDataOrder, order }) 
     const [discount, setDiscount] = useState(0);
 
     const handleCheck = () => {
-        if (code == "CODE10") {
+        if (code === "CODE10") {
             setDiscount((dataOrder.price / 100) * 10);
             setActiveCode("true");
         } else {
@@ -22,12 +22,12 @@ function InfoPrice({ dataOrder, handleOrderRegistration, setDataOrder, order }) 
     };
 
     useEffect(() => {
-        if (activeCode == "true") setDiscount(((dataOrder.price + dataOrder.addressPrice) / 100) * 10);
+        if (activeCode === "true") setDiscount(((dataOrder.price + dataOrder.addressPrice) / 100) * 10);
     }, [dataOrder, activeCode]);
 
     useEffect(() => {
-        if (activeCode == "true") setDataOrder((v) => ({ ...v, discount: discount }));
-    }, [discount]);
+        if (activeCode === "true") setDataOrder((v) => ({ ...v, discount: discount }));
+    }, [discount, activeCode, setDataOrder]);
 
     return (
         <div className="info-price">
@@ -47,13 +47,13 @@ function InfoPrice({ dataOrder, handleOrderRegistration, setDataOrder, order }) 
                         <input
                             name="code"
                             type="text"
-                            className={"info-price__code " + (activeCode != "" ? `info-price__code_${activeCode}` : "")}
+                            className={"info-price__code " + (activeCode !== "" ? `info-price__code_${activeCode}` : "")}
                             value={code}
                             maxLength={10}
                             onChange={(e) => handleChangeCode(e.target.value)}
                             autoComplete="off"
                         />
-                        {activeCode == "" && (
+                        {activeCode === "" && (
                             <button className="info-price__check" onClick={() => handleCheck()}>
                                 <img src="/img/gray-arrow.svg" alt="Проверка промокода" />
                             </button>
@@ -64,7 +64,7 @@ function InfoPrice({ dataOrder, handleOrderRegistration, setDataOrder, order }) 
                     <p className="info-price__text">Доставка</p>
                     <p className="info-price__text">{convertPrice(dataOrder.addressPrice)} ₽</p>
                 </div>
-                {activeCode == "true" && (
+                {activeCode === "true" && (
                     <div className="info-price__row">
                         <p className="info-price__text">Скидка</p>
                         <p className="info-price__text">- {convertPrice(dataOrder.discount)} ₽</p>

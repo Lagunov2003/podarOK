@@ -1,13 +1,14 @@
 import React, { useContext, useState } from "react";
 import "./style.scss";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { responsePutProfile } from "../../../tool/response";
 import { ContextData, ContextLogin } from "../../../app/app";
 
 function Footer({ handleOpenModal }) {
     const navigate = useNavigate();
     const data = useContext(ContextData);
-    const asyncLogin = useContext(ContextLogin)
+    const asyncLogin = useContext(ContextLogin);
+    const location = useLocation();
     const [tel, setTel] = useState("");
 
     const handleClickAccount = (e, type) => {
@@ -15,7 +16,7 @@ function Footer({ handleOpenModal }) {
         const token = localStorage.getItem("token");
 
         if (token) {
-            if (type == "basket") {
+            if (type === "basket") {
                 navigate("/basket");
             } else {
                 navigate("/account");
@@ -28,19 +29,19 @@ function Footer({ handleOpenModal }) {
     const handleChangeInputTel = (e) => {
         let str = e.target.value;
 
-        if (str == "" || str[str.length - 1].match(/[0-9]/)) {
+        if (str === "" || str[str.length - 1].match(/[0-9]/)) {
             const val = str.slice(0, str.length);
             setTel(val);
         }
     };
 
     const handleAddTel = async () => {
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("token");
 
-        if (token && tel.length == 11) {
-            await responsePutProfile({...data, phoneNumber: tel});
-            asyncLogin()
-            setTel("")
+        if (token && tel.length === 11) {
+            await responsePutProfile({ ...data, phoneNumber: tel });
+            asyncLogin();
+            setTel("");
         }
     };
 
@@ -74,7 +75,7 @@ function Footer({ handleOpenModal }) {
                                 to={"/"}
                                 className="header__link"
                                 onClick={() =>
-                                    location.pathname != "/"
+                                    location.pathname !== "/"
                                         ? sessionStorage.setItem("scroll", "delivery")
                                         : document
                                               .getElementsByClassName("delivery")[0]
@@ -87,7 +88,7 @@ function Footer({ handleOpenModal }) {
                                 to={"/"}
                                 className="header__link"
                                 onClick={() =>
-                                    location.pathname != "/"
+                                    location.pathname !== "/"
                                         ? sessionStorage.setItem("scroll", "reviews")
                                         : document
                                               .getElementsByClassName("reviews")[0]
@@ -108,16 +109,16 @@ function Footer({ handleOpenModal }) {
                                 </p>
                             </address>
                             <div className="footer__contact-messages">
-                                <a href="" className="footer__contact-url">
+                                <a href="/" className="footer__contact-url">
                                     <img src="/img/whatsapp.svg" alt="" />
                                 </a>
-                                <a href="" className="footer__contact-url">
+                                <a href="/" className="footer__contact-url">
                                     <img src="/img/vk.svg" alt="" />
                                 </a>
-                                <a href="" className="footer__contact-url">
+                                <a href="/" className="footer__contact-url">
                                     <img src="/img/tg.svg" alt="" />
                                 </a>
-                                <a href="" className="footer__contact-url">
+                                <a href="/" className="footer__contact-url">
                                     <img src="/img/ok.svg" alt="" />
                                 </a>
                             </div>

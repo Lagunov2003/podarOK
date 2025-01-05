@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./style.scss";
 import { Map, YMaps } from "@pbe/react-yandex-maps";
 import { getAdressFromCoordinates } from "../../../tool/response";
@@ -21,10 +21,10 @@ function EditAddress({ closeModalAddress, setAcceptAddress, setDataOrder }) {
 
     const handleSave = () => {
         let price = 0;
-        if (address.address != "" && address.home != "" && address.entrance != "" && address.floor != "" && address.flat != "") {
-            if (address.address.indexOf("Ярославль") != -1) {
+        if (address.address !== "" && address.home !== "" && address.entrance !== "" && address.floor !== "" && address.flat !== "") {
+            if (address.address.indexOf("Ярославль") !== -1) {
                 price = 100;
-            } else if (address.address.indexOf("Ярославская область") != -1) {
+            } else if (address.address.indexOf("Ярославская область") !== -1) {
                 price = 200;
             } else {
                 price = 300;
@@ -35,7 +35,7 @@ function EditAddress({ closeModalAddress, setAcceptAddress, setDataOrder }) {
             let strAddress = address.address;
 
             for (let x in address) {
-                if (address[x] != "" && x != "address") {
+                if (address[x] !== "" && x !== "address") {
                     switch (x) {
                         case "flat": {
                             strAddress += ", кв. " + address[x];
@@ -53,6 +53,8 @@ function EditAddress({ closeModalAddress, setAcceptAddress, setDataOrder }) {
                             strAddress += ", " + address[x] + " подъезд";
                             break;
                         }
+                        default:
+                            break
                     }
                 }
             }
@@ -60,7 +62,7 @@ function EditAddress({ closeModalAddress, setAcceptAddress, setDataOrder }) {
             console.log(strAddress);
             setDataOrder((v) => {
                 let pr = price;
-                if (v.fastDelivery == true) {
+                if (v.fastDelivery === true) {
                     pr += 250;
                 }
                 return { ...v, address: strAddress, addressPrice: pr, comment: comment };
@@ -71,7 +73,7 @@ function EditAddress({ closeModalAddress, setAcceptAddress, setDataOrder }) {
     const handleChangeField = (e) => {
         const { value } = e.target;
 
-        if (value != "" && !value[value.length - 1].match(/[0-9]/)) {
+        if (value !== "" && !value[value.length - 1].match(/[0-9]/)) {
             e.target.value = value.slice(0, value.length - 1);
         }
     };

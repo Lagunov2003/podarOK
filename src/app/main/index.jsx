@@ -15,7 +15,7 @@ function Main() {
         let scroll = sessionStorage.getItem("scroll");
 
         if (scroll) {
-            scroll == "delivery"
+            scroll === "delivery"
                 ? refDelivery.current.scrollIntoView({ behavior: "smooth", block: "center" })
                 : refReviews.current.scrollIntoView({ behavior: "smooth", block: "center" });
             setTimeout(() => {

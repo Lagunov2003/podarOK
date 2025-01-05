@@ -1,8 +1,6 @@
 import React, { useContext } from "react";
 import "./style.scss";
-import Button from "../../../component/button";
-import SingIn from "../../../component/sing-in";
-import { Link, useLocation, useNavigate, useNavigation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ContextData } from "../../../app/app";
 import { ModalAuth } from "../layer-page";
 
@@ -13,7 +11,7 @@ function Header({ handleOpenModal }) {
     const navigate = useNavigate();
 
     const handleClickBasket = () => {
-        if (data == null) {
+        if (data === null) {
             handleOpenAuth();
         } else {
             navigate("/basket");
@@ -36,7 +34,7 @@ function Header({ handleOpenModal }) {
                         to={"/"}
                         className="header__link"
                         onClick={() =>
-                            location.pathname != "/"
+                            location.pathname !== "/"
                                 ? sessionStorage.setItem("scroll", "delivery")
                                 : document.getElementsByClassName("delivery")[0].scrollIntoView({ behavior: "smooth", block: "center" })
                         }
@@ -47,14 +45,14 @@ function Header({ handleOpenModal }) {
                         to={"/"}
                         className="header__link"
                         onClick={() =>
-                            location.pathname != "/"
+                            location.pathname !== "/"
                                 ? sessionStorage.setItem("scroll", "reviews")
                                 : document.getElementsByClassName("reviews")[0].scrollIntoView({ behavior: "smooth", block: "center" })
                         }
                     >
                         Отзывы
                     </Link>
-                    {data?.role != true && (
+                    {data?.role !== true && (
                         <button className="header__link" onClick={() => handleClickBasket()}>
                             Корзина
                         </button>

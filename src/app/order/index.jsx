@@ -37,27 +37,22 @@ function Order({ order }) {
     useEffect(() => {
         const numberOrder = sessionStorage.getItem("numberOrder")
 
-        if(numberOrder != id) {
+        if(numberOrder !== id) {
             navigate("/")
         } 
-    }, [])
-
-
-    useEffect(() => {
-        console.log({ dataOrder, order });
-    }, [dataOrder]);
+    }, [id, navigate])
 
     const handleOrderRegistration = async () => {
         if (
-            dataOrder.address != "" &&
-            dataOrder.time != "" &&
-            dataOrder.recipient.name != "" &&
-            dataOrder.recipient.email != "" &&
-            dataOrder.recipient.tel != ""
+            dataOrder.address !== "" &&
+            dataOrder.time !== "" &&
+            dataOrder.recipient.name !== "" &&
+            dataOrder.recipient.email !== "" &&
+            dataOrder.recipient.tel !== ""
         ) {
             const status = await responsePostOrder({ dataOrder, order });
 
-            if (status == 200) {
+            if (status === 200) {
                 setRegOrder(true);
                 sessionStorage.removeItem("numberOrder")
             }
@@ -66,7 +61,7 @@ function Order({ order }) {
 
     return (
         <>
-            {regOrder == false ? (
+            {regOrder === false ? (
                 <WrapperOrder>
                     <InfoOrder
                         openModalRecipient={setModalRecipient}

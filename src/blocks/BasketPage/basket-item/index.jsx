@@ -9,11 +9,13 @@ function BasketItem({ itemValue, setSelectItem, selectItem, setList }) {
     useEffect(() => {
         const token = localStorage.getItem("token");
 
-        setSelectItem((list) => [...list.map((v) => (v?.gift?.id != itemValue?.gift?.id ? v : { ...itemValue, itemCount: count }))]);
+        setSelectItem((list) => [...list.map((v) => (v?.gift?.id !== itemValue?.gift?.id ? v : { ...itemValue, itemCount: count }))]);
 
-        if (token) responsePutCart(token, itemValue?.gift?.id, count);
-
-    }, [count]);
+        if (token)
+            (async () => {
+                await responsePutCart(token, itemValue?.gift?.id, count);
+            })();
+    }, [count, itemValue, setSelectItem]);
 
     const handleMinus = () => {
         if (count >= 2) {
@@ -31,15 +33,15 @@ function BasketItem({ itemValue, setSelectItem, selectItem, setList }) {
         if (e.target.checked) {
             setSelectItem((list) => [...list, { ...itemValue, itemCount: count }]);
         } else {
-            setSelectItem((list) => [...list.filter((v) => v?.gift?.id != itemValue?.gift?.id)]);
+            setSelectItem((list) => [...list.filter((v) => v?.gift?.id !== itemValue?.gift?.id)]);
         }
     };
 
     const handleDelete = () => {
         const token = localStorage.getItem("token");
 
-        setList((list) => [...list.filter((v) => v?.gift?.id != itemValue?.gift?.id)]);
-        setSelectItem((list) => [...list.filter((v) => v?.gift?.id != itemValue?.gift?.id)]);
+        setList((list) => [...list.filter((v) => v?.gift?.id !== itemValue?.gift?.id)]);
+        setSelectItem((list) => [...list.filter((v) => v?.gift?.id !== itemValue?.gift?.id)]);
 
         if (token) responsePutCart(token, itemValue?.gift?.id, 0);
     };
@@ -67,7 +69,7 @@ function BasketItem({ itemValue, setSelectItem, selectItem, setList }) {
                     type="checkbox"
                     className="basket-item__input"
                     onChange={(e) => handleSelect(e)}
-                    checked={selectItem.filter((v) => v?.gift?.id == itemValue?.gift?.id)?.length != 0 ? true : false}
+                    checked={selectItem.filter((v) => v?.gift?.id === itemValue?.gift?.id)?.length !== 0 ? true : false}
                 />
                 <button className="basket-item__delete" onClick={() => handleDelete()}>
                     <img src="/img/delete-basket.svg" alt="Кнопка удаления товара" />

@@ -13,7 +13,7 @@ function ReviewModal({ handleOpen }) {
         (async () => {
             const status = await responsePostAddSiteReviews(refRate.current, refTextarea.current.value);
 
-            if(status == 200) {
+            if(status === 200) {
                 alert("Отзыв о сайте отправлен на модерацию!")
             }
 
@@ -35,8 +35,8 @@ function ReviewModal({ handleOpen }) {
             <div className="review-modal__row">
                 <p className="review-modal__label">Ваша оценка</p>
                 <div className="review-modal__stars-row" onMouseLeave={() => setRate(0)}>
-                    {arr.map((v, i) =>
-                        rate > i || (refRate.current > i && rate == 0) ? (
+                    {arr.map((_, i) =>
+                        rate > i || (refRate.current > i && rate === 0) ? (
                             <img
                                 src="/img/rating-star.svg"
                                 alt="Звезда рейтинга"
