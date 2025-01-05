@@ -13,6 +13,7 @@ import ru.uniyar.podarok.repositories.MessageRepository;
 import ru.uniyar.podarok.utils.converters.MessageDtoConverter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -59,7 +60,7 @@ public class ChatService {
      * @throws UserNotFoundException      если пользователь с указанным email не найден.
      * @throws UserNotAuthorizedException если текущий пользователь не авторизован.
      */
-    public List<MessageDto> getChatMessages(String senderEmail)
+    public List<MessageDto> getReceivedChatMessages(String senderEmail)
             throws UserNotFoundException, UserNotAuthorizedException {
         Long receiverId = userService.getCurrentAuthenticationUser().getId();
 
@@ -72,6 +73,21 @@ public class ChatService {
         List<Message> foundedMessages = messageRepository.findBySenderIdAndReceiverId(senderId, receiverId, sort);
 
         return foundedMessages.stream().map(messageDtoConverter::convertToMessageDto).toList();
+    }
+
+    /**
+     * Получает список сообщений, отправленных указанным отправителем и полученных текущим пользователем.
+     *
+     * @param userEmail email отправителя (может быть {@code null}).
+     * @return список DTO сообщений.
+     * @throws UserNotFoundException      если пользователь с указанным email не найден.
+     * @throws UserNotAuthorizedException если текущий пользователь не авторизован.
+     */
+    public List<MessageDto> getSentAndReceivedChatMessages(String userEmail)
+            throws UserNotFoundException, UserNotAuthorizedException {
+        ArrayList<MessageDto> messages = new ArrayList<>(getSentChatMessages(userEmail));
+        messages.addAll(getReceivedChatMessages(userEmail));
+        return messages.stream().sorted(Comparator.comparing(MessageDto::getTimestamp)).toList();
     }
 
     /**
@@ -124,13 +140,25 @@ public class ChatService {
      * @throws UserNotAuthorizedException если текущий пользователь не авторизован.
      */
     public List<Dialog> getAllDialogs() throws UserNotFoundException, UserNotAuthorizedException {
-        List<User> users = userService.getAllUsers();
+        List<User> otherUsers = userService.getAllUsers();
         List<Dialog> dialogs = new ArrayList<>();
-        for (User user : users) {
-            Dialog dialog = new Dialog(getChatMessages(user.getEmail()), user.getFirstName(), user.getId());
+        for (User user : otherUsers) {
+            Dialog dialog = new Dialog(getNewestMessageFrom(user), user.getFirstName(), user.getId(), user.getEmail());
             dialogs.add(dialog);
         }
 
         return dialogs;
+    }
+
+    /**
+     * Получает последнее сообщение от указанного отправителя.
+     *
+     * @param user отправитель
+     * @return список Dialog диалогов.
+     * @throws UserNotFoundException если отправитель с указанным email не найден.
+     * @throws UserNotAuthorizedException если текущий пользователь не авторизован.
+     */
+    public MessageDto getNewestMessageFrom(User user) throws UserNotFoundException, UserNotAuthorizedException {
+        return getSentAndReceivedChatMessages(user.getEmail()).stream().findFirst().orElse(null);
     }
 }
