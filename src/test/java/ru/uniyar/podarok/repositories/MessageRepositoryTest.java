@@ -60,35 +60,54 @@ public class MessageRepositoryTest {
 
     @Test
     public void MessageRepository_FindBySenderId_ReturnsMessageList() {
-        List<Message> messages = messageRepository.findBySenderId(sender.getId(), Sort.by("timestamp").ascending());
+        List<Message> messages = messageRepository.findBySenderId(
+                sender.getId(),
+                Sort.by("timestamp").ascending());
+
         assertThat(messages).hasSize(2);
         assertThat(messages).containsExactlyInAnyOrder(message1, message2);
     }
 
     @Test
     public void MessageRepository_FindByReceiverId_ReturnsMessageList() {
-        List<Message> messages = messageRepository.findByReceiverId(receiver.getId(), Sort.by("timestamp").ascending());
+        List<Message> messages = messageRepository.findByReceiverId(
+                receiver.getId(),
+                Sort.by("timestamp").ascending());
+
         assertThat(messages).hasSize(2);
         assertThat(messages).containsExactlyInAnyOrder(message1, message2);
     }
 
     @Test
     public void MessageRepository_FindBySenderIdAndReceiverId_ReturnsMessageList() {
-        List<Message> messages = messageRepository.findBySenderIdAndReceiverId(sender, receiver, Sort.by("timestamp").ascending());
+        List<Message> messages = messageRepository.findBySenderIdAndReceiverId(
+                sender.getId(),
+                receiver.getId(),
+                Sort.by("timestamp").ascending());
+
         assertThat(messages).hasSize(2);
         assertThat(messages).containsExactlyInAnyOrder(message1, message2);
     }
 
     @Test
-    public void MessageRepository_FindByReceiverIdAndIsRead_ReturnsMessageList() {
-        List<Message> messages = messageRepository.findByReceiverIdAndIsRead(receiver.getId(), false, Sort.by("timestamp").ascending());
+    public void MessageRepository_FindByReceiverIdAndRead_ReturnsMessageList() {
+        List<Message> messages = messageRepository.findByReceiverIdAndRead(
+                receiver.getId(),
+                false,
+                Sort.by("timestamp").ascending());
+
         assertThat(messages).hasSize(1);
         assertThat(messages).containsExactly(message1);
     }
 
     @Test
-    public void MessageRepository_FindBySenderIdAndReceiverIdAndIsRead_ReturnsMessageList() {
-        List<Message> messages = messageRepository.findBySenderIdAndReceiverIdAndIsRead(sender.getId(), receiver.getId(), true, Sort.by("timestamp").ascending());
+    public void MessageRepository_FindBySenderIdAndReceiverIdAndRead_ReturnsMessageList() {
+        List<Message> messages = messageRepository.findBySenderIdAndReceiverIdAndRead(
+                sender.getId(),
+                receiver.getId(),
+                true,
+                Sort.by("timestamp").ascending());
+
         assertThat(messages).hasSize(1);
         assertThat(messages).containsExactly(message2);
     }

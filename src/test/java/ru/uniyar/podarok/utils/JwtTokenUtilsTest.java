@@ -41,7 +41,11 @@ public class JwtTokenUtilsTest {
 
     @Test
     public void JwtTokenUtils_GenerateToken_ReturnsNotNull() {
-        UserDetails userDetails = new User("test", "password", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        UserDetails userDetails = new User(
+                "test",
+                "password",
+                List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
         String token = jwtTokenUtils.generateToken(userDetails);
 
         assertNotNull(token);
@@ -50,6 +54,7 @@ public class JwtTokenUtilsTest {
     @Test
     public void JwtTokenUtils_GeneratePasswordResetToken_ReturnsNotNull() {
         String email = "test@example.com";
+
         String token = jwtTokenUtils.generatePasswordResetToken(email);
 
         assertNotNull(token);
@@ -57,19 +62,28 @@ public class JwtTokenUtilsTest {
 
     @Test
     public void JwtTokenUtils_GetUserEmail_ReturnsEmail() {
-        UserDetails userDetails = new User("test", "password", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        UserDetails userDetails = new User(
+                "test",
+                "password",
+                List.of(new SimpleGrantedAuthority("ROLE_USER")));
         String token = jwtTokenUtils.generateToken(userDetails);
 
         String email = jwtTokenUtils.getUserEmail(token);
+
         assertEquals("test", email);
     }
 
     @Test
     public void JwtTokenUtils_GetRoles_ReturnsListOfRoles() {
-        UserDetails userDetails = new User("test", "password", List.of(new SimpleGrantedAuthority("ROLE_USER"), new SimpleGrantedAuthority("ROLE_ADMIN")));
+        UserDetails userDetails = new User(
+                "test",
+                "password",
+                List.of(new SimpleGrantedAuthority("ROLE_USER"),
+                        new SimpleGrantedAuthority("ROLE_ADMIN")));
         String token = jwtTokenUtils.generateToken(userDetails);
 
         List<String> roles = jwtTokenUtils.getRoles(token);
+
         assertEquals(2, roles.size());
         assertEquals("ROLE_ADMIN", roles.get(0));
         assertEquals("ROLE_USER", roles.get(1));

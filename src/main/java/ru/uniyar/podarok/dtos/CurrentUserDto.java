@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * Dto для вывода текущего пользователя.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

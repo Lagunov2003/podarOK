@@ -46,7 +46,8 @@ class ConfirmationCodeServiceTest {
     }
 
     @Test
-    void ConfirmationCodeService_CheckConfirmationCode_ReturnsIsCodeCorrect() throws NotValidCodeException, ExpiredCodeException, FakeConfirmationCodeException {
+    void ConfirmationCodeService_CheckConfirmationCode_ReturnsIsCodeCorrect()
+            throws NotValidCodeException, ExpiredCodeException, FakeConfirmationCodeException {
         ConfirmationCode confirmationCode = new ConfirmationCode();
         confirmationCode.setOwnUserId(userId);
         confirmationCode.setCode(code);
@@ -64,11 +65,12 @@ class ConfirmationCodeServiceTest {
         String invalidCode = "99999";
         Mockito.when(confirmationCodeRepository.findByCode(invalidCode)).thenReturn(Optional.empty());
 
-        assertThrows(NotValidCodeException.class, () -> confirmationCodeService.checkConfirmationCode(userId, invalidCode));
+        assertThrows(NotValidCodeException.class,
+                () -> confirmationCodeService.checkConfirmationCode(userId, invalidCode));
     }
 
     @Test
-    void ConfirmationCodeService_CheckConfirmationCode_ThrowFakeConfirmationCodeException() {
+    void ConfirmationCodeService_CheckConfirmationCode_ThrowsFakeConfirmationCodeException() {
         long otherUserId = 2L;
         ConfirmationCode confirmationCode = new ConfirmationCode();
         confirmationCode.setOwnUserId(otherUserId);
@@ -82,14 +84,15 @@ class ConfirmationCodeServiceTest {
     }
 
     @Test
-    void checkConfirmationCode_throwExpiredCode_whenCodeIsExpired() {
+    void ConfirmationCodeService_CheckConfirmationCode_ThrowsExpiredCodeException() {
         ConfirmationCode confirmationCode = new ConfirmationCode();
         confirmationCode.setOwnUserId(userId);
         confirmationCode.setCode(code);
         confirmationCode.setExpiryDate(LocalDate.now().minusDays(1));
         Mockito.when(confirmationCodeRepository.findByCode(code)).thenReturn(Optional.of(confirmationCode));
 
-        assertThrows(ExpiredCodeException.class, () -> confirmationCodeService.checkConfirmationCode(userId, code));
+        assertThrows(ExpiredCodeException.class,
+                () -> confirmationCodeService.checkConfirmationCode(userId, code));
         Mockito.verify(confirmationCodeRepository).delete(confirmationCode);
     }
 }

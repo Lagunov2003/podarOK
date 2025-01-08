@@ -40,10 +40,13 @@ public class AuthControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void AuthController_CreateNewUser_ReturnsStatusIsOk() throws Exception {
-        RegistrationUserDto registrationUserDto = new RegistrationUserDto("test", "test@example.com", "12345");
+    void AuthController_CreateNewUser_ReturnsStatusIsOk()
+            throws Exception {
+        RegistrationUserDto registrationUserDto = new RegistrationUserDto(
+                "test",
+                "test@example.com",
+                "12345");
         UserDto userDto = new UserDto("test@example.com", "test");
-
         Mockito.when(authService.createNewUser(any(RegistrationUserDto.class))).thenReturn(userDto);
 
         mockMvc.perform(post("/registration")
@@ -54,9 +57,12 @@ public class AuthControllerTest {
     }
 
     @Test
-    void AuthController_CreateNewUser_ReturnsStatusIsConflict() throws Exception {
-        RegistrationUserDto registrationUserDto = new RegistrationUserDto("test", "test@example.com", "12345");
-
+    void AuthController_CreateNewUser_ReturnsStatusIsConflict()
+            throws Exception {
+        RegistrationUserDto registrationUserDto = new RegistrationUserDto(
+                "test",
+                "test@example.com",
+                "12345");
         Mockito.when(authService.createNewUser(any(RegistrationUserDto.class)))
                 .thenThrow(new UserAlreadyExistException("Пользователь уже существует!"));
 
@@ -68,10 +74,10 @@ public class AuthControllerTest {
     }
 
     @Test
-    void AuthController_CreateAuthToken_ReturnsStatusIsOk() throws Exception {
+    void AuthController_CreateAuthToken_ReturnsStatusIsOk()
+            throws Exception {
         JwtRequest jwtRequest = new JwtRequest("test@example.com", "12345");
         JwtResponse jwtResponse = new JwtResponse("");
-
         Mockito.when(authService.createAuthToken(any(JwtRequest.class))).thenReturn(jwtResponse);
 
         mockMvc.perform(post("/login")
@@ -82,9 +88,9 @@ public class AuthControllerTest {
     }
 
     @Test
-    void AuthController_CreateAuthToken_ReturnsStatusIsUnauthorized() throws Exception {
+    void AuthController_CreateAuthToken_ReturnsStatusIsUnauthorized()
+            throws Exception {
         JwtRequest jwtRequest = new JwtRequest("test@example.com", "12345");
-
         Mockito.when(authService.createAuthToken(any(JwtRequest.class))).
                 thenThrow(new BadCredentialsException("Неверные данные!"));
 

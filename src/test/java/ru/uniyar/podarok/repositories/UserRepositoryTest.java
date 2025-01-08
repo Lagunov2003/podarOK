@@ -74,6 +74,7 @@ public class UserRepositoryTest {
     void UserRepository_DeleteUser_ReturnsUserIsEmpty(){
         userRepository.save(user);
         userRepository.delete(user);
+
         Optional<User> foundUser = userRepository.findUserByEmail("test@example.com");
         assertThat(foundUser).isEmpty();
     }

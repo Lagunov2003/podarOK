@@ -32,7 +32,9 @@ class EmailServiceTest {
         assertEquals("podarOKService@yandex.ru", sentMessage.getFrom());
         assertEquals(email, sentMessage.getTo()[0]);
         assertEquals("Благодарим за регистрацию в сервисе podarOK!", sentMessage.getSubject());
-        assertEquals(firstName + ", благодарим Вас за регистрацию в Нашем сервисе по подбору и заказу подарков podarOk!", sentMessage.getText());
+        assertEquals(firstName +
+                ", благодарим Вас за регистрацию в Нашем сервисе по подбору и заказу подарков podarOk!",
+                sentMessage.getText());
     }
 
     @Test
@@ -47,7 +49,9 @@ class EmailServiceTest {
         assertEquals("podarOKService@yandex.ru", sentMessage.getFrom());
         assertEquals(email, sentMessage.getTo()[0]);
         assertEquals("Смена пароля в сервисе podarOK!", sentMessage.getSubject());
-        assertEquals("Для изменения пароля перейдите по ссылке: localhost:8080/confirmChanges?code=" + code, sentMessage.getText());
+        assertEquals("Для изменения пароля перейдите по ссылке: http://localhost:3000/confirmChanges?code="
+                + code,
+                sentMessage.getText());
     }
 
     @Test
@@ -63,7 +67,10 @@ class EmailServiceTest {
         assertEquals(oldEmail, sentMessage.getTo()[0]);
         assertEquals(newEmail, sentMessage.getTo()[1]);
         assertEquals("Смена электронной почты в сервисе podarOK!", sentMessage.getSubject());
-        assertEquals(String.format("Электронная почта в сервисе podarOK была изменена с %s на %s!", oldEmail, newEmail), sentMessage.getText());
+        assertEquals(
+                String.format("Электронная почта в сервисе podarOK была изменена с %s на %s!",
+                oldEmail,
+                newEmail), sentMessage.getText());
     }
 
     @Test
@@ -78,6 +85,9 @@ class EmailServiceTest {
         assertEquals("podarOKService@yandex.ru", sentMessage.getFrom());
         assertEquals(email, sentMessage.getTo()[0]);
         assertEquals("Восстановление пароля в сервисе podarOK!", sentMessage.getSubject());
-        assertEquals("Для восстановления пароля перейдите по ссылке: localhost:8080/resetPassword?token=" + token, sentMessage.getText());
+        assertEquals(
+                "Для восстановления пароля перейдите по ссылке: http://localhost:3000/resetPassword?token="
+                        + token,
+                sentMessage.getText());
     }
 }

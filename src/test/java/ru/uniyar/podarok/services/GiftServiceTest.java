@@ -1,6 +1,5 @@
 package ru.uniyar.podarok.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,12 +14,10 @@ import ru.uniyar.podarok.dtos.AddGiftDto;
 import ru.uniyar.podarok.dtos.ChangeGiftDto;
 import ru.uniyar.podarok.dtos.GiftDto;
 import ru.uniyar.podarok.dtos.GiftFilterRequest;
-import ru.uniyar.podarok.entities.Category;
-import ru.uniyar.podarok.entities.Gift;
-import ru.uniyar.podarok.entities.GiftRecommendation;
-import ru.uniyar.podarok.entities.Occasion;
+import ru.uniyar.podarok.entities.*;
+import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.repositories.GiftRepository;
-import ru.uniyar.podarok.utils.GiftDtoConverter;
+import ru.uniyar.podarok.utils.converters.GiftDtoConverter;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -37,12 +34,12 @@ public class GiftServiceTest {
     private GiftFilterService giftFilterService;
     @Mock
     private GiftDtoConverter giftDtoConverter;
+    @Mock
+    private UserService userService;
     @InjectMocks
     private GiftService giftService;
 
     private Pageable pageable;
-
-
 
     @BeforeEach
     void setUp() {
@@ -52,7 +49,6 @@ public class GiftServiceTest {
         occasion.setId(1L);
         occasion.setName("Birthday");
     }
-
 
     @Test
     public void GiftService_GetAllGifts_ReturnsGiftProjection() {
@@ -71,29 +67,7 @@ public class GiftServiceTest {
     }
 
     @Test
-    public void GiftService_GetGiftsByFilter_ReturnsGiftProjection() {
-        GiftFilterRequest filterRequest = new GiftFilterRequest();
-        GiftFilterRequest processedRequest = new GiftFilterRequest();
-        Page<Gift> mockGiftsPage = new PageImpl<>(List.of(mock(Gift.class)));
-        Page<GiftDto> mockDtoPage = new PageImpl<>(List.of(mock(GiftDto.class)));
-        when(giftFilterService.processRequest(filterRequest)).thenReturn(processedRequest);
-        when(giftRepository.findGiftsByFilter(
-                any(), any(), any(), any(), any(), eq(pageable)
-        )).thenReturn(mockGiftsPage);
-        when(giftDtoConverter.convertToGiftDtoPage(mockGiftsPage)).thenReturn(mockDtoPage);
-
-        Page<GiftDto> result = giftService.getGiftsByFilter(filterRequest, pageable);
-
-        assertNotNull(result);
-        assertTrue(result.hasContent());
-        assertEquals(mockDtoPage, result);
-        verify(giftRepository, times(1)).findGiftsByFilter(
-                any(), any(), any(), any(), any(), eq(pageable)
-        );
-    }
-
-    @Test
-    public void GiftService_GetGiftById_ReturnsGift() {
+    public void GiftService_GetGiftById_ReturnsGift() throws GiftNotFoundException {
         Gift gift = new Gift();
         gift.setName("test");
         gift.setId(1L);
@@ -106,35 +80,14 @@ public class GiftServiceTest {
     }
 
     @Test
-    public void GiftService_GetGiftById_ThrowsEntityNotFoundException() {
+    public void GiftService_GetGiftById_ThrowsGiftNotFoundException() {
         Long giftId = 1L;
         when(giftRepository.findById(giftId)).thenReturn(Optional.empty());
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> giftService.getGiftById(giftId));
-        assertEquals("Подарок не найден!", exception.getMessage());
-        verify(giftRepository, times(1)).findById(giftId);
-    }
-
-    @Test
-    public void GiftService_DeleteGift_VerifiesGiftIsDeleted() {
-        Long giftId = 1L;
-        when(giftRepository.existsById(giftId)).thenReturn(true);
-
-        giftService.deleteGift(giftId);
-
-        verify(giftRepository, times(1)).existsById(giftId);
-        verify(giftRepository, times(1)).deleteById(giftId);
-    }
-
-    @Test
-    public void GiftService_DeleteGift_ThrowsEntityNotFoundException() {
-        Long giftId = 1L;
-        when(giftRepository.existsById(giftId)).thenReturn(false);
-
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> giftService.deleteGift(giftId));
+        GiftNotFoundException exception = assertThrows(GiftNotFoundException.class,
+                () -> giftService.getGiftById(giftId));
         assertEquals("Подарок с id 1 не найден!", exception.getMessage());
-        verify(giftRepository, times(1)).existsById(giftId);
-        verify(giftRepository, never()).deleteById(anyLong());
+        verify(giftRepository, times(1)).findById(giftId);
     }
 
     @Test
@@ -163,7 +116,66 @@ public class GiftServiceTest {
     }
 
     @Test
-    void GiftService_UpdateGift_VerifiesGiftIsUpdated() throws Exception {
+    void GiftService_GetGiftsByGroupId_ReturnsListOfGifts() {
+        Long groupId = 1L;
+        Gift gift1 = new Gift();
+        gift1.setId(1L);
+        gift1.setName("gift 1");
+        Gift gift2 = new Gift();
+        gift2.setId(2L);
+        gift2.setName("gift 2");
+        List<Gift> expectedGifts = List.of(gift1, gift2);
+        when(giftRepository.findGiftsByGroupId(groupId)).thenReturn(expectedGifts);
+
+        List<Gift> result = giftService.getGiftsByGroupId(groupId);
+
+        assertEquals(expectedGifts, result);
+        verify(giftRepository, times(1)).findGiftsByGroupId(groupId);
+    }
+
+    @Test
+    void GiftService_GetGiftsByGroupId_ReturnsEmptyList() {
+        Long groupId = 999L;
+        List<Gift> emptyGifts = List.of();
+        when(giftRepository.findGiftsByGroupId(groupId)).thenReturn(emptyGifts);
+
+        List<Gift> result = giftService.getGiftsByGroupId(groupId);
+
+        assertTrue(result.isEmpty());
+        verify(giftRepository, times(1)).findGiftsByGroupId(groupId);
+    }
+
+
+    @Test
+    @Deprecated
+    public void GiftService_DeleteGift_VerifiesGiftIsDeleted()
+            throws GiftNotFoundException {
+        Long giftId = 1L;
+        when(giftRepository.existsById(giftId)).thenReturn(true);
+
+        giftService.deleteGift(giftId);
+
+        verify(giftRepository, times(1)).existsById(giftId);
+        verify(giftRepository, times(1)).deleteById(giftId);
+    }
+
+    @Test
+    @Deprecated
+    public void GiftService_DeleteGift_ThrowsGiftNotFoundException() {
+        Long giftId = 1L;
+        when(giftRepository.existsById(giftId)).thenReturn(false);
+
+        GiftNotFoundException exception = assertThrows(GiftNotFoundException.class,
+                () -> giftService.deleteGift(giftId));
+        assertEquals("Подарок с id 1 не найден!", exception.getMessage());
+        verify(giftRepository, times(1)).existsById(giftId);
+        verify(giftRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    @Deprecated
+    void GiftService_UpdateGift_VerifiesGiftIsUpdated()
+            throws Exception {
         ChangeGiftDto changeGiftDto = new ChangeGiftDto();
         changeGiftDto.setId(1L);
         changeGiftDto.setPrice(BigDecimal.valueOf(100));
@@ -201,11 +213,13 @@ public class GiftServiceTest {
         );
         verify(giftRepository, times(1)).deleteGiftPhotos(eq(changeGiftDto.getId()));
         verify(giftRepository, times(1)).deleteGiftCategories(eq(changeGiftDto.getId()));
-        verify(giftRepository, times(1)).updateGiftOccasion(eq(changeGiftDto.getId()), anyLong());
+        verify(giftRepository, times(1))
+                .updateGiftOccasion(eq(changeGiftDto.getId()), anyLong());
         verify(giftRepository, times(1)).deleteGiftFeatures(eq(changeGiftDto.getId()));
     }
 
     @Test
+    @Deprecated
     void GiftService_AddGift_VerifiesGiftIsAdded() {
         AddGiftDto addGiftDto = new AddGiftDto();
         addGiftDto.setPrice(BigDecimal.valueOf(200));
@@ -221,7 +235,10 @@ public class GiftServiceTest {
         addGiftDto.setMaxAge(60L);
         Long recommendationId = 15L;
         Long giftId = 20L;
-        when(giftRepository.addGiftRecommendation(addGiftDto.getGender(), addGiftDto.getMinAge(), addGiftDto.getMaxAge()))
+        when(giftRepository.addGiftRecommendation(
+                addGiftDto.getGender(),
+                addGiftDto.getMinAge(),
+                addGiftDto.getMaxAge()))
                 .thenReturn(recommendationId.intValue());
         when(giftRepository.addGift(
                 addGiftDto.getPrice(),
@@ -252,68 +269,191 @@ public class GiftServiceTest {
     }
 
     @Test
-    void GiftService_SearchGiftsByName_ReturnsPageOfGiftDto() {
-        String name = "gift";
+    public void GiftService_SearchGiftsByFilters_ReturnsGiftPage_Asc() {
+        GiftFilterRequest giftFilterRequest = new GiftFilterRequest();
+        giftFilterRequest.setBudget(BigDecimal.valueOf(100));
+        giftFilterRequest.setGender(true);
+        giftFilterRequest.setAge(30);
+        giftFilterRequest.setCategories(List.of(1L, 2L));
+        giftFilterRequest.setOccasions(List.of(3L, 4L));
+        String name = "Gift";
+        String sort = "По возрастанию цены";
         Pageable pageable = PageRequest.of(0, 10);
-        Gift gift = new Gift();
-        gift.setId(1L);
-        gift.setName(name);
-        Page<Gift> giftPage = new PageImpl<>(List.of(gift));
-        Page<GiftDto> expectedDtoPage = new PageImpl<>(List.of(new GiftDto(1L, "Gift Name", new BigDecimal("100.00"), "photo")));
-        when(giftRepository.findGiftsByName(name, pageable)).thenReturn(giftPage);
-        when(giftDtoConverter.convertToGiftDtoPage(giftPage)).thenReturn(expectedDtoPage);
+        List<Gift> gifts = new ArrayList<>();
+        Page<Gift> giftPage = new PageImpl<>(gifts, pageable, gifts.size());
+        when(giftRepository.findAllByFiltersByNameAndByPriceAsc(
+                giftFilterRequest.getBudget(),
+                giftFilterRequest.getGender(),
+                giftFilterRequest.getAge(),
+                giftFilterRequest.getCategories(),
+                giftFilterRequest.getOccasions(),
+                name,
+                pageable
+        )).thenReturn(giftPage);
+        Page<GiftDto> giftDtoPage = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        when(giftDtoConverter.convertToGiftDtoPage(giftPage)).thenReturn(giftDtoPage);
 
-        Page<GiftDto> result = giftService.searchGiftsByName(name, pageable);
+        Page<GiftDto> result = giftService.searchGiftsByFilters(giftFilterRequest, name, sort, pageable);
 
-        assertEquals(expectedDtoPage, result);
-        verify(giftRepository, times(1)).findGiftsByName(name, pageable);
+        assertEquals(giftDtoPage, result);
+        verify(giftRepository, times(1)).findAllByFiltersByNameAndByPriceAsc(
+                giftFilterRequest.getBudget(),
+                giftFilterRequest.getGender(),
+                giftFilterRequest.getAge(),
+                giftFilterRequest.getCategories(),
+                giftFilterRequest.getOccasions(),
+                name,
+                pageable
+        );
         verify(giftDtoConverter, times(1)).convertToGiftDtoPage(giftPage);
     }
 
     @Test
-    void GiftService_SearchGiftsByName_ReturnsEmptyPage() {
-        String name = "unknown";
+    public void  GiftService_SearchGiftsByFilters_ReturnsGiftPage_Desc() {
+        GiftFilterRequest giftFilterRequest = new GiftFilterRequest();
+        giftFilterRequest.setBudget(BigDecimal.valueOf(100));
+        giftFilterRequest.setGender(true);
+        giftFilterRequest.setAge(30);
+        giftFilterRequest.setCategories(List.of(1L, 2L));
+        giftFilterRequest.setOccasions(List.of(3L, 4L));
+        String name = "Gift";
+        String sort = "По убыванию цены";
         Pageable pageable = PageRequest.of(0, 10);
-        Page<Gift> emptyGiftPage = Page.empty(pageable);
-        Page<GiftDto> emptyDtoPage = Page.empty(pageable);
-        when(giftRepository.findGiftsByName(name, pageable)).thenReturn(emptyGiftPage);
-        when(giftDtoConverter.convertToGiftDtoPage(emptyGiftPage)).thenReturn(emptyDtoPage);
+        List<Gift> gifts = new ArrayList<>();
+        Page<Gift> giftPage = new PageImpl<>(gifts, pageable, gifts.size());
+        when(giftRepository.findAllByFiltersByNameAndByPriceDesc(
+                giftFilterRequest.getBudget(),
+                giftFilterRequest.getGender(),
+                giftFilterRequest.getAge(),
+                giftFilterRequest.getCategories(),
+                giftFilterRequest.getOccasions(),
+                name,
+                pageable
+        )).thenReturn(giftPage);
+        Page<GiftDto> giftDtoPage = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        when(giftDtoConverter.convertToGiftDtoPage(giftPage)).thenReturn(giftDtoPage);
 
-        Page<GiftDto> result = giftService.searchGiftsByName(name, pageable);
+        Page<GiftDto> result = giftService.searchGiftsByFilters(giftFilterRequest, name, sort, pageable);
 
-        assertTrue(result.isEmpty());
-        verify(giftRepository, times(1)).findGiftsByName(name, pageable);
-        verify(giftDtoConverter, times(1)).convertToGiftDtoPage(emptyGiftPage);
+        assertEquals(giftDtoPage, result);
+        verify(giftRepository, times(1)).findAllByFiltersByNameAndByPriceDesc(
+                giftFilterRequest.getBudget(),
+                giftFilterRequest.getGender(),
+                giftFilterRequest.getAge(),
+                giftFilterRequest.getCategories(),
+                giftFilterRequest.getOccasions(),
+                name,
+                pageable
+        );
+        verify(giftDtoConverter, times(1)).convertToGiftDtoPage(giftPage);
     }
 
     @Test
-    void GiftService_GetGiftsByGroupId_ReturnsListOfGifts() {
-        Long groupId = 1L;
-        Gift gift1 = new Gift();
-        gift1.setId(1L);
-        gift1.setName("gift 1");
-        Gift gift2 = new Gift();
-        gift2.setId(2L);
-        gift2.setName("gift 2");
-        List<Gift> expectedGifts = List.of(gift1, gift2);
-        when(giftRepository.findGiftsByGroupId(groupId)).thenReturn(expectedGifts);
+    public void  GiftService_SearchGiftsByFilters_ReturnsGiftPage_ByRating() {
+        GiftFilterRequest giftFilterRequest = new GiftFilterRequest();
+        giftFilterRequest.setBudget(BigDecimal.valueOf(100));
+        giftFilterRequest.setGender(true);
+        giftFilterRequest.setAge(30);
+        giftFilterRequest.setCategories(List.of(1L, 2L));
+        giftFilterRequest.setOccasions(List.of(3L, 4L));
+        String name = "Gift";
+        String sort = "По рейтингу";
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Gift> gifts = new ArrayList<>();
+        Page<Gift> giftPage = new PageImpl<>(gifts, pageable, gifts.size());
+        when(giftRepository.findAllByFiltersByNameAndByAverageRatingDesc(
+                giftFilterRequest.getBudget(),
+                giftFilterRequest.getGender(),
+                giftFilterRequest.getAge(),
+                giftFilterRequest.getCategories(),
+                giftFilterRequest.getOccasions(),
+                name,
+                pageable
+        )).thenReturn(giftPage);
+        Page<GiftDto> giftDtoPage = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        when(giftDtoConverter.convertToGiftDtoPage(giftPage)).thenReturn(giftDtoPage);
 
-        List<Gift> result = giftService.getGiftsByGroupId(groupId);
+        Page<GiftDto> result = giftService.searchGiftsByFilters(giftFilterRequest, name, sort, pageable);
 
-        assertEquals(expectedGifts, result);
-        verify(giftRepository, times(1)).findGiftsByGroupId(groupId);
+        assertEquals(giftDtoPage, result);
+        verify(giftRepository, times(1)).findAllByFiltersByNameAndByAverageRatingDesc(
+                giftFilterRequest.getBudget(),
+                giftFilterRequest.getGender(),
+                giftFilterRequest.getAge(),
+                giftFilterRequest.getCategories(),
+                giftFilterRequest.getOccasions(),
+                name,
+                pageable
+        );
+        verify(giftDtoConverter, times(1)).convertToGiftDtoPage(giftPage);
     }
 
     @Test
-    void GiftService_GetGiftsByGroupId_ReturnsEmptyList() {
-        Long groupId = 999L;
-        List<Gift> emptyGifts = List.of();
-        when(giftRepository.findGiftsByGroupId(groupId)).thenReturn(emptyGifts);
+    public void GiftService_SearchGiftsByFilters_ReturnsGiftPage_Default() {
+        GiftFilterRequest giftFilterRequest = new GiftFilterRequest();
+        giftFilterRequest.setBudget(BigDecimal.valueOf(100));
+        giftFilterRequest.setGender(true);
+        giftFilterRequest.setAge(30);
+        giftFilterRequest.setCategories(List.of(1L, 2L));
+        giftFilterRequest.setOccasions(List.of(3L, 4L));
+        String name = "Gift";
+        String sort = "Default";
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Gift> gifts = new ArrayList<>();
+        Page<Gift> giftPage = new PageImpl<>(gifts, pageable, gifts.size());
+        when(giftRepository.findAllByFiltersByName(
+                giftFilterRequest.getBudget(),
+                giftFilterRequest.getGender(),
+                giftFilterRequest.getAge(),
+                giftFilterRequest.getCategories(),
+                giftFilterRequest.getOccasions(),
+                name,
+                pageable
+        )).thenReturn(giftPage);
+        Page<GiftDto> giftDtoPage = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        when(giftDtoConverter.convertToGiftDtoPage(giftPage)).thenReturn(giftDtoPage);
 
-        List<Gift> result = giftService.getGiftsByGroupId(groupId);
+        Page<GiftDto> result = giftService.searchGiftsByFilters(giftFilterRequest, name, sort, pageable);
 
-        assertTrue(result.isEmpty());
-        verify(giftRepository, times(1)).findGiftsByGroupId(groupId);
+        assertEquals(giftDtoPage, result);
+        verify(giftRepository, times(1)).findAllByFiltersByName(
+                giftFilterRequest.getBudget(),
+                giftFilterRequest.getGender(),
+                giftFilterRequest.getAge(),
+                giftFilterRequest.getCategories(),
+                giftFilterRequest.getOccasions(),
+                name,
+                pageable
+        );
+        verify(giftDtoConverter, times(1)).convertToGiftDtoPage(giftPage);
     }
 
+    @Test
+    public void GiftService_UpdateFavorites_ReturnsGiftDtoPage() {
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@example.com");
+        GiftDto giftDto1 = new GiftDto();
+        giftDto1.setId(1L);
+        giftDto1.setName("Gift 1");
+        giftDto1.setIsFavorite(false);
+        GiftDto giftDto2 = new GiftDto();
+        giftDto2.setId(2L);
+        giftDto2.setName("Gift 2");
+        giftDto2.setIsFavorite(false);
+        List<GiftDto> giftDtos = new ArrayList<>();
+        giftDtos.add(giftDto1);
+        giftDtos.add(giftDto2);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<GiftDto> pageGifts = new PageImpl<>(giftDtos, pageable, giftDtos.size());
+        when(userService.giftIsUserFavorite(user, 1L)).thenReturn(false);
+        when(userService.giftIsUserFavorite(user, 2L)).thenReturn(false);
+
+        Page<GiftDto> result = giftService.updateFavorites(pageGifts, user);
+
+        assertEquals(2, result.getTotalElements());
+        assertEquals(false, result.getContent().get(0).getIsFavorite());
+        assertEquals(false, result.getContent().get(1).getIsFavorite());
+    }
 }
+

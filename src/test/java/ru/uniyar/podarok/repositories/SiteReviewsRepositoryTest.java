@@ -1,6 +1,7 @@
 package ru.uniyar.podarok.repositories;
 
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -21,6 +22,10 @@ public class SiteReviewsRepositoryTest {
     @Autowired
     private EntityManager entityManager;
 
+    @BeforeEach
+    void cleanDatabase() {
+        entityManager.createNativeQuery("TRUNCATE TABLE site_reviews RESTART IDENTITY CASCADE").executeUpdate();
+    }
     @Test
     void SiteReviewsRepository_FindByAcceptedTrue_ReturnsAcceptedReviewsList() {
         SiteReviews acceptedReview = new SiteReviews();
@@ -64,7 +69,7 @@ public class SiteReviewsRepositoryTest {
         for (int i = 1; i <= 8; i++) {
             SiteReviews review = new SiteReviews();
             review.setReview("Review " + i);
-            review.setMark(i % 5 + 1); // Marks 1-5
+            review.setMark(i % 5 + 1);
             review.setAccepted(true);
             entityManager.persist(review);
         }

@@ -12,16 +12,15 @@ import ru.uniyar.podarok.dtos.OrderDto;
 import ru.uniyar.podarok.entities.*;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
-import ru.uniyar.podarok.utils.GiftDtoConverter;
-import ru.uniyar.podarok.utils.OrderDtoConverter;
+import ru.uniyar.podarok.utils.converters.GiftDtoConverter;
+import ru.uniyar.podarok.utils.converters.OrderDtoConverter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +45,8 @@ public class UserOrdersServiceTest {
     }
 
     @Test
-    void UserOrdersService_GetUsersNotifications_ReturnsNotifications() throws UserNotFoundException, UserNotAuthorizedException {
+    void UserOrdersService_GetUsersNotifications_ReturnsNotifications()
+            throws UserNotFoundException, UserNotAuthorizedException {
         Notification notification1 = new Notification();
         notification1.setId(1L);
         notification1.setItemValue("Item 1");
@@ -69,7 +69,26 @@ public class UserOrdersServiceTest {
     }
 
     @Test
-    void UserOrdersService_GetUsersFavorites_ReturnsUserFavoriteGifts() throws UserNotFoundException, UserNotAuthorizedException {
+    void UserOrdersService_GetUsersNotifications_ThrowsUserNotFoundException()
+            throws UserNotFoundException, UserNotAuthorizedException {
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotFoundException("Пользователь не найден!"));
+
+        assertThrows(UserNotFoundException.class ,() -> userOrdersService.getUsersNotifications());
+    }
+
+    @Test
+    void UserOrdersService_GetUsersNotifications_ThrowsUserNotAuthorizedException()
+            throws UserNotFoundException, UserNotAuthorizedException {
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotAuthorizedException("Пользователь не авторизован!"));
+
+        assertThrows(UserNotAuthorizedException.class ,() -> userOrdersService.getUsersNotifications());
+    }
+
+    @Test
+    void UserOrdersService_GetUsersFavorites_ReturnsUserFavoriteGifts()
+            throws UserNotFoundException, UserNotAuthorizedException {
         Gift gift1 = new Gift();
         gift1.setId(1L);
         gift1.setName("Gift 1");
@@ -92,7 +111,26 @@ public class UserOrdersServiceTest {
     }
 
     @Test
-    void UserOrdersService_GetUsersOrdersHistory_ReturnsCompletedOrders() throws UserNotFoundException, UserNotAuthorizedException {
+    void UserOrdersService_GetUsersFavorites_ThrowsUserNotFoundException()
+            throws UserNotFoundException, UserNotAuthorizedException {
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotFoundException("Пользователь не найден!"));
+
+        assertThrows(UserNotFoundException.class ,() -> userOrdersService.getUsersFavorites());
+    }
+
+    @Test
+    void UserOrdersService_GetUsersFavorites_ThrowsUserNotAuthorizedException()
+            throws UserNotFoundException, UserNotAuthorizedException {
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotAuthorizedException("Пользователь не авторизован!"));
+
+        assertThrows(UserNotAuthorizedException.class ,() -> userOrdersService.getUsersFavorites());
+    }
+
+    @Test
+    void UserOrdersService_GetUsersOrdersHistory_ReturnsCompletedOrders()
+            throws UserNotFoundException, UserNotAuthorizedException {
         GiftPhoto giftPhoto1 = new GiftPhoto();
         giftPhoto1.setPhotoUrl("photo1.png");
         Gift gift1 = new Gift();
@@ -137,7 +175,26 @@ public class UserOrdersServiceTest {
     }
 
     @Test
-    void UserOrdersService_GetUsersCurrentOrders_ReturnsCurrentOrders() throws UserNotFoundException, UserNotAuthorizedException {
+    void UserOrdersService_GetUsersOrdersHistory_ThrowsUserNotFoundException()
+            throws UserNotFoundException, UserNotAuthorizedException {
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotFoundException("Пользователь не найден!"));
+
+        assertThrows(UserNotFoundException.class ,() -> userOrdersService.getUsersOrdersHistory());
+    }
+
+    @Test
+    void UserOrdersService_GetUsersOrdersHistory_ThrowsUserNotAuthorizedException()
+            throws UserNotFoundException, UserNotAuthorizedException {
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotAuthorizedException("Пользователь не авторизован!"));
+
+        assertThrows(UserNotAuthorizedException.class ,() -> userOrdersService.getUsersOrdersHistory());
+    }
+
+    @Test
+    void UserOrdersService_GetUsersCurrentOrders_ReturnsCurrentOrders()
+            throws UserNotFoundException, UserNotAuthorizedException {
         GiftPhoto giftPhoto1 = new GiftPhoto();
         giftPhoto1.setPhotoUrl("photo1.png");
         Gift gift1 = new Gift();
@@ -179,5 +236,23 @@ public class UserOrdersServiceTest {
         assertEquals("В пути", result.get(0).getStatus());
         assertEquals("ул. Союзная, д. 144", result.get(0).getInformation());
         Mockito.verify(userService, Mockito.times(1)).getCurrentAuthenticationUser();
+    }
+
+    @Test
+    void UserOrdersService_GetUsersCurrentOrders_ThrowsUserNotFoundException()
+            throws UserNotFoundException, UserNotAuthorizedException {
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotFoundException("Пользователь не найден!"));
+
+        assertThrows(UserNotFoundException.class ,() -> userOrdersService.getUsersCurrentOrders());
+    }
+
+    @Test
+    void UserOrdersService_GetUsersCurrentOrders_ThrowsUserNotAuthorizedException()
+            throws UserNotFoundException, UserNotAuthorizedException {
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotAuthorizedException("Пользователь не авторизован!"));
+
+        assertThrows(UserNotAuthorizedException.class ,() -> userOrdersService.getUsersCurrentOrders());
     }
 }

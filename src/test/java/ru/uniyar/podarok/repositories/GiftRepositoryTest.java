@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,6 +15,7 @@ import ru.uniyar.podarok.entities.*;
 import ru.uniyar.podarok.testEntities.GiftCategory;
 import ru.uniyar.podarok.testEntities.GiftCategoryId;
 import ru.uniyar.podarok.testEntities.GiftOccasion;
+import ru.uniyar.podarok.testEntities.GiftOccasionId;
 import ru.uniyar.podarok.testRepositories.*;
 
 
@@ -51,6 +53,9 @@ public class GiftRepositoryTest {
     private Pageable pageable;
     private Gift gift1 = new Gift();
     private User user = new User();
+    private Category category1 = new Category();
+    private Category category2 = new Category();
+    private GiftGroup giftGroup = new GiftGroup();
 
     @BeforeEach
     void setUp() {
@@ -66,11 +71,13 @@ public class GiftRepositoryTest {
         occasion.setName("test");
         occasion = occasionRepository.save(occasion);
 
-        Category category1 = new Category();
+        Occasion occasion2 = new Occasion();
+        occasion2.setName("test");
+        occasion2 = occasionRepository.save(occasion2);
+
         category1.setName("name1");
         categoryRepository.save(category1);
 
-        Category category2 = new Category();
         category2.setName("name2");
         category2.setGifts(new ArrayList<>());
         category2 = categoryRepository.save(category2);
@@ -96,13 +103,12 @@ public class GiftRepositoryTest {
         GiftGroup giftGroup0 = new GiftGroup();
         giftGroup0.setId(1L);
         groupRepository.save(giftGroup0);
-        GiftGroup giftGroup = new GiftGroup();
         giftGroup.setId(2L);
-        groupRepository.save(giftGroup);
+        giftGroup = groupRepository.save(giftGroup);
 
         gift1.setCategories(new HashSet<>(List.of(category2)));
         gift1.setRecommendation(giftRecommendation);
-        gift1.setGiftGroup(null);
+        gift1.setGiftGroup(giftGroup0);
         gift1 = giftRepository.save(gift1);
 
 
@@ -125,54 +131,50 @@ public class GiftRepositoryTest {
         entityManager.createNativeQuery("TRUNCATE TABLE category RESTART IDENTITY CASCADE").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE occasion RESTART IDENTITY CASCADE").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE users RESTART IDENTITY CASCADE").executeUpdate();
-        entityManager.createNativeQuery("TRUNCATE TABLE gift_recommendations RESTART IDENTITY CASCADE").executeUpdate();
+        entityManager.createNativeQuery("TRUNCATE TABLE gift_recommendations RESTART IDENTITY CASCADE")
+                .executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE gift_group RESTART IDENTITY CASCADE").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE gift_photo RESTART IDENTITY CASCADE").executeUpdate();
-        entityManager.createNativeQuery("TRUNCATE TABLE gift_category RESTART IDENTITY CASCADE").executeUpdate();
-    }
-
-    @Test
-    public void GiftRepository_FindAllGifts_ReturnsGift() {
-        Page<Gift> giftsPage = giftRepository.findAllGifts(pageable);
-
-        assertNotNull(giftsPage);
-        assertTrue(giftsPage.hasContent());
-        Gift actualGift = giftsPage.getContent().get(0);
-        assertEquals(gift1.getName(), actualGift.getName());
-        assertEquals(0, gift1.getPrice().compareTo(actualGift.getPrice()));
-    }
-
-    @Test
-    public void GiftRepository_FindGiftsByFilter_ReturnsGift() {
-        BigDecimal budget = new BigDecimal("150.00");
-        Boolean gender = true;
-        Integer age = 30;
-        List<Long> categories = List.of(1L, 2L);
-        List<Long> occasions = List.of(1L);
-
-        Page<Gift> giftsPage = giftRepository.findGiftsByFilter(
-                budget, gender, age, categories, occasions, pageable);
-
-        assertNotNull(giftsPage);
-        assertTrue(giftsPage.hasContent());
-        giftsPage.forEach(gift -> {
-            assertNotNull(gift.getId());
-            assertTrue(gift.getPrice().compareTo(budget) <= 0);
-        });
+        entityManager.createNativeQuery("TRUNCATE TABLE gift_category RESTART IDENTITY CASCADE")
+                .executeUpdate();
     }
 
     @Test
     public void GiftRepository_FindById_ReturnsGift() {
         Optional<Gift> gift = giftRepository.findById(1L);
+
         Gift result = gift.get();
         assertThat(result).isNotNull();
         assertEquals("test", gift1.getName());
     }
 
     @Test
+    public void GiftRepository_FindGiftsByCategoriesOrOccasions_ReturnsGiftList() {
+        List<Gift> result = giftRepository.findGiftsByCategoriesOrOccasions(Arrays.asList(1L, 2L), List.of(1L));
+
+        assertEquals(1, result.size());
+        assertEquals("test", result.get(0).getName());
+    }
+
+    @Test
+    public void GiftRepository_FindGiftsByGroupId_ReturnsGiftList() {
+        List<Gift> result = giftRepository.findGiftsByGroupId(1L);
+
+        assertEquals(1, result.size());
+        assertEquals("test", result.get(0).getName());
+    }
+
+    @Test
+    @Deprecated
     @Transactional
     public void GiftRepository_UpdateGift_VerifiesGiftUpdated() {
-        giftRepository.updateGift(1L, BigDecimal.valueOf(200), 1L, "Updated Description", "Updated Gift", 2L);
+        giftRepository.updateGift(
+                1L,
+                BigDecimal.valueOf(200),
+                1L,
+                "Updated Description",
+                "Updated Gift",
+                2L);
         entityManager.flush();
         entityManager.clear();
 
@@ -185,21 +187,7 @@ public class GiftRepositoryTest {
     }
 
     @Test
-    @Transactional
-    public void GiftRepository_AddGift_VerifiesGiftAdded() {
-        Integer addedGiftId = giftRepository.addGift(BigDecimal.valueOf(200), 1L, "Updated Description", "Updated Gift", 2L);
-        entityManager.flush();
-        entityManager.clear();
-
-        Gift addedGift = giftRepository.findById(Long.valueOf(addedGiftId)).get();
-        assertNotNull(addedGift);
-        assertEquals(0, BigDecimal.valueOf(200).compareTo(addedGift.getPrice()));
-        assertEquals("Updated Description", addedGift.getDescription());
-        assertEquals("Updated Gift", addedGift.getName());
-        assertEquals(2L, addedGift.getGiftGroup().getId());
-    }
-
-    @Test
+    @Deprecated
     @Transactional
     public void GiftRepository_DeleteGiftCategories_VerifiesCategoryDeleted() {
         GiftCategory giftCategory = new GiftCategory();
@@ -210,25 +198,23 @@ public class GiftRepositoryTest {
         entityManager.clear();
         giftRepository.deleteGiftCategories(1L);
 
-        Optional<GiftCategory> deletedCategory = giftCategoryRepository.findById(new GiftCategoryId(2L, 1L));
+        Optional<GiftCategory> deletedCategory = giftCategoryRepository.findById(
+                new GiftCategoryId(2L, 1L));
         assertTrue(deletedCategory.isEmpty());
     }
 
     @Test
+    @Deprecated
     @Transactional
-    public void GiftRepository_AddGiftCategory_VerifiesCategoryAdded() {
-        GiftCategory giftCategory = new GiftCategory();
-        giftCategory.setGiftId(1L);
-        giftCategory.setCategoryId(1L);
+    public void GiftRepository_UpdateGiftOccasion() {
+        giftRepository.updateGiftOccasion(1L, 2L);
 
-        giftRepository.addGiftCategory(1L, 1L);
-
-        GiftCategory addedCategory = giftCategoryRepository.findById(new GiftCategoryId(1L, 1L)).get();
-        assertNotNull(addedCategory);
-        assertEquals(1L, addedCategory.getCategoryId());
+        Gift updatedGift = giftRepository.findById(1L).get();
+        assertEquals(2L, updatedGift.getOccasions().stream().findFirst().get().getId());
     }
 
     @Test
+    @Deprecated
     @Transactional
     public void GiftRepository_DeleteGiftPhotos_VerifiesPhotoDeleted() {
         GiftPhoto giftPhoto = new GiftPhoto();
@@ -247,22 +233,7 @@ public class GiftRepositoryTest {
     }
 
     @Test
-    @Transactional
-    public void GiftRepository_AddGiftPhoto_VerifiesPhotoAdded() {
-        GiftPhoto giftPhoto = new GiftPhoto();
-        Gift gift = new Gift();
-        gift.setId(1L);
-        giftPhoto.setGift(gift);
-        giftPhoto.setPhotoUrl("url");
-
-        giftRepository.addGiftPhoto(1L, "url");
-
-        GiftPhoto addedPhoto = giftPhotoRepository.findById(1L).get();
-        assertNotNull(addedPhoto);
-        assertEquals("url", addedPhoto.getPhotoUrl());
-    }
-
-    @Test
+    @Deprecated
     @Transactional
     public void GiftRepository_DeleteGiftFeatures_VerifiesFeatureDeleted() {
         GiftFeature giftFeature = new GiftFeature();
@@ -282,24 +253,7 @@ public class GiftRepositoryTest {
     }
 
     @Test
-    @Transactional
-    public void GiftRepository_AddGiftFeature_VerifiesFeatureAdded() {
-        GiftFeature giftFeature = new GiftFeature();
-        Gift gift = new Gift();
-        gift.setId(1L);
-        giftFeature.setGift(gift);
-        giftFeature.setItemName("name");
-        giftFeature.setItemValue("value");
-
-        giftRepository.addGiftFeature(1L, "name", "value");
-
-        GiftFeature addedFeature = giftFeatureRepository.findById(1L).get();
-        assertNotNull(addedFeature);
-        assertEquals("name", addedFeature.getItemName());
-        assertEquals("value", addedFeature.getItemValue());
-    }
-
-    @Test
+    @Deprecated
     @Transactional
     public void GiftRepository_UpdateGiftRecommendation_VerifiesRecommendationUpdated() {
         GiftRecommendation recommendation = new GiftRecommendation();
@@ -321,6 +275,96 @@ public class GiftRepositoryTest {
     }
 
     @Test
+    @Deprecated
+    @Transactional
+    public void GiftRepository_AddGift_VerifiesGiftAdded() {
+        Integer addedGiftId = giftRepository.addGift(
+                BigDecimal.valueOf(200),
+                1L,
+                "Updated Description",
+                "Updated Gift",
+                2L);
+        entityManager.flush();
+        entityManager.clear();
+
+        Gift addedGift = giftRepository.findById(Long.valueOf(addedGiftId)).get();
+        assertNotNull(addedGift);
+        assertEquals(0, BigDecimal.valueOf(200).compareTo(addedGift.getPrice()));
+        assertEquals("Updated Description", addedGift.getDescription());
+        assertEquals("Updated Gift", addedGift.getName());
+        assertEquals(2L, addedGift.getGiftGroup().getId());
+    }
+
+    @Test
+    @Deprecated
+    @Transactional
+    public void GiftRepository_AddGiftCategory_VerifiesCategoryAdded() {
+        GiftCategory giftCategory = new GiftCategory();
+        giftCategory.setGiftId(1L);
+        giftCategory.setCategoryId(1L);
+
+        giftRepository.addGiftCategory(1L, 1L);
+
+        GiftCategory addedCategory = giftCategoryRepository.findById(
+                new GiftCategoryId(1L, 1L)).get();
+        assertNotNull(addedCategory);
+        assertEquals(1L, addedCategory.getCategoryId());
+    }
+
+    @Test
+    @Deprecated
+    @Transactional
+    public void GiftRepository_AddGiftOccasion_VerifiesCategoryAdded() {
+        GiftOccasion giftOccasion = new GiftOccasion();
+        giftOccasion.setGiftId(1L);
+        giftOccasion.setOccasionId(2L);
+
+        giftRepository.addGiftOccasion(1L, 2L);
+
+        GiftOccasion addedOccasion = giftOccasionRepository.findById(
+                new GiftOccasionId(2L, 1L)).get();
+        assertNotNull(addedOccasion);
+        assertEquals(2L, addedOccasion.getOccasionId());
+    }
+
+    @Test
+    @Deprecated
+    @Transactional
+    public void GiftRepository_AddGiftPhoto_VerifiesPhotoAdded() {
+        GiftPhoto giftPhoto = new GiftPhoto();
+        Gift gift = new Gift();
+        gift.setId(1L);
+        giftPhoto.setGift(gift);
+        giftPhoto.setPhotoUrl("url");
+
+        giftRepository.addGiftPhoto(1L, "url");
+
+        GiftPhoto addedPhoto = giftPhotoRepository.findById(1L).get();
+        assertNotNull(addedPhoto);
+        assertEquals("url", addedPhoto.getPhotoUrl());
+    }
+
+    @Test
+    @Deprecated
+    @Transactional
+    public void GiftRepository_AddGiftFeature_VerifiesFeatureAdded() {
+        GiftFeature giftFeature = new GiftFeature();
+        Gift gift = new Gift();
+        gift.setId(1L);
+        giftFeature.setGift(gift);
+        giftFeature.setItemName("name");
+        giftFeature.setItemValue("value");
+
+        giftRepository.addGiftFeature(1L, "name", "value");
+
+        GiftFeature addedFeature = giftFeatureRepository.findById(1L).get();
+        assertNotNull(addedFeature);
+        assertEquals("name", addedFeature.getItemName());
+        assertEquals("value", addedFeature.getItemValue());
+    }
+
+    @Test
+    @Deprecated
     @Transactional
     public void GiftRepository_AddGiftRecommendation_VerifiesRecommendationAdded() {
         GiftRecommendation recommendation = new GiftRecommendation();
@@ -336,5 +380,80 @@ public class GiftRepositoryTest {
         assertTrue(addedRecommendation.getGender());
         assertEquals(18, addedRecommendation.getMinAge());
         assertEquals(30, addedRecommendation.getMaxAge());
+    }
+
+    @Test
+    public void GiftRepository_FindAllByFiltersByNameAndByAverageRatingDesc_ReturnsGiftPage() {
+        Page<Gift> result = giftRepository.findAllByFiltersByNameAndByAverageRatingDesc(
+                BigDecimal.valueOf(100),
+                true,
+                20,
+                List.of(2L),
+                List.of(1L),
+                "test",
+                PageRequest.of(0, 15)
+        );
+
+        assertEquals(1, result.getTotalElements());
+        assertTrue(result.getContent().stream().anyMatch(gift -> gift.getId().equals(1L)));
+    }
+
+    @Test
+    public void GiftRepository_FindAllByFiltersByNameAndByPriceAsc_ReturnsGiftPage() {
+        Page<Gift> result = giftRepository.findAllByFiltersByNameAndByPriceAsc(
+                BigDecimal.valueOf(100),
+                true,
+                20,
+                List.of(2L),
+                List.of(1L),
+                "test",
+                PageRequest.of(0, 15)
+        );
+
+        assertEquals(1, result.getTotalElements());
+        assertTrue(result.getContent().stream().anyMatch(gift -> gift.getId().equals(1L)));
+    }
+
+    @Test
+    public void GiftRepository_FindAllByFiltersByNameAndByPriceDesc_ReturnsGiftPage() {
+        Page<Gift> result = giftRepository.findAllByFiltersByNameAndByPriceDesc(
+                BigDecimal.valueOf(100),
+                true,
+                20,
+                List.of(2L),
+                List.of(1L),
+                "test",
+                PageRequest.of(0, 15)
+        );
+
+        assertEquals(1, result.getTotalElements());
+        assertTrue(result.getContent().stream().anyMatch(gift -> gift.getId().equals(1L)));
+    }
+
+    @Test
+    public void GiftRepository_FindAllByFiltersByName_ReturnsGiftPage() {
+        Page<Gift> result = giftRepository.findAllByFiltersByName(
+                BigDecimal.valueOf(100),
+                true,
+                20,
+                List.of(2L),
+                List.of(1L),
+                "test",
+                PageRequest.of(0, 15)
+        );
+
+        assertEquals(1, result.getTotalElements());
+        assertTrue(result.getContent().stream().anyMatch(gift -> gift.getId().equals(1L)));
+    }
+
+    @Test
+    public void GiftRepository_FindAllGifts_ReturnsGift() {
+        Page<Gift> giftsPage = giftRepository.findAllGifts(pageable);
+
+        assertNotNull(giftsPage);
+        assertTrue(giftsPage.hasContent());
+        Gift actualGift = giftsPage.getContent().get(0);
+        assertEquals(gift1.getName(), actualGift.getName());
+        assertEquals(0, gift1.getPrice().compareTo(actualGift.getPrice()));
     }
 }

@@ -9,6 +9,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+/**
+ * Dto для вывода заказа.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

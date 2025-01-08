@@ -10,10 +10,12 @@ import ru.uniyar.podarok.dtos.AddSiteReviewDto;
 import ru.uniyar.podarok.dtos.SiteReviewsDto;
 import ru.uniyar.podarok.entities.SiteReviews;
 import ru.uniyar.podarok.entities.User;
+import ru.uniyar.podarok.exceptions.SiteReviewAlreadyExistException;
+import ru.uniyar.podarok.exceptions.SiteReviewNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.SiteReviewsRepository;
-import ru.uniyar.podarok.utils.SiteReviewsDtoConverter;
+import ru.uniyar.podarok.utils.converters.SiteReviewsDtoConverter;
 
 import java.util.List;
 import java.util.Optional;
@@ -57,8 +59,8 @@ class SiteReviewsServiceTest {
                 siteReviews1, siteReviews2
         );
         List<SiteReviewsDto> siteReviewsDtos = List.of(
-                new SiteReviewsDto(1L, "user", "Review 1", 5),
-                new SiteReviewsDto(2L, "user", "Review 2", 4)
+                new SiteReviewsDto(1L, 1L, "user", "Review 1", 5),
+                new SiteReviewsDto(2L, 2L, "user", "Review 2", 4)
         );
         when(siteReviewsRepository.findTop6ByAcceptedTrue()).thenReturn(siteReviews);
         when(siteReviewsDtoConverter.convertToSiteReviewsDto(any(SiteReviews.class)))
@@ -79,7 +81,12 @@ class SiteReviewsServiceTest {
         siteReviews.setAccepted(true);
         siteReviews.setMark(5);
         List<SiteReviews> siteReviewsList = List.of(siteReviews);
-        List<SiteReviewsDto> siteReviewsDtos = List.of(new SiteReviewsDto(1L,"user", "Review 1", 5));
+        List<SiteReviewsDto> siteReviewsDtos = List.of(new SiteReviewsDto(
+                1L,
+                1L,
+                "user",
+                "Review 1",
+                5));
         when(siteReviewsRepository.findByAcceptedTrue()).thenReturn(siteReviewsList);
         when(siteReviewsDtoConverter.convertToSiteReviewsDto(any(SiteReviews.class)))
                 .thenReturn(siteReviewsDtos.get(0));
@@ -92,7 +99,8 @@ class SiteReviewsServiceTest {
     }
 
     @Test
-    void SiteReviewsService_AddSiteReview_ShouldSaveNewReview_WhenUserHasNoExistingReview() throws UserNotFoundException, UserNotAuthorizedException {
+    void SiteReviewsService_AddSiteReview_VerifiesReviewSaved()
+            throws UserNotFoundException, UserNotAuthorizedException, SiteReviewAlreadyExistException {
         AddSiteReviewDto addSiteReviewDto = new AddSiteReviewDto(5, "Great service!");
         User user = new User();
         user.setId(1L);
@@ -105,7 +113,24 @@ class SiteReviewsServiceTest {
     }
 
     @Test
-    void SiteReviewsService_ChangeAcceptedStatusSiteReviews_ShouldUpdateAcceptedStatus_WhenReviewExists() throws EntityNotFoundException {
+    void SiteReviewsService_AddSiteReview_ThrowsSiteReviewAlreadyExistException()
+            throws UserNotFoundException, UserNotAuthorizedException {
+        AddSiteReviewDto addSiteReviewDto = new AddSiteReviewDto(5, "Great service!");
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("User");
+        user.setSiteReviews(new SiteReviews());
+        when(userService.getCurrentAuthenticationUser()).thenReturn(user);
+
+        assertThrows(SiteReviewAlreadyExistException.class,
+                () -> siteReviewsService.addSiteReview(addSiteReviewDto));
+
+    }
+
+
+    @Test
+    void SiteReviewsService_ChangeAcceptedStatusSiteReviews_VerifiesReviewIsSaved()
+            throws SiteReviewNotFoundException {
         SiteReviews siteReviews = new SiteReviews();
         siteReviews.setId(1L);
         siteReviews.setReview("Review 1");
@@ -120,10 +145,10 @@ class SiteReviewsServiceTest {
     }
 
     @Test
-    void SiteReviewsService_ChangeAcceptedStatusSiteReviews_ShouldThrowException_WhenReviewDoesNotExist() {
+    void SiteReviewsService_ChangeAcceptedStatusSiteReviews_ThrowsSiteReviewNotFoundException() {
         when(siteReviewsRepository.findById(1L)).thenReturn(Optional.empty());
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
+        SiteReviewNotFoundException exception = assertThrows(SiteReviewNotFoundException.class, () ->
                 siteReviewsService.changeAcceptedStatusSiteReviews(1L)
         );
         assertEquals("Отзыв с id 1 не найден!", exception.getMessage());
@@ -131,9 +156,18 @@ class SiteReviewsServiceTest {
     }
 
     @Test
-    void SiteReviewsService_DeleteSiteReviews_ShouldDeleteReview_WhenIdExists() {
+    void SiteReviewsService_DeleteSiteReviews_VerifiesReviewDeleted()
+            throws SiteReviewNotFoundException {
+        when(siteReviewsRepository.existsById(any())).thenReturn(true);
         siteReviewsService.deleteSiteReviews(1L);
 
         verify(siteReviewsRepository).deleteById(1L);
+    }
+
+    @Test
+    void SiteReviewsService_DeleteSiteReviews_ThrowsSiteReviewNotFoundException() {
+        when(siteReviewsRepository.existsById(any())).thenReturn(false);
+
+        assertThrows(SiteReviewNotFoundException.class, () -> siteReviewsService.deleteSiteReviews(1L));
     }
 }

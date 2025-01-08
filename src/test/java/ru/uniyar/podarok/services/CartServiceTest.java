@@ -1,6 +1,5 @@
 package ru.uniyar.podarok.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,10 +14,11 @@ import ru.uniyar.podarok.entities.Cart;
 import ru.uniyar.podarok.entities.Gift;
 import ru.uniyar.podarok.entities.Order;
 import ru.uniyar.podarok.entities.User;
+import ru.uniyar.podarok.exceptions.GiftNotFoundException;
 import ru.uniyar.podarok.exceptions.UserNotAuthorizedException;
 import ru.uniyar.podarok.exceptions.UserNotFoundException;
 import ru.uniyar.podarok.repositories.CartRepository;
-import ru.uniyar.podarok.utils.GiftDtoConverter;
+import ru.uniyar.podarok.utils.converters.GiftDtoConverter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -79,10 +79,13 @@ public class CartServiceTest {
         giftDto.setName("gift");
     }
 
+
     @Test
-    public void CartService_AddGifts_VerifiesGiftIsSaved() throws UserNotFoundException, UserNotAuthorizedException {
+    public void CartService_AddGifts_VerifiesGiftGiftIsSaved()
+            throws UserNotFoundException, UserNotAuthorizedException, GiftNotFoundException {
         when(giftService.getGiftById(gift.getId())).thenReturn(gift);
         when(userService.getCurrentAuthenticationUser()).thenReturn(user);
+        when(cartRepository.findItemByGiftId(gift.getId())).thenReturn(Optional.of(cart));
 
         cartService.addGifts(gift.getId(), 3);
 
@@ -90,7 +93,20 @@ public class CartServiceTest {
     }
 
     @Test
-    public void CartService_AddGifts_VerifiesGiftAmountIsAdded() throws UserNotFoundException, UserNotAuthorizedException {
+    public void CartService_AddGifts_VerifiesGiftGiftIsSaved_WhenGiftDoesNotExist()
+            throws UserNotFoundException, UserNotAuthorizedException, GiftNotFoundException {
+        when(giftService.getGiftById(gift.getId())).thenReturn(gift);
+        when(userService.getCurrentAuthenticationUser()).thenReturn(user);
+        when(cartRepository.findItemByGiftId(gift.getId())).thenReturn(Optional.empty());
+
+        cartService.addGifts(gift.getId(), 3);
+
+        verify(cartRepository, times(1)).save(any(Cart.class));
+    }
+
+    @Test
+    public void CartService_AddGifts_ThrowsUserNotFoundException()
+            throws UserNotFoundException, UserNotAuthorizedException, GiftNotFoundException {
         when(giftService.getGiftById(gift.getId())).thenReturn(gift);
         when(userService.getCurrentAuthenticationUser()).thenReturn(user);
         when(cartRepository.findItemByGiftId(gift.getId())).thenReturn(Optional.of(cart));
@@ -110,7 +126,8 @@ public class CartServiceTest {
     }
 
     @Test
-    public void CartService_ChangeGiftsAmount_ReturnsGiftItemAmount() throws UserNotFoundException, UserNotAuthorizedException {
+    public void CartService_ChangeGiftsAmount_ReturnsGiftItemAmount()
+            throws GiftNotFoundException {
         when(cartRepository.findItemByGiftId(gift.getId())).thenReturn(Optional.of(cart));
 
         cartService.changeGiftsAmount(gift.getId(), 5);
@@ -120,8 +137,18 @@ public class CartServiceTest {
     }
 
     @Test
-    public void CartService_CleanCart_ReturnsIsRepositoryEmpty() throws UserNotFoundException, UserNotAuthorizedException {
+    public void CartService_ChangeGiftsAmount_ThrowsGiftNotFoundException() {
+        when(cartRepository.findItemByGiftId(gift.getId())).thenReturn(Optional.empty());
+
+        verify(cartRepository, never()).save(cart);
+        assertThrows(GiftNotFoundException.class, () -> cartService.changeGiftsAmount(gift.getId(), 5));
+    }
+
+    @Test
+    public void CartService_CleanCart_ReturnsIsRepositoryEmpty()
+            throws UserNotFoundException, UserNotAuthorizedException {
         when(userService.getCurrentAuthenticationUser()).thenReturn(user);
+
         cartService.cleanCart();
 
         verify(cartRepository, times(1)).deleteAllByUserId(user.getId());
@@ -129,7 +156,26 @@ public class CartServiceTest {
     }
 
     @Test
-    public void CartService_GetCart_ReturnsCart() throws UserNotFoundException, UserNotAuthorizedException {
+    public void CartService_CleanCart_ThrowsUserNotFoundException()
+            throws UserNotFoundException, UserNotAuthorizedException {
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotFoundException("Пользователь не найден!"));
+
+        assertThrows(UserNotFoundException.class, () -> cartService.cleanCart());
+    }
+
+    @Test
+    public void CartService_CleanCart_ThrowsUserNotAuthorizedException()
+            throws UserNotFoundException, UserNotAuthorizedException {
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotAuthorizedException("Пользователь не авторизован!"));
+
+        assertThrows(UserNotAuthorizedException.class, () -> cartService.cleanCart());
+    }
+
+    @Test
+    public void CartService_GetCart_ReturnsCart()
+            throws UserNotFoundException, UserNotAuthorizedException {
         GiftDto giftDto = new GiftDto();
         giftDto.setId(1L);
         giftDto.setName("gift");
@@ -138,6 +184,7 @@ public class CartServiceTest {
         cartDto.setGift(giftDto);
         when(userService.getCurrentAuthenticationUser()).thenReturn(user);
         when(giftDtoConverter.convertToGiftDto(any())).thenReturn(giftDto);
+
         List<CartDto> cartList = cartService.getCart();
 
         assertEquals(1, cartList.size());
@@ -145,13 +192,40 @@ public class CartServiceTest {
     }
 
     @Test
-    void CartService_PlaceOrder_VerifiesOrderIsPlaced() throws Exception {
+    public void CartService_GetCart_ThrowsUserNotFoundException()
+            throws UserNotFoundException, UserNotAuthorizedException {
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotFoundException("Пользователь не найден!"));
+        ;
+        assertThrows(UserNotFoundException.class, () -> cartService.getCart());
+    }
+
+    @Test
+    public void CartService_GetCart_ThrowsUserNotAuthorizedException()
+            throws UserNotFoundException, UserNotAuthorizedException {
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotAuthorizedException("Пользователь не авторизован!"));
+
+        assertThrows(UserNotAuthorizedException.class, () -> cartService.getCart());
+    }
+
+    @Test
+    void CartService_PlaceOrder_VerifiesOrderIsPlaced()
+            throws Exception {
         OrderRequestDto orderRequestDto = new OrderRequestDto(List.of(
-                new OrderItemDto(1, 1L)), LocalDate.now(), LocalTime.now(), LocalTime.now(), "test", "card", "user", "test@example.com", "8800"
+                new OrderItemDto(1, 1L)),
+                LocalDate.now(),
+                LocalTime.now(),
+                LocalTime.now(),
+                BigDecimal.valueOf(1000),
+                "test",
+                "card",
+                "user",
+                "test@example.com",
+                "8800"
         );
         Order order = new Order();
         order.setUser(user);
-        //order.setGiftOrders(gift);
         when(userService.getCurrentAuthenticationUser()).thenReturn(user);
         when(giftService.getGiftById(1L)).thenReturn(gift);
         when(cartRepository.findItemByGiftIdAndUserId(1L, 1L)).thenReturn(Optional.of(cart));
@@ -163,23 +237,67 @@ public class CartServiceTest {
     }
 
     @Test
-    void CartService_PlaceOrder_ThrowsUserNotFoundException() throws Exception {
+    void CartService_PlaceOrder_ThrowsUserNotFoundException()
+            throws Exception {
         OrderRequestDto orderRequestDto = new OrderRequestDto(List.of(
-                new OrderItemDto(1, 1L)), LocalDate.now(), LocalTime.now(), LocalTime.now(), "test", "card", "user", "test@example.com", "8800"
+                new OrderItemDto(1, 1L)),
+                LocalDate.now(),
+                LocalTime.now(),
+                LocalTime.now(),
+                BigDecimal.valueOf(1000),
+                "test",
+                "card",
+                "user",
+                "test@example.com",
+                "8800"
         );
-        when(userService.getCurrentAuthenticationUser()).thenThrow(new UserNotFoundException("Пользователь не найден!"));
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotFoundException("Пользователь не найден!"));
 
         assertThrows(UserNotFoundException.class, () -> cartService.placeOrder(orderRequestDto));
     }
 
     @Test
-    void CartService_PlaceOrder_ThrowsEntityNotFoundException() throws Exception {
+    void CartService_PlaceOrder_ThrowsUserNotAuthorizedException()
+            throws Exception {
         OrderRequestDto orderRequestDto = new OrderRequestDto(List.of(
-                new OrderItemDto(1, 1L)), LocalDate.now(), LocalTime.now(), LocalTime.now(), "test", "card"
-                , "user", "test@example.com", "8800");
-        when(userService.getCurrentAuthenticationUser()).thenReturn(user);
-        when(giftService.getGiftById(1L)).thenThrow(new EntityNotFoundException("Подарок не найден!"));
+                new OrderItemDto(1, 1L)),
+                LocalDate.now(),
+                LocalTime.now(),
+                LocalTime.now(),
+                BigDecimal.valueOf(1000),
+                "test",
+                "card",
+                "user",
+                "test@example.com",
+                "8800");
+        when(userService.getCurrentAuthenticationUser()).thenThrow(
+                new UserNotAuthorizedException("Пользователь не авторизован!"));
 
-        assertThrows(EntityNotFoundException.class, () -> cartService.placeOrder(orderRequestDto));
+        assertThrows(UserNotAuthorizedException.class, () -> cartService.placeOrder(orderRequestDto));
     }
+
+    @Test
+    void CartService_PlaceOrder_ThrowsEntityNotFoundException()
+            throws Exception {
+        OrderRequestDto orderRequestDto = new OrderRequestDto(List.of(
+                new OrderItemDto(1, 1L)),
+                LocalDate.now(),
+                LocalTime.now(),
+                LocalTime.now(),
+                BigDecimal.valueOf(1000),
+                "test",
+                "card",
+                "user",
+                "test@example.com",
+                "8800");
+        when(userService.getCurrentAuthenticationUser()).thenReturn(user);
+        when(giftService.getGiftById(1L)).thenThrow(new GiftNotFoundException("Подарок не найден!"));
+
+        assertThrows(GiftNotFoundException.class, () -> cartService.placeOrder(orderRequestDto));
+    }
+
+
+
+
 }

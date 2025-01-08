@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -41,13 +42,17 @@ class AuthServiceTest {
     private AuthService authService;
 
     @Test
-    void AuthService_CreateNewUser_ReturnsCreatedUser() throws UserAlreadyExistException {
-        RegistrationUserDto registrationUserDto = new RegistrationUserDto("test", "test@example.com", "12345");
+    void AuthService_CreateNewUser_ReturnsCreatedUser()
+            throws UserAlreadyExistException {
+        RegistrationUserDto registrationUserDto = new RegistrationUserDto(
+                "test",
+                "test@example.com",
+                "12345");
         User user = new User();
         user.setId(1L);
         user.setEmail("test@example.com");
         user.setFirstName("test");
-        Mockito.when(userService.createNewUser(any(RegistrationUserDto.class))).thenReturn(user);
+        when(userService.createNewUser(any(RegistrationUserDto.class))).thenReturn(user);
 
         UserDto result = authService.createNewUser(registrationUserDto);
 
@@ -57,13 +62,42 @@ class AuthServiceTest {
     }
 
     @Test
+    void AuthService_CreateNewUser_ThrowsUserAlreadyExistException()
+            throws UserAlreadyExistException {
+        RegistrationUserDto registrationUserDto = new RegistrationUserDto(
+                "test@example.com",
+                "password",
+                "John");
+        when(userService.createNewUser(registrationUserDto))
+                .thenThrow(new UserAlreadyExistException("User already exists"));
+
+        assertThrows(UserAlreadyExistException.class, () -> authService.createNewUser(registrationUserDto));
+
+        verify(userService, times(1)).createNewUser(registrationUserDto);
+    }
+
+    @Test
+    void AuthService_CreateAuthToken_ThrowsBadCredentialsException() {
+        JwtRequest authRequest = new JwtRequest("test@example.com", "wrongpassword");
+        doThrow(new BadCredentialsException("Неверный токен!"))
+                .when(authenticationManager)
+                .authenticate(any(UsernamePasswordAuthenticationToken.class));
+
+        assertThrows(BadCredentialsException.class, () -> authService.createAuthToken(authRequest));
+        verify(authenticationManager, times(1))
+                .authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verifyNoInteractions(userService);
+        verifyNoInteractions(jwtTokenUtils);
+    }
+
+    @Test
     void AuthService_CreateAuthToken_ReturnsCreatedAuthToken() {
         JwtRequest authRequest = new JwtRequest("test@example.com", "12345");
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                 "test@example.com", "12345", new ArrayList<>());
         String generatedToken = "jwt-token";
-        Mockito.when(userService.loadUserByUsername(authRequest.getEmail())).thenReturn(userDetails);
-        Mockito.when(jwtTokenUtils.generateToken(userDetails)).thenReturn(generatedToken);
+        when(userService.loadUserByUsername(authRequest.getEmail())).thenReturn(userDetails);
+        when(jwtTokenUtils.generateToken(userDetails)).thenReturn(generatedToken);
 
         JwtResponse result = authService.createAuthToken(authRequest);
 

@@ -39,13 +39,15 @@ public class ConfirmationCodeRepositoryTest {
     }
     @BeforeEach
     void cleanDatabase() {
-        entityManager.createNativeQuery("TRUNCATE TABLE confirmation_code RESTART IDENTITY CASCADE").executeUpdate();
+        entityManager.createNativeQuery("TRUNCATE TABLE confirmation_code RESTART IDENTITY CASCADE")
+                .executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE users RESTART IDENTITY CASCADE").executeUpdate();
     }
 
     @Test
     void ConfirmationCodeRepository_SaveCode_ReturnSavedCode(){
         ConfirmationCode savedCode = confirmationCodeRepository.save(code);
+
         assertThat(savedCode).isNotNull();
         assertThat(savedCode.getId()).isGreaterThan(0);
         assertEquals(LocalDate.now().plusDays(1), savedCode.getExpiryDate());
@@ -74,8 +76,8 @@ public class ConfirmationCodeRepositoryTest {
         confirmationCodeRepository.save(code);
 
         confirmationCodeRepository.delete(code);
-        Optional<ConfirmationCode> foundCode = confirmationCodeRepository.findByCode("12345");
 
+        Optional<ConfirmationCode> foundCode = confirmationCodeRepository.findByCode("12345");
         assertThat(foundCode).isEmpty();
     }
 }

@@ -7,18 +7,39 @@ import ru.uniyar.podarok.dtos.GiftFilterRequest;
 @Service
 @AllArgsConstructor
 public class GiftFilterService {
+    /**
+     * Проверят запрос GiftFilterRequest на наличие параметров фильтра.
+     *
+     * @param request запрос.
+     * @return true, если нашёлся хотя бы один параметр фильтра.
+     */
     public boolean hasFilters(GiftFilterRequest request) {
-        return (request.getBudget() != null || request.getGender() != null || request.getAge() != null ||
-                (request.getCategories() != null && !request.getCategories().isEmpty()) ||
-                (request.getOccasions() != null && !request.getOccasions().isEmpty()));
+        return request.getBudget() != null
+                || request.getGender() != null
+                || request.getAge() != null
+                || (request.getCategories() != null && !request.getCategories().isEmpty())
+                || (request.getOccasions() != null && !request.getOccasions().isEmpty());
     }
 
+    /**
+     * Проверят запрос GiftFilterRequest на наличие параметров опроса.
+     *
+     * @param request запрос.
+     * @return true, если нашёлся хотя бы один параметр опроса.
+     */
     public boolean hasSurveyData(GiftFilterRequest request) {
-        return (request.getSurveyBudget() != null || request.getSurveyGender() != null || request.getSurveyAge() != null ||
-                (request.getSurveyCategories() != null && !request.getSurveyCategories().isEmpty()) ||
-                (request.getSurveyOccasions() != null && !request.getSurveyOccasions().isEmpty()));
+        return request.getSurveyBudget() != null
+                || request.getSurveyGender() != null
+                || request.getSurveyAge() != null
+                || (request.getSurveyCategories() != null && !request.getSurveyCategories().isEmpty())
+                || (request.getSurveyOccasions() != null && !request.getSurveyOccasions().isEmpty());
     }
-
+    /**
+     * Создаёт новый запрос GiftFilterRequest на основе переденных данных.
+     *
+     * @param request запрос.
+     * @return обработанный request.
+     */
     public GiftFilterRequest processRequest(GiftFilterRequest request) {
         if (hasSurveyData(request) && !hasFilters(request)) {
             return createSurveyRequest(request);
@@ -60,8 +81,10 @@ public class GiftFilterService {
 
     private GiftFilterRequest mergeWithFilterData(GiftFilterRequest request) {
         return new GiftFilterRequest(
-                (request.getSurveyCategories() != null && !request.getSurveyCategories().isEmpty()) ? request.getSurveyCategories() : request.getCategories(),
-                (request.getSurveyOccasions() != null && !request.getSurveyOccasions().isEmpty()) ? request.getSurveyOccasions() : request.getOccasions(),
+                (request.getSurveyCategories() != null && !request.getSurveyCategories().isEmpty())
+                        ? request.getSurveyCategories() : request.getCategories(),
+                (request.getSurveyOccasions() != null && !request.getSurveyOccasions().isEmpty())
+                        ? request.getSurveyOccasions() : request.getOccasions(),
                 request.getSurveyGender() != null ? request.getSurveyGender() : request.getGender(),
                 request.getSurveyBudget() != null ? request.getSurveyBudget() : request.getBudget(),
                 request.getSurveyAge() != null ? request.getSurveyAge() : request.getAge(),
@@ -73,3 +96,4 @@ public class GiftFilterService {
         );
     }
 }
+

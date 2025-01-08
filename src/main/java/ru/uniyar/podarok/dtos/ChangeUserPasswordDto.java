@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Dto для изменения пароля пользователя.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
