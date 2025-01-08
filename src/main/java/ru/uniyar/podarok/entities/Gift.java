@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import java.util.Set;
 @Entity
 @Data
 @Table(name = "gift")
+@EqualsAndHashCode(exclude = {"categories"})
 public class Gift {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

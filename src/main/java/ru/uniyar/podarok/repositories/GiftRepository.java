@@ -99,7 +99,7 @@ public interface GiftRepository extends JpaRepository<Gift, Long> {
      */
     @Deprecated
     @Modifying
-    @Query(value = "DELETE FROM gift_photos "
+    @Query(value = "DELETE FROM gift_photo "
             + "WHERE gift_id=:gift_id", nativeQuery = true)
     void deleteGiftPhotos(@Param("gift_id") Long giftId);
 
